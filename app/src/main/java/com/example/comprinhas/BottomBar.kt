@@ -2,6 +2,7 @@ package com.example.comprinhas
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -97,7 +98,9 @@ fun BottomBar(
                         Text(text = "Concluir Compras")
                     }
 
-                    LazyColumn() {
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
                         items(cartItems) {
                             CartItemCard(name = it.name, addedBy = it.addedBy, onRemove = { onRemoveItem(it) })
                         }

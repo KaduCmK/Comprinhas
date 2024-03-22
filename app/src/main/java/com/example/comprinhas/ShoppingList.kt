@@ -1,5 +1,7 @@
 package com.example.comprinhas
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -20,8 +22,9 @@ fun ShoppingList(
     LazyColumn(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 8.dp)
             .blur(if (isExpanded) 16.dp else 0.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(horizontal = 8.dp)
     ) {
         items(shoppingList) {
             ShoppingItemCard(name = it.name, addedBy = it.addedBy, onMoveToCart = { onMoveToCart(it) })

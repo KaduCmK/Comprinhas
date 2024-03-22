@@ -28,7 +28,7 @@ fun TopBar(
     showDialog: () -> Unit
 ) {
     Column(
-        modifier = modifier.blur(if (isExpanded) 16.dp else 0.dp),
+        modifier = modifier.blur(if (isExpanded) 16.dp else 0.dp).padding(bottom = 32.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row(

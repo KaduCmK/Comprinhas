@@ -62,7 +62,10 @@ fun HomeScreen(
                 isExpanded = isExpanded,
                 toggleExpanded = { isExpanded = !isExpanded },
                 onRemoveItem = { comprinhasViewModel.removeFromCart(it) },
-                onClearCart = { comprinhasViewModel.clearCart() }
+                onClearCart = {
+                    comprinhasViewModel.clearCart()
+                    isExpanded = false
+                }
             )
         }
     ) {innerPadding ->

@@ -3,7 +3,7 @@ package com.example.comprinhas
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 
-fun mockShoppingList() = List(7) { ShoppingItem("Compra $it", "Mock")}
+//fun mockShoppingList() = List(7) { ShoppingItem("Compra $it", "Mock")}
 
 class ComprinhasViewModel(): ViewModel() {
 

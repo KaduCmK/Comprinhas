@@ -26,7 +26,6 @@ fun CartItemCard(
 ) {
     Surface(
         modifier = modifier
-            .padding(top = 8.dp)
             .fillMaxWidth(),
         color = MaterialTheme.colorScheme.surfaceTint,
         shape = RoundedCornerShape(25)
