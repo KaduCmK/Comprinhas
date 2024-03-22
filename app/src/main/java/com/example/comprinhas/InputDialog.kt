@@ -1,6 +1,5 @@
 package com.example.comprinhas
 
-import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,6 +20,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -32,11 +32,11 @@ import kotlinx.coroutines.delay
 fun InputDialog(setDialog: (Boolean) -> Unit, setValue: (String) -> Unit) {
 
     var txtField by remember { mutableStateOf("") }
-    var txtError by remember { mutableStateOf("") }
+    var isValid by remember { mutableStateOf(true) }
 
-    var showKeyboard by remember { mutableStateOf(true) }
-    var focusRequester = remember { FocusRequester() }
-    var keyboard = LocalSoftwareKeyboardController.current
+    val showKeyboard by remember { mutableStateOf(true) }
+    val focusRequester = remember { FocusRequester() }
+    val keyboard = LocalSoftwareKeyboardController.current
 
     Dialog(onDismissRequest = { setDialog(false) }) {
         Card(
@@ -51,11 +51,20 @@ fun InputDialog(setDialog: (Boolean) -> Unit, setValue: (String) -> Unit) {
             )
             OutlinedTextField(
                 modifier = Modifier
-                    .padding(16.dp)
+                    .padding(8.dp)
                     .focusRequester(focusRequester),
                 value = txtField,
                 onValueChange = { txtField = it},
-                label = { Text("Item")}
+                label = { Text("Item")},
+                isError = !isValid,
+                supportingText = {
+                    if (!isValid) {
+                        Text(
+                            text = "Não pode ser vazio",
+                            color = Color.Red
+                        )
+                    }
+                }
             )
             Row (
                 modifier = Modifier.fillMaxWidth(),
@@ -69,11 +78,12 @@ fun InputDialog(setDialog: (Boolean) -> Unit, setValue: (String) -> Unit) {
                 TextButton(
                     onClick = {
                         if (txtField.isEmpty()) {
-                            txtError = "Não pode ser vazio!"
-                        }
+                            isValid = false
 
+                        } else {
                         setValue(txtField)
                         setDialog(false)
+                        }
                     }
                 ) {
                     Text(text = "Adicionar")
