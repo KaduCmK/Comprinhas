@@ -32,11 +32,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.comprinhas.data.ShoppingItem
 
 @Composable
 fun BottomBar(
     modifier: Modifier = Modifier,
-    cartItems: List<ShoppingItem> = List(4) { ShoppingItem("Compra $it", "Fulano") },
+    cartItems: List<ShoppingItem> = List(4) { ShoppingItem(name = "Compra $it", addedBy = "Fulano") },
     isExpanded: Boolean,
     toggleExpanded: () -> Unit,
     onRemoveItem: (ShoppingItem) -> Unit,

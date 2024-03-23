@@ -17,6 +17,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.comprinhas.data.ShoppingItem
 import com.example.comprinhas.ui.theme.ComprinhasTheme
 
 class MainActivity : ComponentActivity() {
@@ -48,7 +49,7 @@ fun HomeScreen(
         InputDialog(
             setDialog = { dialog = it },
             setValue = {
-                comprinhasViewModel.addShoppingList(ShoppingItem(it))
+                comprinhasViewModel.addShoppingList(ShoppingItem(name = it))
             })
     }
 

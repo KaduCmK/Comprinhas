@@ -10,11 +10,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.comprinhas.data.ShoppingItem
 
 @Composable
 fun ShoppingList(
     modifier: Modifier = Modifier,
-    shoppingList: List<ShoppingItem> = List(3) { ShoppingItem("Compra $it", "Fulano")},
+    shoppingList: List<ShoppingItem> = List(3) { ShoppingItem(name = "Compra $it", addedBy = "Fulano") },
     isExpanded: Boolean,
     onMoveToCart: (ShoppingItem) -> Unit
 ) {

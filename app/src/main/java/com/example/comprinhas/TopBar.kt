@@ -1,5 +1,6 @@
 package com.example.comprinhas
 
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.comprinhas.ui.theme.ComprinhasTheme
 
 @Composable
 fun TopBar(
@@ -28,7 +30,9 @@ fun TopBar(
     showDialog: () -> Unit
 ) {
     Column(
-        modifier = modifier.blur(if (isExpanded) 16.dp else 0.dp).padding(bottom = 32.dp),
+        modifier = modifier
+            .blur(if (isExpanded) 16.dp else 0.dp)
+            .padding(bottom = 32.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row(
@@ -63,8 +67,11 @@ fun TopBar(
     }
 }
 
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Preview(showBackground = true)
 @Composable
 private fun TopBarPreview() {
-    TopBar(isExpanded = false, showDialog = {})
+    ComprinhasTheme {
+        TopBar(isExpanded = false, showDialog = {})
+    }
 }
