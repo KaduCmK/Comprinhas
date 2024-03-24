@@ -1,5 +1,6 @@
 package com.example.comprinhas
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,6 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.comprinhas.data.ShoppingItem
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ShoppingList(
     modifier: Modifier = Modifier,
@@ -26,8 +28,14 @@ fun ShoppingList(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(horizontal = 8.dp)
     ) {
-        items(shoppingList) {
-            ShoppingItemCard(name = it.name, addedBy = it.addedBy, onMoveToCart = { onMoveToCart(it) })
+        items(shoppingList, key = { it.id }) {
+            ShoppingItemCard(
+                modifier = Modifier.animateItemPlacement(),
+                id =  it.id,
+                name = it.name,
+                addedBy = it.addedBy,
+                onMoveToCart = { onMoveToCart(it) }
+            )
         }
     }
 }

@@ -5,8 +5,8 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Update
-import kotlinx.coroutines.flow.Flow
+import java.time.LocalDateTime
+import java.time.ZonedDateTime
 
 @Dao
 interface ShoppingItemDao {
@@ -24,10 +24,10 @@ interface ShoppingItemDao {
     fun insertAll(items: List<ShoppingItem>)
 
     @Query("UPDATE items SET onCart = 1 WHERE id = :id")
-    fun moveToCart(id: Int)
+    fun moveToCart(id: ZonedDateTime)
 
     @Query("UPDATE items SET onCart = 0 WHERE id = :id")
-    fun removeFromCart(id: Int)
+    fun removeFromCart(id: ZonedDateTime)
 
     @Delete
     fun deleteFromList(item: ShoppingItem)

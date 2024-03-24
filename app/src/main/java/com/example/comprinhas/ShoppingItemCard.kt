@@ -17,10 +17,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.comprinhas.data.TimeDiff
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import java.util.Calendar
+import java.util.Date
+import java.util.GregorianCalendar
 
 @Composable
 fun ShoppingItemCard(
     modifier: Modifier = Modifier,
+    id: ZonedDateTime,
     name: String,
     addedBy: String,
     onMoveToCart: () -> Unit
@@ -43,7 +52,7 @@ fun ShoppingItemCard(
                     style = MaterialTheme.typography.titleMedium
                 )
                 Text(
-                    text = "Adicionado por $addedBy",
+                    text = "Adicionado por $addedBy | ${TimeDiff.calculateTimeDiff(id)}",
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
@@ -60,5 +69,5 @@ fun ShoppingItemCard(
 @Preview(showBackground = true)
 @Composable
 private fun ShoppingItemPreview() {
-    ShoppingItemCard(name = "Compra 1", addedBy = "fulano", onMoveToCart = {})
+    ShoppingItemCard(id = ZonedDateTime.now().minusHours(4),name = "Compra 1", addedBy = "fulano", onMoveToCart = {})
 }

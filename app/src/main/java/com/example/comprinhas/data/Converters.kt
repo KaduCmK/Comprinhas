@@ -1,16 +1,18 @@
 package com.example.comprinhas.data
 
 import androidx.room.TypeConverter
-import java.util.Date
+import java.time.Instant
+import java.time.ZoneId
+import java.time.ZonedDateTime
 
 class Converters {
     @TypeConverter
-    fun fromTimestamp(value: Long): Date {
-        return Date(value)
+    fun toLocalDateTime(dateSecs: Long): ZonedDateTime {
+        return Instant.ofEpochSecond(dateSecs).atZone(ZoneId.systemDefault())
     }
 
     @TypeConverter
-    fun dateToTimestamp(date: Date): Long {
-        return date.time
+    fun toDateLong(date: ZonedDateTime): Long {
+        return date.toEpochSecond()
     }
 }

@@ -6,9 +6,11 @@ import androidx.room.DatabaseConfiguration
 import androidx.room.InvalidationTracker
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteOpenHelper
 
 @Database(entities = [ShoppingItem::class], version = 1, exportSchema = true)
+@TypeConverters(Converters::class)
 abstract class ShoppingListDatabase: RoomDatabase() {
 
     abstract fun shoppingItemDao(): ShoppingItemDao
