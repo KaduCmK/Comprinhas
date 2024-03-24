@@ -17,9 +17,10 @@ import com.example.comprinhas.data.ShoppingItem
 @Composable
 fun ShoppingList(
     modifier: Modifier = Modifier,
-    shoppingList: List<ShoppingItem> = List(3) { ShoppingItem(name = "Compra $it", addedBy = "Fulano") },
+    shoppingList: List<ShoppingItem>,
     isExpanded: Boolean,
-    onMoveToCart: (ShoppingItem) -> Unit
+    onMoveToCart: (ShoppingItem) -> Unit,
+    onDelete: (ShoppingItem) -> Unit
 ) {
     LazyColumn(
         modifier = modifier
@@ -28,13 +29,13 @@ fun ShoppingList(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(horizontal = 8.dp)
     ) {
-        items(shoppingList, key = { it.id }) {
+        items(shoppingList) {
             ShoppingItemCard(
-                modifier = Modifier.animateItemPlacement(),
                 id =  it.id,
                 name = it.name,
                 addedBy = it.addedBy,
-                onMoveToCart = { onMoveToCart(it) }
+                onMoveToCart = { onMoveToCart(it) },
+                onDelete = { onDelete(it) }
             )
         }
     }
@@ -43,5 +44,5 @@ fun ShoppingList(
 @Preview(showBackground = true)
 @Composable
 private fun ShoppingListPreview() {
-    ShoppingList(isExpanded = false, onMoveToCart = {})
+    ShoppingList(shoppingList = List(3) { ShoppingItem(name = it.toString(), addedBy = "Preview") }, isExpanded = false, onMoveToCart = {}, onDelete = {})
 }
