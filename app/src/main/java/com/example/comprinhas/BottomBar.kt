@@ -22,6 +22,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,15 +30,15 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.comprinhas.data.ShoppingItem
+import kotlinx.coroutines.flow.Flow
 
 @Composable
 fun BottomBar(
     modifier: Modifier = Modifier,
-    cartItems: List<ShoppingItem> = List(4) { ShoppingItem(name = "Compra $it", addedBy = "Fulano") },
+    cartFlow: Flow<List<ShoppingItem>>,
     isExpanded: Boolean,
     toggleExpanded: () -> Unit,
     onRemoveItem: (ShoppingItem) -> Unit,
@@ -46,6 +47,7 @@ fun BottomBar(
     val surfaceColor by animateColorAsState(
         if (isExpanded) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
     )
+    val cartItems by cartFlow.collectAsState(initial = emptyList())
 
     Column {
         Surface(
@@ -112,8 +114,8 @@ fun BottomBar(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-private fun BottomBarPreview() {
-    BottomBar(isExpanded = true, toggleExpanded = {}, onRemoveItem = {}, onClearCart = {})
-}
+//@Preview(showBackground = true)
+//@Composable
+//private fun BottomBarPreview() {
+//    BottomBar(isExpanded = true, toggleExpanded = {}, onRemoveItem = {}, onClearCart = {})
+//}

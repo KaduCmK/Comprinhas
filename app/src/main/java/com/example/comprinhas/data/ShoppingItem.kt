@@ -2,14 +2,14 @@ package com.example.comprinhas.data
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import java.time.LocalDateTime
+import kotlinx.serialization.Serializable
 import java.time.ZonedDateTime
-import java.util.Date
 
+@Serializable
 @Entity(tableName = "items")
 data class ShoppingItem(
     @PrimaryKey
-    val id: ZonedDateTime = ZonedDateTime.now(),
+    val id: Long = ZonedDateTime.now().toEpochSecond(),
 
     val name: String,
     val addedBy: String = "Fulano",

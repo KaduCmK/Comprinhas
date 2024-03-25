@@ -81,7 +81,7 @@ fun HomeScreen(
         },
         bottomBar = {
             BottomBar(
-                cartItems = comprinhasViewModel.cartList,
+                cartFlow = comprinhasViewModel.cartList,
                 isExpanded = isExpanded,
                 toggleExpanded = { isExpanded = !isExpanded },
                 onRemoveItem = { comprinhasViewModel.removeFromCart(it) },
@@ -93,7 +93,7 @@ fun HomeScreen(
         }
     ) {innerPadding ->
         ShoppingList(
-            shoppingList = comprinhasViewModel.shoppingList,
+            shoppingFlow = comprinhasViewModel.shoppingList,
             modifier = Modifier.padding(innerPadding),
             isExpanded = isExpanded,
             onMoveToCart = { comprinhasViewModel.moveToCart(it)},

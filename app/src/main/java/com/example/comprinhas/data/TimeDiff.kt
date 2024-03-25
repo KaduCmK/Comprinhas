@@ -1,13 +1,15 @@
 package com.example.comprinhas.data
 
+import java.time.Instant
+import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
 class TimeDiff {
 
     companion object {
-        fun calculateTimeDiff(date: ZonedDateTime): String {
-            val secDiff = ZonedDateTime.now().toEpochSecond() - date.toEpochSecond()
+        fun calculateTimeDiff(date: Long): String {
+            val secDiff = ZonedDateTime.now().toEpochSecond() - date
             return if (secDiff < 60) {
                 "agora"
             }
@@ -18,7 +20,9 @@ class TimeDiff {
                 "há ${secDiff / 3600}h"
             }
             else {
-                date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                Instant.ofEpochSecond(date)
+                    .atZone(ZoneId.systemDefault())
+                    .format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
             }
         }
     }

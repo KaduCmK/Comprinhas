@@ -30,13 +30,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.comprinhas.data.TimeDiff
-import com.example.comprinhas.ui.theme.ComprinhasTheme
-import java.time.ZonedDateTime
 
 @Composable
 fun ShoppingItemCard(
     modifier: Modifier = Modifier,
-    id: ZonedDateTime,
+    id: Long,
     name: String,
     addedBy: String,
     onMoveToCart: () -> Unit,
@@ -55,7 +53,7 @@ fun ShoppingItemCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .pointerInput(id.toEpochSecond()) {
+            .pointerInput(id) {
                 detectTapGestures(
                     onLongPress = {
                         haptics.performHapticFeedback(HapticFeedbackType.LongPress)
@@ -101,12 +99,12 @@ fun ShoppingItemCard(
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun ShoppingItemPreview() {
-    ComprinhasTheme {
-        ShoppingItemCard(
-            id = ZonedDateTime.now().minusHours(4),
-            name = "Compra 1",
-            addedBy = "fulano",
-            onMoveToCart = {},
-            onDelete = {})
-    }
+//    ComprinhasTheme {
+//        ShoppingItemCard(
+//            id = ZonedDateTime.now().minusHours(4),
+//            name = "Compra 1",
+//            addedBy = "fulano",
+//            onMoveToCart = {},
+//            onDelete = {})
+//    }
 }
