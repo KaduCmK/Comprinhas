@@ -15,6 +15,10 @@ class ShoppingListRepository(private val dao: ShoppingItemDao) {
         dao.deleteFromList(item)
     }
 
+    suspend fun clearList() {
+        dao.clearList()
+    }
+
     suspend fun moveToCart(id: Long) {
         dao.moveToCart(id)
     }

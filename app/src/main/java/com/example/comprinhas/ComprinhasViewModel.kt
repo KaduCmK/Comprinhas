@@ -5,6 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
+import com.example.comprinhas.http.DatabaseApi
 import androidx.lifecycle.viewModelScope
 import com.example.comprinhas.data.AppPreferences
 import com.example.comprinhas.data.PreferencesRepository
@@ -29,22 +30,15 @@ class ComprinhasViewModel(application: Application): AndroidViewModel(applicatio
     var shoppingList = repo.shoppingList
     var cartList = repo.cartList
 
-//    init {
-//        viewModelScope.launch {
-//            val result = DatabaseApi.retrofitService.getDatabase()
-//            result.shoppingList.forEach {
-//                if (it !in shoppingList) {
-//                    repo.insert(it)
-//                }
-//            }
-//
-//            shoppingList.value!!.forEach {
-//                if (it !in result.shoppingList) {
-//                    repo.deleteFromList(it)
-//                }
-//            }
-//        }
-//    }
+    init {
+        viewModelScope.launch {
+            val result = DatabaseApi.retrofitService.getDatabase()
+            repo.clearList()
+            result.shoppingList.forEach {
+                repo.insert(it)
+            }
+        }
+    }
 
     val appPreferences: AppPreferences
         get() {
@@ -60,7 +54,7 @@ class ComprinhasViewModel(application: Application): AndroidViewModel(applicatio
 
     fun addShoppingList(item: ShoppingItem) {
         viewModelScope.launch {
-//            DatabaseApi.retrofitService.addNewItem(item.id, item.name, item.addedBy)
+            DatabaseApi.retrofitService.addNewItem(item.id, item.name, item.addedBy)
             repo.insert(item)
         }
 //        shoppingList.add(item)
@@ -68,7 +62,7 @@ class ComprinhasViewModel(application: Application): AndroidViewModel(applicatio
 
     fun deleteShoppingItem(item: ShoppingItem) {
         viewModelScope.launch{
-//            DatabaseApi.retrofitService.removeItem(item.id)
+            DatabaseApi.retrofitService.removeItem(item.id)
             repo.deleteFromList(item)
         }
 //        shoppingList.remove(item)
@@ -89,8 +83,12 @@ class ComprinhasViewModel(application: Application): AndroidViewModel(applicatio
 //        shoppingList.add(item)
     }
     fun clearCart() {
-        viewModelScope.launch { repo.clearCart() }
-//        cartList.clear()
+        viewModelScope.launch {
+            cartList.collect { shoppingItems ->
+                DatabaseApi.retrofitService.clearCart(shoppingItems.map { it.id })
+            }
+            repo.clearCart()
+        }
     }
 
     fun updateUserPrefs(name: String) {

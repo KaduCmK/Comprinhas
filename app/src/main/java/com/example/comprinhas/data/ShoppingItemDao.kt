@@ -33,4 +33,7 @@ interface ShoppingItemDao {
 
     @Query("DELETE FROM items WHERE onCart = 1")
     suspend fun clearCart()
+
+    @Query("DELETE FROM items")
+    suspend fun clearList()
 }
