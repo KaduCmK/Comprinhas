@@ -12,6 +12,7 @@ import com.example.comprinhas.data.PreferencesRepository
 import com.example.comprinhas.data.ShoppingItem
 import com.example.comprinhas.data.ShoppingListDatabase
 import com.example.comprinhas.data.ShoppingListRepository
+import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.launch
 
 //fun mockShoppingList() = List(7) { ShoppingItem("Compra $it", "Mock")}
@@ -57,7 +58,6 @@ class ComprinhasViewModel(application: Application): AndroidViewModel(applicatio
             DatabaseApi.retrofitService.addNewItem(item.id, item.name, item.addedBy)
             repo.insert(item)
         }
-//        shoppingList.add(item)
     }
 
     fun deleteShoppingItem(item: ShoppingItem) {
@@ -65,29 +65,29 @@ class ComprinhasViewModel(application: Application): AndroidViewModel(applicatio
             DatabaseApi.retrofitService.removeItem(item.id)
             repo.deleteFromList(item)
         }
-//        shoppingList.remove(item)
     }
 
     fun moveToCart(item: ShoppingItem) {
         viewModelScope.launch {
             repo.moveToCart(item.id)
         }
-//        shoppingList.remove(item)
-//        cartList.add(item)
 
     }
 
     fun removeFromCart(item: ShoppingItem) {
         viewModelScope.launch { repo.removeFromCart(item.id) }
-//        cartList.remove(item)
-//        shoppingList.add(item)
     }
     fun clearCart() {
         viewModelScope.launch {
-            cartList.collect { shoppingItems ->
-                DatabaseApi.retrofitService.clearCart(shoppingItems.map { it.id })
+
+            var working = true
+            cartList.takeWhile { working }.collect { shoppingItems ->
+                DatabaseApi.retrofitService.clearCart(shoppingItems.map { it.id }
+                    .also {
+                        working = false
+                        repo.clearCart()
+                    })
             }
-            repo.clearCart()
         }
     }
 

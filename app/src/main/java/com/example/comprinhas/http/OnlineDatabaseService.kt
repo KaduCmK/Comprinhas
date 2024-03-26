@@ -10,7 +10,7 @@ import retrofit2.http.Query
 
 private val retrofit = Retrofit.Builder()
     .addConverterFactory(GsonConverterFactory.create())
-    .baseUrl("http://192.168.1.75:3000")
+    .baseUrl("http://192.168.100.104:3000")
     .build()
 
 object DatabaseApi {
