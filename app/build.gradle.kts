@@ -58,6 +58,7 @@ dependencies {
 
     implementation(libs.androidx.datastore.core)
     implementation(libs.androidx.lifecycle.livedata.ktx)
+    implementation(libs.androidx.work.runtime.ktx)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)

@@ -20,7 +20,7 @@ object DatabaseApi {
 }
 
 @Serializable
-data class DatabaseRequest(val lastChanged: String, val shoppingList: List<ShoppingItem>)
+data class DatabaseRequest(val lastChanged: Long, val shoppingList: List<ShoppingItem>)
 
 interface OnlineDatabaseService {
 
