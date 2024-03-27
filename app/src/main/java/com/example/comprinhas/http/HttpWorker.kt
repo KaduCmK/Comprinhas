@@ -5,15 +5,37 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 
 object WorkerOperation {
-    val INSERT = 1
-    val CLEAR_CART = 2
-    val DELETE_FROM_LIST = 3
-
+    const val INSERT = 1
+    const val CLEAR_CART = 2
+    const val DELETE_FROM_LIST = 3
 }
 
 class HttpWorker(context: Context, params: WorkerParameters)
     : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {
-        TODO("Not yet implemented")
+        val retrofitService = DatabaseApi.retrofitService
+
+        val id = inputData.getLong("id", 0)
+        val name = inputData.getString("name") ?: ""
+        val addedBy = inputData.getString("addedBy") ?: ""
+        val idList = inputData.getLongArray("idList")!!
+        val lastChanged = inputData.getLong("lastChanged", 0)
+
+        val operation = inputData.getInt("workerOperation", -1)
+        when (operation) {
+            WorkerOperation.INSERT -> {
+                retrofitService.addNewItem(id, name, addedBy)
+            }
+
+            WorkerOperation.DELETE_FROM_LIST -> {
+                retrofitService.removeItem(id, lastChanged)
+            }
+
+            WorkerOperation.CLEAR_CART -> {
+                retrofitService.clearCart(idList.toList(), lastChanged)
+            }
+        }
+
+        return Result.success()
     }
 }

@@ -2,6 +2,7 @@ package com.example.comprinhas.http
 
 import com.example.comprinhas.data.ShoppingItem
 import kotlinx.serialization.Serializable
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
@@ -10,7 +11,7 @@ import retrofit2.http.Query
 
 private val retrofit = Retrofit.Builder()
     .addConverterFactory(GsonConverterFactory.create())
-    .baseUrl("http://192.168.100.104:3000")
+    .baseUrl("https://comprinhas-server.fly.dev")
     .build()
 
 object DatabaseApi {
@@ -28,7 +29,7 @@ interface OnlineDatabaseService {
     suspend fun getTest(@Query("idList") idList: String)
 
     @GET("/")
-    suspend fun getDatabase(): DatabaseRequest
+    suspend fun getDatabase(): Response<DatabaseRequest>
 
     @POST("/newItem")
     suspend fun addNewItem(
@@ -38,8 +39,8 @@ interface OnlineDatabaseService {
     )
 
     @POST("/removeItem")
-    suspend fun removeItem(@Query("id") id: Long)
+    suspend fun removeItem(@Query("id") id: Long, @Query("lastChanged") lastChanged: Long)
 
     @POST("/clearCart")
-    suspend fun clearCart(@Query("idList") idList: List<Long>)
+    suspend fun clearCart(@Query("idList") idList: List<Long>, @Query("lastChanged") lastChanged: Long)
 }

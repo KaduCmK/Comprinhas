@@ -6,28 +6,33 @@ import androidx.work.Data
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
-import androidx.work.WorkRequest
-import androidx.work.Worker
-import com.example.comprinhas.http.DatabaseApi
 import com.example.comprinhas.http.HttpWorker
 import com.example.comprinhas.http.WorkerOperation
 import kotlinx.coroutines.flow.Flow
+import java.time.ZonedDateTime
 
-class ShoppingListRepository(private val dao: ShoppingItemDao, val context: Context) {
-
-    val retrofitService = DatabaseApi.retrofitService
+class ShoppingListRepository(private val dao: ShoppingItemDao, private val context: Context) {
 
     val shoppingList: Flow<List<ShoppingItem>> = dao.getAllShopping()
     val cartList: Flow<List<ShoppingItem>> = dao.getAllCart()
 
-    val pendingWorks: MutableList<OneTimeWorkRequest> = mutableListOf()
+    private fun buildHttpWorkRequest(
+        operation: Int,
+        item: ShoppingItem? = null,
+        idList: List<Long> = emptyList(),
+        lastChanged: Long = ZonedDateTime.now().toEpochSecond()
+    ): OneTimeWorkRequest {
 
-    private fun buildHttpWorkRequest(operation: Int): OneTimeWorkRequest {
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
         val inputData = Data.Builder()
             .putInt("workerOperation", operation)
+            .putLong("id", item?.id ?: -1)
+            .putString("name", item?.name)
+            .putString("addedBy", item?.addedBy)
+            .putLongArray("idList", idList.toLongArray())
+            .putLong("lastChanged", lastChanged)
             .build()
 
         return OneTimeWorkRequest.Builder(HttpWorker::class.java)
@@ -36,21 +41,18 @@ class ShoppingListRepository(private val dao: ShoppingItemDao, val context: Cont
             .build()
     }
 
-    suspend fun insert(item: ShoppingItem, internet: Boolean) {
+    suspend fun insert(item: ShoppingItem) {
         dao.insert(item)
 
-        val insertWorker = buildHttpWorkRequest(WorkerOperation.INSERT)
-        if (internet) WorkManager.getInstance(context).enqueue(insertWorker)
-        else pendingWorks.add(insertWorker)
-
+        val insertWorker = buildHttpWorkRequest(WorkerOperation.INSERT, item)
+        WorkManager.getInstance(context).enqueue(insertWorker)
     }
 
-    suspend fun deleteFromList(item: ShoppingItem, internet: Boolean = false) {
+    suspend fun deleteFromList(item: ShoppingItem, lastChanged: Long) {
         dao.deleteFromList(item)
 
-        val deleteWorker = buildHttpWorkRequest(WorkerOperation.DELETE_FROM_LIST)
-        if (internet) WorkManager.getInstance(context).enqueue(deleteWorker)
-        else pendingWorks.add(deleteWorker)
+        val deleteWorker = buildHttpWorkRequest(WorkerOperation.DELETE_FROM_LIST, item, lastChanged = lastChanged)
+        WorkManager.getInstance(context).enqueue(deleteWorker)
     }
 
     suspend fun clearList() {
@@ -65,12 +67,16 @@ class ShoppingListRepository(private val dao: ShoppingItemDao, val context: Cont
         dao.removeFromCart(id)
     }
 
-    suspend fun clearCart(internet: Boolean = false) {
+    suspend fun clearCart(idList: List<Long>, lastChanged: Long) {
         dao.clearCart()
 
-        val clearListWorker = buildHttpWorkRequest(WorkerOperation.CLEAR_CART)
-        if (internet) WorkManager.getInstance(context).enqueue(clearListWorker)
-        else pendingWorks.add(clearListWorker)
+        val clearListWorker = buildHttpWorkRequest(
+            WorkerOperation.CLEAR_CART,
+            idList = idList,
+            lastChanged = lastChanged
+        )
+
+        WorkManager.getInstance(context).enqueue(clearListWorker)
     }
 
 }

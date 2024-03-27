@@ -9,7 +9,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteOpenHelper
 
-@Database(entities = [ShoppingItem::class], version = 1, exportSchema = true)
+@Database(entities = [ShoppingItem::class], version = 2, exportSchema = true)
 @TypeConverters(Converters::class)
 abstract class ShoppingListDatabase: RoomDatabase() {
 
@@ -22,7 +22,6 @@ abstract class ShoppingListDatabase: RoomDatabase() {
             Room
                 .databaseBuilder(context, ShoppingListDatabase::class.java, "shopping_list_database")
                 .fallbackToDestructiveMigration()
-                .allowMainThreadQueries()
                 .build()
                 .also { Instance = it }
         }
