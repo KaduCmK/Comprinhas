@@ -45,7 +45,7 @@ class SyncWorker(private val context: Context, params: WorkerParameters)
                     worksFlow.takeWhile { collecting }
                         .collect { list ->
                             Log.d("SYNC-WORKER", "list<workinfo> = $list")
-                            if (list.all { it.state == WorkInfo.State.SUCCEEDED }) {
+                            if (list.all { it.state == WorkInfo.State.SUCCEEDED || it.state == WorkInfo.State.FAILED }) {
                                 Log.d("SYNC", "Tasks finalizadas. Sincronizando...")
                                 collecting = false
 
@@ -75,7 +75,7 @@ class SyncWorker(private val context: Context, params: WorkerParameters)
             return Result.success()
         }
         catch (e: Exception) {
-            Log.e("SYNC-WORKER", e.message!!)
+            Log.e("SYNC-WORKER", e.toString())
             Toast.makeText(context, e.cause.toString(), Toast.LENGTH_LONG).show()
             return if (this.runAttemptCount < 3) Result.retry()
             else Result.failure()

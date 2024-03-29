@@ -28,7 +28,7 @@ class HttpWorker(context: Context, params: WorkerParameters)
             }
 
             WorkerOperation.DELETE_FROM_LIST -> {
-                retrofitService.removeItem(id, lastChanged)
+                retrofitService.removeItem(id, name, addedBy, lastChanged)
             }
 
             WorkerOperation.CLEAR_CART -> {

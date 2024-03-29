@@ -39,7 +39,11 @@ interface OnlineDatabaseService {
     )
 
     @POST("/removeItem")
-    suspend fun removeItem(@Query("id") id: Long, @Query("lastChanged") lastChanged: Long)
+    suspend fun removeItem(@Query("id") id: Long,
+                           @Query("name") name: String,
+                           @Query("addedBy") addedBy: String,
+                           @Query("lastChanged") lastChanged: Long
+    )
 
     @POST("/clearCart")
     suspend fun clearCart(@Query("idList") idList: List<Long>, @Query("lastChanged") lastChanged: Long)

@@ -6,6 +6,7 @@ import androidx.work.Data
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
+import androidx.work.WorkRequest
 import com.example.comprinhas.http.HttpWorker
 import com.example.comprinhas.http.WorkerOperation
 import kotlinx.coroutines.flow.Flow
