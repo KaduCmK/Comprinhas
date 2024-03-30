@@ -25,9 +25,10 @@ import com.example.comprinhas.ui.theme.ComprinhasTheme
 
 @Composable
 fun WelcomeScreen(
-    onContinue: (String) -> Unit
+    onContinue: (String, String) -> Unit
 ) {
     var name by remember { mutableStateOf("") }
+    var listId by remember { mutableStateOf("") }
 
     Surface(modifier = Modifier
         .fillMaxSize(),
@@ -36,12 +37,23 @@ fun WelcomeScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "Insira seu nome", style = MaterialTheme.typography.titleLarge)
+            Text(text = "Insira seu nome e id da lista", style = MaterialTheme.typography.titleLarge)
             Spacer(modifier = Modifier.height(16.dp))
-            TextField(value = name, onValueChange = { name = it })
+
+            TextField(
+                value = name,
+                onValueChange = { name = it },
+                label = { Text(text = "Nome")}
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            TextField(
+                value = listId,
+                onValueChange = { listId = it },
+                label = { Text(text = "Id da Lista")}
+            )
             Button(
                 modifier = Modifier.padding(top = 64.dp),
-                onClick = { onContinue(name) }
+                onClick = { onContinue(name, listId) }
             ) {
                 Text(text = "Avançar")
             }
@@ -53,6 +65,6 @@ fun WelcomeScreen(
 @Composable
 private fun WelcomeScreenPreview() {
     ComprinhasTheme {
-        WelcomeScreen({})
+        WelcomeScreen {_, _ ->}
     }
 }

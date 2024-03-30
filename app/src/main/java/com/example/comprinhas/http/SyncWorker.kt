@@ -18,11 +18,14 @@ import kotlinx.coroutines.flow.takeWhile
 class SyncWorker(private val context: Context, params: WorkerParameters)
     : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {
+        val name = inputData.getString("name") ?: ""
+        val listId = inputData.getString("listId") ?: ""
+
         val dataStore = PreferencesRepository(context.dataStore, context)
         val localLastChanged = dataStore.preferencesFlow.first().lastChanged
 
         try {
-            val response = DatabaseApi.retrofitService.getDatabase()
+            val response = DatabaseApi.retrofitService.getDatabase(name, listId)
             var onlineDatabase = response.body()!!
 
             val dao = ShoppingListDatabase.getDatabase(context).shoppingItemDao()
@@ -51,7 +54,9 @@ class SyncWorker(private val context: Context, params: WorkerParameters)
 
                                 workManager.pruneWork()
 
-                                onlineDatabase = DatabaseApi.retrofitService.getDatabase().body()!!
+                                onlineDatabase = DatabaseApi.retrofitService.getDatabase(
+                                    name, listId
+                                ).body()!!
                                 localRepo.clearList()
                                 onlineDatabase.shoppingList.forEach { dao.insert(it) }
                             }
@@ -59,7 +64,9 @@ class SyncWorker(private val context: Context, params: WorkerParameters)
                 }
                 else {
                     Log.d("SYNC", "Sem tarefas para realizar. Sincronizando...")
-                    onlineDatabase = DatabaseApi.retrofitService.getDatabase().body()!!
+                    onlineDatabase = DatabaseApi.retrofitService.getDatabase(
+                        name, listId
+                    ).body()!!
                     localRepo.clearList()
                     onlineDatabase.shoppingList.forEach { dao.insert(it) }
                 }

@@ -55,8 +55,8 @@ fun MainApp(comprinhasViewModel: ComprinhasViewModel = viewModel()) {
     val userPreferences = comprinhasViewModel.appPreferences
 
     if (userPreferences.welcomeScreen) {
-        WelcomeScreen {
-            comprinhasViewModel.updateUserPrefs(it)
+        WelcomeScreen { name, listId ->
+            comprinhasViewModel.updateUserPrefs(name, listId)
         }
     }
     else {

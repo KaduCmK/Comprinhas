@@ -8,12 +8,17 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
-data class AppPreferences(val name: String, val welcomeScreen: Boolean, val lastChanged: Long, val isLoading: Boolean)
+data class AppPreferences(
+    val welcomeScreen: Boolean,
+    val name: String,
+    val listId: String,
+    val lastChanged: Long,
+    val isLoading: Boolean
+)
 
 class PreferencesRepository(
     private val preferencesDatastore: DataStore<Preferences>,
@@ -21,18 +26,28 @@ class PreferencesRepository(
 ) {
 
     private object PreferencesKeys {
-        val USER_NAME = stringPreferencesKey("user_name")
         val WELCOME_SCREEN = booleanPreferencesKey("welcome_screen")
+        val USER_NAME = stringPreferencesKey("user_name")
+        val LIST_ID = stringPreferencesKey("list_id")
         val LAST_CHANGED = longPreferencesKey("last_changed")
         val IS_LOADING = booleanPreferencesKey("is_loading")
     }
 
     val preferencesFlow: Flow<AppPreferences> = preferencesDatastore.data.map { preferences ->
-        val name = preferences[PreferencesKeys.USER_NAME] ?: ""
         val welcomeScreen = preferences[PreferencesKeys.WELCOME_SCREEN] ?: true
+        val name = preferences[PreferencesKeys.USER_NAME] ?: ""
+        val listId = preferences[PreferencesKeys.LIST_ID] ?: ""
         val lastChanged = preferences[PreferencesKeys.LAST_CHANGED] ?: -1
         val isLoading = preferences[PreferencesKeys.IS_LOADING] ?: true
-        AppPreferences(name, welcomeScreen, lastChanged, isLoading)
+        AppPreferences(welcomeScreen, name, listId, lastChanged, isLoading)
+    }
+
+    suspend fun getNameAndListId(): Pair<String, String> {
+        return preferencesDatastore.data.map {
+            val name = it[PreferencesKeys.USER_NAME] ?: ""
+            val listId = it[PreferencesKeys.LIST_ID] ?: ""
+            name to listId
+        }.first()
     }
 
     suspend fun updateLastChanged(id: Long) {
@@ -49,10 +64,18 @@ class PreferencesRepository(
         }
     }
 
-    suspend fun updateNameAndWelcomeScreen(name: String, welcomeScreen: Boolean) {
+    suspend fun updateNameAndListId(name: String, listId: String) {
+        preferencesDatastore.edit { preferences ->
+            preferences[PreferencesKeys.USER_NAME] = name
+            preferences[PreferencesKeys.LIST_ID] = listId
+        }
+    }
+
+    suspend fun updateWelcomeScreen(name: String, listId: String) {
         preferencesDatastore.edit {preferences ->
             preferences[PreferencesKeys.USER_NAME] = name
-            preferences[PreferencesKeys.WELCOME_SCREEN] = welcomeScreen
+            preferences[PreferencesKeys.LIST_ID] = listId
+            preferences[PreferencesKeys.WELCOME_SCREEN] = false
         }
     }
 }

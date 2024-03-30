@@ -29,7 +29,10 @@ interface OnlineDatabaseService {
     suspend fun getTest(@Query("idList") idList: String)
 
     @GET("/")
-    suspend fun getDatabase(): Response<DatabaseRequest>
+    suspend fun getDatabase(
+        @Query("name") name: String,
+        @Query("listId") listId: String
+    ): Response<DatabaseRequest>
 
     @POST("/newItem")
     suspend fun addNewItem(

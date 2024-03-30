@@ -3,7 +3,6 @@ package com.example.comprinhas
 import android.app.Application
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -11,6 +10,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.Constraints
+import androidx.work.Data
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequest
@@ -40,7 +40,7 @@ class ComprinhasViewModel(application: Application): AndroidViewModel(applicatio
         preferencesRepository.preferencesFlow
 
     private var _appPreferences by mutableStateOf(
-        AppPreferences("", false, 0, true)
+        AppPreferences(false, "", "", 0, true)
     )
     var shoppingList = repo.shoppingList
     var cartList = repo.cartList
@@ -69,9 +69,15 @@ class ComprinhasViewModel(application: Application): AndroidViewModel(applicatio
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
 
+        val inputData = Data.Builder()
+            .putString("name", runBlocking { appPreferences.name })
+            .putString("listId", runBlocking { appPreferences.listId })
+            .build()
+
         val periodicSync = PeriodicWorkRequest
             .Builder(SyncWorker::class.java, 15, TimeUnit.MINUTES)
             .setConstraints(constraints)
+            .setInputData(inputData)
             .build()
 
         val workManager = WorkManager.getInstance(application.applicationContext)
@@ -85,11 +91,9 @@ class ComprinhasViewModel(application: Application): AndroidViewModel(applicatio
 
     val appPreferences: AppPreferences
         get() {
-            Log.d("VIEW_MODEL", "lastChanged = ${_appPreferences.lastChanged}")
-
             viewModelScope.launch {
                 preferencesFlow.collect {
-                    _appPreferences = AppPreferences(it.name, it.welcomeScreen, it.lastChanged, it.isLoading)
+                    _appPreferences = AppPreferences(it.welcomeScreen, it.name, it.listId, it.lastChanged, it.isLoading)
                 }
             }
 
@@ -130,9 +134,15 @@ class ComprinhasViewModel(application: Application): AndroidViewModel(applicatio
         }
     }
 
-    fun updateUserPrefs(name: String) {
+    fun updateUserPrefs(name: String, listId: String) {
         viewModelScope.launch {
-            preferencesRepository.updateNameAndWelcomeScreen(name, false)
+            preferencesRepository.updateWelcomeScreen(name, listId)
+        }
+    }
+
+    fun updateNameAndListId(name: String, listId: String) {
+        viewModelScope.launch {
+            preferencesRepository.updateNameAndListId(name, listId)
         }
     }
 }
