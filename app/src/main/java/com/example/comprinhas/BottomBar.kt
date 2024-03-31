@@ -1,8 +1,10 @@
 package com.example.comprinhas
 
+import android.content.res.Configuration
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,6 +20,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -30,10 +33,13 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.comprinhas.data.ShoppingItem
+import com.example.comprinhas.ui.theme.ComprinhasTheme
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 
 @Composable
 fun BottomBar(
@@ -45,19 +51,21 @@ fun BottomBar(
     onClearCart: () -> Unit
 ) {
     val surfaceColor by animateColorAsState(
-        if (isExpanded) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
+        if (isExpanded) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
+        label = "expanded color animation"
     )
-    val cartItems by cartFlow.collectAsState(initial = emptyList())
+    val cartItems by cartFlow.collectAsState(initial = List(3) { ShoppingItem(0, "Compra $it") })
 
     Column {
         Surface(
-            onClick = toggleExpanded,
             modifier = modifier
                 .animateContentSize()
-                .shadow(16.dp, shape = RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp))
                 .fillMaxWidth()
                 .heightIn(min = 72.dp),
-            color = surfaceColor
+            shape = RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp),
+            onClick = toggleExpanded,
+            color = surfaceColor,
+            shadowElevation = 32.dp
         ) {
             Column {
                 Row(
@@ -96,7 +104,7 @@ fun BottomBar(
                         Icon(
                             modifier = Modifier.padding(end = 4.dp),
                             painter = painterResource(id = R.drawable.baseline_shopping_cart_checkout_24),
-                            contentDescription = null
+                            contentDescription = "Concluir compras"
                         )
                         Text(text = "Concluir Compras")
                     }
@@ -105,7 +113,18 @@ fun BottomBar(
                         verticalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         items(cartItems) {
-                            CartItemCard(name = it.name, addedBy = it.addedBy, onRemove = { onRemoveItem(it) })
+                            ShoppingItemCard(
+                                defaultColor = MaterialTheme.colorScheme.surfaceTint,
+                                shoppingItem = it,
+                                actionButton = {
+                                    IconButton(onClick = { onRemoveItem(it) }) {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.baseline_remove_shopping_cart_24),
+                                            contentDescription = null
+                                        )
+                                    }
+                                }
+                            )
                         }
                     }
                 }
@@ -114,8 +133,19 @@ fun BottomBar(
     }
 }
 
-//@Preview(showBackground = true)
-//@Composable
-//private fun BottomBarPreview() {
-//    BottomBar(isExpanded = true, toggleExpanded = {}, onRemoveItem = {}, onClearCart = {})
-//}
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(showBackground = true)
+@Composable
+private fun BottomBarPreview() {
+    ComprinhasTheme {
+        Surface {
+            BottomBar(
+                isExpanded = true,
+                toggleExpanded = {},
+                onRemoveItem = {},
+                onClearCart = {},
+                cartFlow = flowOf(List(3) { ShoppingItem(0, "Compra $it") })
+            )
+        }
+    }
+}

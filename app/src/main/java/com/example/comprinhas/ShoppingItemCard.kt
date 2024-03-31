@@ -23,27 +23,28 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.comprinhas.data.ShoppingItem
 import com.example.comprinhas.data.TimeDiff
+import com.example.comprinhas.ui.theme.ComprinhasTheme
 
 @Composable
 fun ShoppingItemCard(
-    modifier: Modifier = Modifier,
-    id: Long,
-    name: String,
-    addedBy: String,
-    onMoveToCart: () -> Unit,
-    onDelete: () -> Unit
+    defaultColor: Color = MaterialTheme.colorScheme.surfaceVariant,
+    shoppingItem: ShoppingItem,
+    onLongPress: () -> Unit = {},
+    actionButton: @Composable () -> Unit,
 ) {
     val haptics = LocalHapticFeedback.current
     var isPressed by remember { mutableStateOf(false) }
     val cardColor by animateColorAsState(
-        targetValue = if (isPressed) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.surfaceVariant,
+        targetValue = if (isPressed) MaterialTheme.colorScheme.errorContainer else defaultColor,
         animationSpec = tween(300, 50, LinearOutSlowInEasing),
         label = "delete color animation"
     )
@@ -51,13 +52,13 @@ fun ShoppingItemCard(
     // TODO: hoist do controlador de cor (possivel solucao de bug)
 
     Card(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxWidth()
-            .pointerInput(id) {
+            .pointerInput(shoppingItem.id) {
                 detectTapGestures(
                     onLongPress = {
                         haptics.performHapticFeedback(HapticFeedbackType.LongPress)
-                        onDelete()
+                        onLongPress()
                     },
                     onPress = {
                         isPressed = true
@@ -71,27 +72,22 @@ fun ShoppingItemCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Row(
-        modifier = modifier.padding(all = 8.dp),
+        modifier = Modifier.padding(all = 8.dp),
         verticalAlignment = Alignment.CenterVertically
         ) {
             Column(
                 modifier = Modifier.weight(1f),
             ) {
                 Text(
-                    text = name,
+                    text = shoppingItem.name,
                     style = MaterialTheme.typography.titleMedium
                 )
                 Text(
-                    text = "Adicionado por $addedBy | ${TimeDiff.calculateTimeDiff(id)}",
+                    text = "Adicionado por ${shoppingItem.addedBy} | ${TimeDiff.calculateTimeDiff(shoppingItem.id)}",
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
-            IconButton(onClick = onMoveToCart) {
-                Icon(
-                    painter = painterResource(id = R.drawable.baseline_add_shopping_cart_24),
-                    contentDescription = null
-                )
-            }
+            actionButton()
         }
     }
 }
@@ -99,12 +95,11 @@ fun ShoppingItemCard(
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun ShoppingItemPreview() {
-//    ComprinhasTheme {
-//        ShoppingItemCard(
-//            id = ZonedDateTime.now().minusHours(4),
-//            name = "Compra 1",
-//            addedBy = "fulano",
-//            onMoveToCart = {},
-//            onDelete = {})
-//    }
+    ComprinhasTheme {
+        ShoppingItemCard(
+            shoppingItem = ShoppingItem(0, "Titulo", "Fulano"),
+            onLongPress = {},
+            actionButton = {}
+        )
+    }
 }
