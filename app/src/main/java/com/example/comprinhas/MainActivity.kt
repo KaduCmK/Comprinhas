@@ -1,5 +1,7 @@
 package com.example.comprinhas
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
@@ -33,8 +35,20 @@ import com.example.comprinhas.ui.theme.ComprinhasTheme
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
 class MainActivity : ComponentActivity() {
+    companion object { var isForeground = false }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        isForeground = true
+
+        val name = "Adição e remoção de itens"
+        val importance = NotificationManager.IMPORTANCE_DEFAULT
+        val channel = NotificationChannel("list_notifications", name, importance)
+
+        val notificationManager: NotificationManager =
+            application.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(channel)
 
         setContent {
             ComprinhasTheme {
@@ -47,6 +61,11 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        isForeground = false
     }
 }
 
