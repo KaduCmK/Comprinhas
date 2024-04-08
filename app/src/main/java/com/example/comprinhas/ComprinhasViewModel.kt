@@ -31,8 +31,8 @@ import kotlinx.coroutines.runBlocking
 import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit
 
-abstract class IMainViewModel()
-    : ViewModel() {
+abstract class IMainViewModel(application: Application)
+    : AndroidViewModel(application) {
     abstract var shoppingList: Flow<List<ShoppingItem>>
     abstract var cartList: Flow<List<ShoppingItem>>
     abstract val isLoading: Boolean
@@ -48,8 +48,8 @@ abstract class IMainViewModel()
 
 }
 
-class ComprinhasViewModelPreview()
-    : IMainViewModel() {
+class ComprinhasViewModelPreview(application: Application)
+    : IMainViewModel(application) {
     override var shoppingList: Flow<List<ShoppingItem>>
         get() = flowOf(List(7) {ShoppingItem(name = "$it", addedBy = "Mock")})
         set(value) {}
@@ -78,7 +78,7 @@ class ComprinhasViewModelPreview()
 
 }
 
-class ComprinhasViewModel(application: Application): IMainViewModel() {
+class ComprinhasViewModel(application: Application): IMainViewModel(application) {
     private val db = ShoppingListDatabase.getDatabase(application.applicationContext)
     private val dao = db.shoppingItemDao()
     private val repo = ShoppingListRepository(dao, application.baseContext)

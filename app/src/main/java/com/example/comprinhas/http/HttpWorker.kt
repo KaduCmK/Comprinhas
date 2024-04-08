@@ -21,6 +21,8 @@ class HttpWorker(context: Context, params: WorkerParameters)
         val idList = inputData.getLongArray("idList")!!
         val lastChanged = inputData.getLong("lastChanged", 0)
 
+        // TODO: tratamento de erros HTTP
+
         val operation = inputData.getInt("workerOperation", -1)
         when (operation) {
             WorkerOperation.INSERT -> {
