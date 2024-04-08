@@ -8,6 +8,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.Constraints
 import androidx.work.Data
@@ -21,15 +22,63 @@ import com.example.comprinhas.data.ShoppingItem
 import com.example.comprinhas.data.ShoppingListDatabase
 import com.example.comprinhas.data.ShoppingListRepository
 import com.example.comprinhas.http.SyncWorker
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit
 
-//fun mockShoppingList() = List(7) { ShoppingItem("Compra $it", "Mock")}
+abstract class IMainViewModel()
+    : ViewModel() {
+    abstract var shoppingList: Flow<List<ShoppingItem>>
+    abstract var cartList: Flow<List<ShoppingItem>>
+    abstract val isLoading: Boolean
+    abstract val appPreferences: AppPreferences
 
-class ComprinhasViewModel(application: Application): AndroidViewModel(application) {
+    abstract fun addShoppingList(item: ShoppingItem)
+    abstract fun deleteShoppingItem(item: ShoppingItem)
+    abstract fun moveToCart(item: ShoppingItem)
+    abstract fun removeFromCart(item: ShoppingItem)
+    abstract fun clearCart()
+    abstract fun updateUserPrefs(name: String, listId: String)
+    abstract fun updateNameAndListId(name: String, listId: String)
+
+}
+
+class ComprinhasViewModelPreview()
+    : IMainViewModel() {
+    override var shoppingList: Flow<List<ShoppingItem>>
+        get() = flowOf(List(7) {ShoppingItem(name = "$it", addedBy = "Mock")})
+        set(value) {}
+    override var cartList: Flow<List<ShoppingItem>>
+        get() = flowOf(List(3) {ShoppingItem(name = "$it", addedBy = "Mock")})
+        set(value) {}
+    override val isLoading: Boolean
+        get() = false
+    override val appPreferences: AppPreferences
+        get() = AppPreferences(false, "Preview", "main", 123, false)
+
+    override fun addShoppingList(item: ShoppingItem) {}
+
+    override fun deleteShoppingItem(item: ShoppingItem) {}
+
+    override fun moveToCart(item: ShoppingItem) {}
+
+    override fun removeFromCart(item: ShoppingItem) {}
+
+    override fun clearCart() {}
+
+    override fun updateUserPrefs(name: String, listId: String) {}
+
+    override fun updateNameAndListId(name: String, listId: String) {}
+
+
+}
+
+class ComprinhasViewModel(application: Application): IMainViewModel() {
     private val db = ShoppingListDatabase.getDatabase(application.applicationContext)
     private val dao = db.shoppingItemDao()
     private val repo = ShoppingListRepository(dao, application.baseContext)
@@ -42,10 +91,10 @@ class ComprinhasViewModel(application: Application): AndroidViewModel(applicatio
     private var _appPreferences by mutableStateOf(
         AppPreferences(false, "", "", 0, true)
     )
-    var shoppingList = repo.shoppingList
-    var cartList = repo.cartList
+    override var shoppingList = repo.shoppingList
+    override var cartList = repo.cartList
 
-    val isLoading
+    override val isLoading
         get() = _appPreferences.isLoading
 
     init {
@@ -89,7 +138,7 @@ class ComprinhasViewModel(application: Application): AndroidViewModel(applicatio
                 periodicSync)
     }
 
-    val appPreferences: AppPreferences
+    override val appPreferences: AppPreferences
         get() {
             viewModelScope.launch {
                 preferencesFlow.collect {
@@ -100,14 +149,14 @@ class ComprinhasViewModel(application: Application): AndroidViewModel(applicatio
             return _appPreferences
         }
 
-    fun addShoppingList(item: ShoppingItem) {
+    override fun addShoppingList(item: ShoppingItem) {
         viewModelScope.launch {
             preferencesRepository.updateLastChanged(item.id)
             repo.insert(item)
         }
     }
 
-    fun deleteShoppingItem(item: ShoppingItem) {
+    override fun deleteShoppingItem(item: ShoppingItem) {
         viewModelScope.launch{
             val lastChanged = ZonedDateTime.now().toEpochSecond()
             preferencesRepository.updateLastChanged(lastChanged)
@@ -115,17 +164,17 @@ class ComprinhasViewModel(application: Application): AndroidViewModel(applicatio
         }
     }
 
-    fun moveToCart(item: ShoppingItem) {
+    override fun moveToCart(item: ShoppingItem) {
         viewModelScope.launch {
             repo.moveToCart(item.id)
         }
 
     }
 
-    fun removeFromCart(item: ShoppingItem) {
+    override fun removeFromCart(item: ShoppingItem) {
         viewModelScope.launch { repo.removeFromCart(item.id) }
     }
-    fun clearCart() {
+    override fun clearCart() {
         viewModelScope.launch {
             val lastChanged = ZonedDateTime.now().toEpochSecond()
 
@@ -134,13 +183,13 @@ class ComprinhasViewModel(application: Application): AndroidViewModel(applicatio
         }
     }
 
-    fun updateUserPrefs(name: String, listId: String) {
+    override fun updateUserPrefs(name: String, listId: String) {
         viewModelScope.launch {
             preferencesRepository.updateWelcomeScreen(name, listId)
         }
     }
 
-    fun updateNameAndListId(name: String, listId: String) {
+    override fun updateNameAndListId(name: String, listId: String) {
         viewModelScope.launch {
             preferencesRepository.updateNameAndListId(name, listId)
         }

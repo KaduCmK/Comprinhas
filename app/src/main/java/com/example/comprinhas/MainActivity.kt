@@ -26,6 +26,8 @@ import androidx.compose.ui.unit.dp
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.comprinhas.data.ShoppingItem
 import com.example.comprinhas.ui.theme.ComprinhasTheme
@@ -67,7 +69,7 @@ fun MainApp(comprinhasViewModel: ComprinhasViewModel = viewModel()) {
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    comprinhasViewModel: ComprinhasViewModel = viewModel(),
+    comprinhasViewModel: IMainViewModel = viewModel(),
     name: String
 ) {
     var isExpanded by remember { mutableStateOf(false) }
@@ -125,9 +127,10 @@ fun HomeScreen(
 @Preview(showBackground = true)
 @Composable
 private fun HomeScreenPreview(
-
 ) {
     ComprinhasTheme {
-        MainApp()
+        HomeScreen(
+            comprinhasViewModel = ComprinhasViewModelPreview(),
+            name = "Preview")
     }
 }
