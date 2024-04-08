@@ -1,13 +1,18 @@
 package com.example.comprinhas.http
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import android.util.Log
-import android.widget.Toast
-import androidx.datastore.dataStore
+import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.work.CoroutineWorker
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import com.example.comprinhas.MainActivity
+import com.example.comprinhas.R
 import com.example.comprinhas.data.PreferencesRepository
 import com.example.comprinhas.data.ShoppingListDatabase
 import com.example.comprinhas.data.ShoppingListRepository
@@ -29,7 +34,6 @@ class SyncWorker(private val context: Context, params: WorkerParameters)
             var onlineDatabase = response.body()!!
 
             val dao = ShoppingListDatabase.getDatabase(context).shoppingItemDao()
-            val localRepo = ShoppingListRepository(dao, context)
 
             if (onlineDatabase.lastChanged != localLastChanged) {
                 Log.d("SYNC", "Datas diferentes - Iniciando sincronização...")
@@ -53,23 +57,23 @@ class SyncWorker(private val context: Context, params: WorkerParameters)
                                 collecting = false
 
                                 workManager.pruneWork()
-
-                                onlineDatabase = DatabaseApi.retrofitService.getDatabase(
-                                    name, listId
-                                ).body()!!
-                                localRepo.clearList()
-                                onlineDatabase.shoppingList.forEach { dao.insert(it) }
                             }
                         }
                 }
                 else {
                     Log.d("SYNC", "Sem tarefas para realizar. Sincronizando...")
-                    onlineDatabase = DatabaseApi.retrofitService.getDatabase(
-                        name, listId
-                    ).body()!!
-                    localRepo.clearList()
-                    onlineDatabase.shoppingList.forEach { dao.insert(it) }
                 }
+
+                onlineDatabase = DatabaseApi.retrofitService.getDatabase(
+                    name, listId
+                ).body()!!
+                onlineDatabase.shoppingList.forEach {
+                    if (it !in dao.getAllShopping().first()) {
+                        if (!MainActivity.isForeground) postNotification(it.name, it.addedBy)
+                    }
+                }
+                dao.clearList()
+                dao.insertAll(onlineDatabase.shoppingList)
 
                 Log.d("SYNC-WORKER", "Novo valor de lastChanged = ${onlineDatabase.lastChanged}")
                 dataStore.updateLastChanged(onlineDatabase.lastChanged)
@@ -83,12 +87,31 @@ class SyncWorker(private val context: Context, params: WorkerParameters)
         }
         catch (e: Exception) {
             Log.e("SYNC-WORKER", e.toString())
-            Toast.makeText(context, e.cause.toString(), Toast.LENGTH_LONG).show()
-            return if (this.runAttemptCount < 3) Result.retry()
+            return if (runAttemptCount < 3) Result.retry()
             else Result.failure()
         }
         finally {
             dataStore.updateLoadingScreen(false)
+        }
+    }
+
+    private fun postNotification(name: String, addedBy: String) {
+        val builder = NotificationCompat.Builder(context, "list_notifications")
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setContentTitle("Lista de Compras")
+            .setContentText("$addedBy adicionou $name à lista de compras")
+            .build()
+
+        with(NotificationManagerCompat.from(context)) {
+            if (ActivityCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+
+                return
+            }
+            notify(1, builder)
         }
     }
 }
