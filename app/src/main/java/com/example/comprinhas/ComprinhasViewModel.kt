@@ -8,7 +8,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.Constraints
 import androidx.work.Data
@@ -23,7 +22,6 @@ import com.example.comprinhas.data.ShoppingListDatabase
 import com.example.comprinhas.data.ShoppingListRepository
 import com.example.comprinhas.http.SyncWorker
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
@@ -52,10 +50,10 @@ class ComprinhasViewModelPreview(application: Application)
     : IMainViewModel(application) {
     override var shoppingList: Flow<List<ShoppingItem>>
         get() = flowOf(List(7) {ShoppingItem(name = "$it", addedBy = "Mock")})
-        set(value) {}
+        set(_) {}
     override var cartList: Flow<List<ShoppingItem>>
         get() = flowOf(List(3) {ShoppingItem(name = "$it", addedBy = "Mock")})
-        set(value) {}
+        set(_) {}
     override val isLoading: Boolean
         get() = false
     override val appPreferences: AppPreferences
