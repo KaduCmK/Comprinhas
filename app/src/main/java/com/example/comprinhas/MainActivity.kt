@@ -1,5 +1,6 @@
 package com.example.comprinhas
 
+import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
@@ -7,32 +8,30 @@ import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.comprinhas.data.ShoppingItem
 import com.example.comprinhas.ui.theme.ComprinhasTheme
+import kotlinx.coroutines.launch
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
@@ -81,18 +80,23 @@ fun MainApp(comprinhasViewModel: ComprinhasViewModel = viewModel()) {
         }
     }
     else {
-        HomeScreen(name = userPreferences.name)
+        HomeScreen(name = userPreferences.name, comprinhasViewModel = comprinhasViewModel)
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    modifier: Modifier = Modifier,
     comprinhasViewModel: IMainViewModel = viewModel(),
     name: String
 ) {
-    var isExpanded by remember { mutableStateOf(false) }
+    val cartList by comprinhasViewModel.cartList.collectAsState(initial = emptyList())
+    val shoppingList by comprinhasViewModel.shoppingList.collectAsState(initial = emptyList())
+
     var dialog by remember { mutableStateOf(false) }
+
+    val scaffoldState = rememberBottomSheetScaffoldState()
+    val scope = rememberCoroutineScope()
 
     if (dialog) {
         InputDialog(
@@ -101,44 +105,35 @@ fun HomeScreen(
                 comprinhasViewModel.addShoppingList(ShoppingItem(name = it, addedBy = name))
             })
     }
-    
-    Scaffold(
+
+    BottomSheetScaffold(
         topBar = {
-            TopBar(isExpanded = isExpanded, showDialog = { dialog = true })
+            Surface {
+                TopBar(showDialog = { dialog = true })
+            }
         },
-        bottomBar = {
+        sheetPeekHeight = 115.dp,
+        scaffoldState = scaffoldState,
+        sheetContent = {
             BottomBar(
-                cartFlow = comprinhasViewModel.cartList,
-                isExpanded = isExpanded,
-                toggleExpanded = { isExpanded = !isExpanded },
-                onRemoveItem = { comprinhasViewModel.removeFromCart(it) },
+                cartList = cartList,
+                onRemoveItem = {
+                    comprinhasViewModel.removeFromCart(it)
+               },
                 onClearCart = {
                     comprinhasViewModel.clearCart()
-                    isExpanded = false
-                }
+                    scope.launch { scaffoldState.bottomSheetState.partialExpand() }
+                },
             )
         }
     ) {innerPadding ->
-        if (comprinhasViewModel.isLoading) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                CircularProgressIndicator(
-                    modifier = Modifier.width(32.dp)
-                )
-            }
-        }
-        else {
-            ShoppingList(
-                shoppingFlow = comprinhasViewModel.shoppingList,
-                modifier = Modifier.padding(innerPadding),
-                isExpanded = isExpanded,
-                onMoveToCart = { comprinhasViewModel.moveToCart(it)},
-                onDelete = { comprinhasViewModel.deleteShoppingItem(it)}
-            )
-        }
+        ShoppingList(
+            shoppingList = shoppingList,
+            modifier = Modifier.padding(innerPadding),
+            onMoveToCart = { comprinhasViewModel.moveToCart(it)},
+            onDelete = { comprinhasViewModel.deleteShoppingItem(it)},
+            isLoading = comprinhasViewModel.isLoading
+        )
     }
 }
 
@@ -149,7 +144,7 @@ private fun HomeScreenPreview(
 ) {
     ComprinhasTheme {
         HomeScreen(
-            comprinhasViewModel = ComprinhasViewModelPreview(),
+            comprinhasViewModel = ComprinhasViewModelPreview(Application()),
             name = "Preview")
     }
 }
