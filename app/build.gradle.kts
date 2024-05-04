@@ -57,6 +57,11 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.kotlinx.serialization.json)
 
+    implementation(libs.play.services.base)
+    implementation(libs.play.services.code.scanner)
+
+    implementation(libs.androidx.material.icons.extended)
+
     implementation(libs.androidx.datastore.core)
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.work.runtime.ktx)

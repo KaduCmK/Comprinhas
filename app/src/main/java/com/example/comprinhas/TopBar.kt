@@ -4,10 +4,14 @@ import android.content.Intent
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.QrCodeScanner
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -30,7 +34,9 @@ import com.example.comprinhas.ui.theme.ComprinhasTheme
 @Composable
 fun TopBar(
     modifier: Modifier = Modifier,
-    showDialog: () -> Unit
+    showDialog: () -> Unit,
+    onNavigateToSettings: () -> Unit = {},
+    onQrCodeScan: () -> Unit = {}
 ) {
     Column(
         modifier = modifier
@@ -67,13 +73,28 @@ fun TopBar(
             }
         }
 
-        Button(
-            onClick = showDialog
-        ) {
-            Text(
-                style = MaterialTheme.typography.titleMedium,
-                text = "Adicionar"
-            )
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp)
+        ){
+            Button(
+                modifier = Modifier.weight(0.3f),
+                onClick = showDialog
+            ) {
+                Text(
+
+                    style = MaterialTheme.typography.titleMedium,
+                    text = "Adicionar"
+                )
+            }
+            IconButton(
+                modifier = Modifier.padding(start = 64.dp),
+                onClick = onQrCodeScan,
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.QrCodeScanner,
+                    contentDescription = "Scan"
+                )
+            }
         }
     }
 }
