@@ -1,4 +1,4 @@
-package com.example.comprinhas
+package com.example.comprinhas.ui.home
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,6 +17,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.comprinhas.R
+import com.example.comprinhas.ShoppingItemCard
 import com.example.comprinhas.data.ShoppingItem
 import com.example.comprinhas.ui.theme.ComprinhasTheme
 
