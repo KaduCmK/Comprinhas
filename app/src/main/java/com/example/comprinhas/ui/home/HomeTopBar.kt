@@ -1,6 +1,5 @@
-package com.example.comprinhas
+package com.example.comprinhas.ui.home
 
-import android.content.Intent
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.QrCodeScanner
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -24,13 +24,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.comprinhas.ui.settings.SettingsActivity
 import com.example.comprinhas.ui.theme.ComprinhasTheme
 
 @Composable
 fun TopBar(
     modifier: Modifier = Modifier,
-    showDialog: () -> Unit
+    showDialog: () -> Unit,
+    onNavigateToSettings: () -> Unit,
+    onQrCodeScan: () -> Unit
 ) {
     Column(
         modifier = modifier
@@ -43,7 +44,7 @@ fun TopBar(
                 .padding(24.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val context = LocalContext.current
+            LocalContext.current
 
             Text(
                 modifier = modifier.weight(1f),
@@ -54,11 +55,7 @@ fun TopBar(
                 )
             )
             IconButton(
-                onClick = {
-                    context.startActivity(
-                        Intent(context,  SettingsActivity::class.java)
-                    )
-                },
+                onClick = onNavigateToSettings,
             )  {
                 Icon(
                     modifier = Modifier.size(35.dp),
@@ -67,13 +64,28 @@ fun TopBar(
             }
         }
 
-        Button(
-            onClick = showDialog
-        ) {
-            Text(
-                style = MaterialTheme.typography.titleMedium,
-                text = "Adicionar"
-            )
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp)
+        ){
+            Button(
+                modifier = Modifier.weight(0.3f),
+                onClick = showDialog
+            ) {
+                Text(
+
+                    style = MaterialTheme.typography.titleMedium,
+                    text = "Adicionar"
+                )
+            }
+            IconButton(
+                modifier = Modifier.padding(start = 64.dp),
+                onClick = onQrCodeScan,
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.QrCodeScanner,
+                    contentDescription = "Scan"
+                )
+            }
         }
     }
 }
@@ -84,7 +96,7 @@ fun TopBar(
 private fun TopBarPreview() {
     ComprinhasTheme {
         Surface {
-            TopBar(showDialog = {})
+            TopBar(showDialog = {}, onNavigateToSettings = {}, onQrCodeScan = {})
         }
     }
 }

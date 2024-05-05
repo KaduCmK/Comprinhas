@@ -1,4 +1,4 @@
-package com.example.comprinhas
+package com.example.comprinhas.ui.welcome
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement

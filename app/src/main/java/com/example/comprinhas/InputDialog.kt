@@ -16,7 +16,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -27,9 +26,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import kotlinx.coroutines.delay
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun InputDialog(setDialog: (Boolean) -> Unit, setValue: (String) -> Unit) {
+fun InputDialog(
+    onDismiss: () -> Unit,
+    setValue: (String) -> Unit
+) {
 
     var txtField by remember { mutableStateOf("") }
     var isValid by remember { mutableStateOf(true) }
@@ -38,7 +39,7 @@ fun InputDialog(setDialog: (Boolean) -> Unit, setValue: (String) -> Unit) {
     val focusRequester = remember { FocusRequester() }
     val keyboard = LocalSoftwareKeyboardController.current
 
-    Dialog(onDismissRequest = { setDialog(false) }) {
+    Dialog(onDismissRequest = onDismiss) {
         Card(
             modifier = Modifier.padding(16.dp)
         ) {
@@ -71,7 +72,7 @@ fun InputDialog(setDialog: (Boolean) -> Unit, setValue: (String) -> Unit) {
                 horizontalArrangement = Arrangement.End
             ) {
                 TextButton(
-                    onClick = { setDialog(false) }
+                    onClick = onDismiss
                 ) {
                     Text(text = "Cancelar")
                 }
@@ -82,7 +83,7 @@ fun InputDialog(setDialog: (Boolean) -> Unit, setValue: (String) -> Unit) {
 
                         } else {
                         setValue(txtField)
-                        setDialog(false)
+                        onDismiss()
                         }
                     }
                 ) {

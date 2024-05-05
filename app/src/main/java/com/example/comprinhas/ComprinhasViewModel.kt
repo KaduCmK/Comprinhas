@@ -3,6 +3,7 @@ package com.example.comprinhas
 import android.app.Application
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -21,6 +22,9 @@ import com.example.comprinhas.data.ShoppingItem
 import com.example.comprinhas.data.ShoppingListDatabase
 import com.example.comprinhas.data.ShoppingListRepository
 import com.example.comprinhas.http.SyncWorker
+import com.google.mlkit.vision.barcode.common.Barcode
+import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
+import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
@@ -43,6 +47,7 @@ abstract class IMainViewModel(application: Application)
     abstract fun clearCart()
     abstract fun updateUserPrefs(name: String, listId: String)
     abstract fun updateNameAndListId(name: String, listId: String)
+    abstract fun scanQrCode()
 
 }
 
@@ -72,6 +77,9 @@ class ComprinhasViewModelPreview(application: Application)
     override fun updateUserPrefs(name: String, listId: String) {}
 
     override fun updateNameAndListId(name: String, listId: String) {}
+    override fun scanQrCode() {
+        TODO("Not yet implemented")
+    }
 
 
 }
@@ -191,5 +199,26 @@ class ComprinhasViewModel(application: Application): IMainViewModel(application)
         viewModelScope.launch {
             preferencesRepository.updateNameAndListId(name, listId)
         }
+    }
+
+    override fun scanQrCode() {
+        val options = GmsBarcodeScannerOptions.Builder()
+            .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
+            .enableAutoZoom()
+            .build()
+
+        val scanner = GmsBarcodeScanning.getClient(getApplication(), options)
+
+        scanner.startScan()
+            .addOnSuccessListener {
+                Toast.makeText(getApplication(), it.rawValue, Toast.LENGTH_SHORT).show()
+            }
+            .addOnCanceledListener {
+                Toast.makeText(getApplication(), "QR Code Cancelado", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener {
+                Toast.makeText(getApplication(), "Falha no leitor de QR Code", Toast.LENGTH_SHORT).show()
+                Log.d("ViewModel-QRCODE", it.message.toString())
+            }
     }
 }
