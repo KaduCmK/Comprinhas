@@ -15,6 +15,7 @@ class HttpWorker(context: Context, params: WorkerParameters)
     override suspend fun doWork(): Result {
         val retrofitService = DatabaseApi.retrofitService
 
+        val listName = inputData.getString("listName") ?: ""
         val id = inputData.getLong("id", 0)
         val name = inputData.getString("name") ?: ""
         val addedBy = inputData.getString("addedBy") ?: ""
@@ -26,15 +27,15 @@ class HttpWorker(context: Context, params: WorkerParameters)
         val operation = inputData.getInt("workerOperation", -1)
         when (operation) {
             WorkerOperation.INSERT -> {
-                retrofitService.addNewItem(id, name, addedBy)
+                retrofitService.addNewItem(listName, id, name, addedBy)
             }
 
             WorkerOperation.DELETE_FROM_LIST -> {
-                retrofitService.removeItem(id, name, addedBy, lastChanged)
+                retrofitService.removeItem(listName, id, addedBy, lastChanged)
             }
 
             WorkerOperation.CLEAR_CART -> {
-                retrofitService.clearCart(idList.toList(), lastChanged)
+                retrofitService.clearCart(idList.toList(), listName, lastChanged)
             }
         }
 

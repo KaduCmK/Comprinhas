@@ -71,7 +71,7 @@ class MainActivity : ComponentActivity() {
                         InputDialog(
                             onDismiss = navController::popBackStack,
                             setValue = {
-                                viewModel.addShoppingList(ShoppingItem(name = it, addedBy = appPreferences.name))
+                                viewModel.addShoppingList(ShoppingItem(nomeItem = it, adicionadoPor = appPreferences.name))
                             })
                     }
                 }

@@ -6,7 +6,6 @@ import androidx.work.Data
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
-import androidx.work.WorkRequest
 import com.example.comprinhas.http.HttpWorker
 import com.example.comprinhas.http.WorkerOperation
 import kotlinx.coroutines.flow.Flow
@@ -20,6 +19,7 @@ class ShoppingListRepository(private val dao: ShoppingItemDao, private val conte
     private fun buildHttpWorkRequest(
         operation: Int,
         item: ShoppingItem? = null,
+        listName: String = "",
         idList: List<Long> = emptyList(),
         lastChanged: Long = ZonedDateTime.now().toEpochSecond()
     ): OneTimeWorkRequest {
@@ -29,9 +29,10 @@ class ShoppingListRepository(private val dao: ShoppingItemDao, private val conte
             .build()
         val inputData = Data.Builder()
             .putInt("workerOperation", operation)
-            .putLong("id", item?.id ?: -1)
-            .putString("name", item?.name)
-            .putString("addedBy", item?.addedBy)
+            .putString("listName", listName)
+            .putLong("id", item?.idItem ?: -1)
+            .putString("name", item?.nomeItem)
+            .putString("addedBy", item?.adicionadoPor)
             .putLongArray("idList", idList.toLongArray())
             .putLong("lastChanged", lastChanged)
             .build()
@@ -42,17 +43,17 @@ class ShoppingListRepository(private val dao: ShoppingItemDao, private val conte
             .build()
     }
 
-    suspend fun insert(item: ShoppingItem) {
+    suspend fun insert(item: ShoppingItem, listName: String) {
         dao.insert(item)
 
-        val insertWorker = buildHttpWorkRequest(WorkerOperation.INSERT, item)
+        val insertWorker = buildHttpWorkRequest(WorkerOperation.INSERT, item, listName = listName)
         WorkManager.getInstance(context).enqueue(insertWorker)
     }
 
-    suspend fun deleteFromList(item: ShoppingItem, lastChanged: Long) {
+    suspend fun deleteFromList(item: ShoppingItem, listName: String, lastChanged: Long) {
         dao.deleteFromList(item)
 
-        val deleteWorker = buildHttpWorkRequest(WorkerOperation.DELETE_FROM_LIST, item, lastChanged = lastChanged)
+        val deleteWorker = buildHttpWorkRequest(WorkerOperation.DELETE_FROM_LIST, item, listName, lastChanged = lastChanged)
         WorkManager.getInstance(context).enqueue(deleteWorker)
     }
 
@@ -68,12 +69,13 @@ class ShoppingListRepository(private val dao: ShoppingItemDao, private val conte
         dao.removeFromCart(id)
     }
 
-    suspend fun clearCart(idList: List<Long>, lastChanged: Long) {
+    suspend fun clearCart(idList: List<Long>, listName: String, lastChanged: Long) {
         dao.clearCart()
 
         val clearListWorker = buildHttpWorkRequest(
             WorkerOperation.CLEAR_CART,
             idList = idList,
+            listName = listName,
             lastChanged = lastChanged
         )
 

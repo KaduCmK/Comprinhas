@@ -14,15 +14,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.comprinhas.ComprinhasViewModelPreview
-import com.example.comprinhas.IMainViewModel
+import com.example.comprinhas.ComprinhasViewModel
 import com.example.comprinhas.ui.theme.ComprinhasTheme
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    viewModel: IMainViewModel,
+    viewModel: ComprinhasViewModel,
     toWelcomeScreen: () -> Unit,
     toSettingsScreen: () -> Unit,
     showDialog: () -> Unit,
@@ -77,7 +76,7 @@ private fun HomeScreenPreview(
 ) {
     ComprinhasTheme {
         HomeScreen(
-            ComprinhasViewModelPreview(Application()),
+            ComprinhasViewModel(Application()),
             {}, {}, {}
             )
     }

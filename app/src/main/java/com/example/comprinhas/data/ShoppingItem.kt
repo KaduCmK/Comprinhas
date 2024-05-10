@@ -9,9 +9,10 @@ import java.time.ZonedDateTime
 @Entity(tableName = "items")
 data class ShoppingItem(
     @PrimaryKey
-    val id: Long = ZonedDateTime.now().toEpochSecond(),
+    val idItem: Long = ZonedDateTime.now().toEpochSecond(),
 
-    val name: String,
-    val addedBy: String = "Fulano",
+    var nomeLista: String = "",
+    val nomeItem: String = "item",
+    val adicionadoPor: String = "Fulano",
     val onCart: Boolean = false
 )

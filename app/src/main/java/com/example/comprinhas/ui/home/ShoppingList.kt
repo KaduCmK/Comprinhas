@@ -1,5 +1,6 @@
 package com.example.comprinhas.ui.home
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -22,6 +23,7 @@ import com.example.comprinhas.ShoppingItemCard
 import com.example.comprinhas.data.ShoppingItem
 import com.example.comprinhas.ui.theme.ComprinhasTheme
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ShoppingList(
     modifier: Modifier = Modifier,
@@ -52,10 +54,11 @@ fun ShoppingList(
             }
         }
         else {
-            items(shoppingList) {
+            items(items = shoppingList, key = { it.idItem }) {
                 ShoppingItemCard(
+                    modifier = Modifier.animateItemPlacement(),
                     shoppingItem = it,
-                    onLongPress = { onDelete(it) },
+                    onDelete = { onDelete(it) },
                     actionButton = {
                         IconButton(onClick = { onMoveToCart(it) }) {
                             Icon(
@@ -74,7 +77,7 @@ fun ShoppingList(
 private fun ShoppingListPreview() {
     ComprinhasTheme {
         ShoppingList(
-            shoppingList = List(4) {ShoppingItem(name = "Compa $it")},
+            shoppingList = List(4) {ShoppingItem(nomeItem = "Compa $it")},
             onMoveToCart = {},
             onDelete = {},
             isLoading = false
