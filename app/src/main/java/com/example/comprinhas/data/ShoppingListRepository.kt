@@ -7,6 +7,7 @@ import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import com.example.comprinhas.http.HttpWorker
+import com.example.comprinhas.http.NewListWorker
 import com.example.comprinhas.http.WorkerOperation
 import kotlinx.coroutines.flow.Flow
 import java.time.ZonedDateTime
@@ -41,6 +42,20 @@ class ShoppingListRepository(private val dao: ShoppingItemDao, private val conte
             .setConstraints(constraints)
             .setInputData(inputData)
             .build()
+    }
+
+    fun crateList(username: String, listName: String, listPassword: String) {
+        val inputData = Data.Builder()
+            .putString("username", username)
+            .putString("listName", listName)
+            .putString("listPassword", listPassword)
+            .build()
+
+        val newListWorker = OneTimeWorkRequest.Builder(NewListWorker::class.java)
+            .setInputData(inputData)
+            .build()
+
+        WorkManager.getInstance(context).enqueue(newListWorker)
     }
 
     suspend fun insert(item: ShoppingItem, listName: String) {

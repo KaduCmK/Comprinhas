@@ -24,6 +24,7 @@ import com.example.comprinhas.data.ShoppingListDatabase
 import com.example.comprinhas.data.ShoppingListRepository
 import com.example.comprinhas.http.ReceiptWorker
 import com.example.comprinhas.http.SyncWorker
+import com.example.comprinhas.ui.UiState
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
@@ -33,7 +34,7 @@ import kotlinx.coroutines.runBlocking
 import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit
 
-class ComprinhasViewModel(application: Application): AndroidViewModel(application) {
+class ComprinhasViewModel(private val application: Application): AndroidViewModel(application) {
     private val db = ShoppingListDatabase.getDatabase(application.applicationContext)
     private val dao = db.shoppingItemDao()
     private val repo = ShoppingListRepository(dao, application.baseContext)
@@ -44,24 +45,34 @@ class ComprinhasViewModel(application: Application): AndroidViewModel(applicatio
         preferencesRepository.preferencesFlow
 
     private var _appPreferences by mutableStateOf(
-        AppPreferences(false, "", "", 0, true)
+        AppPreferences(false, "", "", "", 0)
     )
+    val appPreferences: AppPreferences
+        get() {
+            viewModelScope.launch {
+                preferencesFlow.collect {
+                    _appPreferences = AppPreferences(it.welcomeScreen, it.name, it.listId, it.listPassword, it.lastChanged)
+                }
+            }
+
+            return _appPreferences
+        }
+
     var shoppingList = repo.shoppingList
     var cartList = repo.cartList
 
-    val isLoading
-        get() = _appPreferences.isLoading
+    var uiState = preferencesRepository.uiState
 
-    init {
+    fun getShoppingList() {
+        runBlocking { preferencesRepository.updateUiState(UiState.LOADING) }
+
         val connectivityManager = application.getSystemService(ConnectivityManager::class.java)
         val networkCapabilities = connectivityManager.activeNetwork
         val actNw = connectivityManager.getNetworkCapabilities(networkCapabilities)
         val hasInternet = actNw?.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED) ?: false
 
-        runBlocking { preferencesRepository.updateLoadingScreen(true) }
-
         if (!hasInternet) {
-            runBlocking { preferencesRepository.updateLoadingScreen(false) }
+            runBlocking { preferencesRepository.updateUiState(UiState.NO_INTERNET) }
             Toast.makeText(
                 application.applicationContext,
                 "Sem conexão com a Internet",
@@ -76,6 +87,7 @@ class ComprinhasViewModel(application: Application): AndroidViewModel(applicatio
         val inputData = Data.Builder()
             .putString("name", runBlocking { appPreferences.name })
             .putString("listId", runBlocking { appPreferences.listId })
+            .putString("listPassword", runBlocking { appPreferences.listPassword })
             .build()
 
         val periodicSync = PeriodicWorkRequest
@@ -93,20 +105,13 @@ class ComprinhasViewModel(application: Application): AndroidViewModel(applicatio
                 periodicSync)
     }
 
-    val appPreferences: AppPreferences
-        get() {
-            viewModelScope.launch {
-                preferencesFlow.collect {
-                    _appPreferences = AppPreferences(it.welcomeScreen, it.name, it.listId, it.lastChanged, it.isLoading)
-                }
-            }
+    fun createList(username: String, listName: String, listPassword: String) {
+        repo.crateList(username, listName, listPassword)
+    }
 
-            return _appPreferences
-        }
-
-    fun addShoppingList(item: ShoppingItem) {
+    fun addShoppingListItem(item: ShoppingItem) {
         viewModelScope.launch {
-            preferencesRepository.updateLastChanged(item.idItem)
+//            preferencesRepository.updateLastChanged(item.idItem)
             repo.insert(item, appPreferences.listId)
         }
     }
@@ -114,7 +119,7 @@ class ComprinhasViewModel(application: Application): AndroidViewModel(applicatio
     fun deleteShoppingItem(item: ShoppingItem) {
         viewModelScope.launch{
             val lastChanged = ZonedDateTime.now().toEpochSecond()
-            preferencesRepository.updateLastChanged(lastChanged)
+//            preferencesRepository.updateLastChanged(lastChanged)
             repo.deleteFromList(item, appPreferences.listId, lastChanged)
         }
     }
@@ -133,20 +138,8 @@ class ComprinhasViewModel(application: Application): AndroidViewModel(applicatio
         viewModelScope.launch {
             val lastChanged = ZonedDateTime.now().toEpochSecond()
 
-            preferencesRepository.updateLastChanged(lastChanged)
+//            preferencesRepository.updateLastChanged(lastChanged)
             repo.clearCart(cartList.first().map { it.idItem }, appPreferences.listId, lastChanged)
-        }
-    }
-
-    fun updateUserPrefs(name: String, listId: String) {
-        viewModelScope.launch {
-            preferencesRepository.updateWelcomeScreen(name, listId)
-        }
-    }
-
-    fun updateNameAndListId(name: String, listId: String) {
-        viewModelScope.launch {
-            preferencesRepository.updateNameAndListId(name, listId)
         }
     }
 
@@ -161,7 +154,7 @@ class ComprinhasViewModel(application: Application): AndroidViewModel(applicatio
             .addOnSuccessListener {
                 Toast.makeText(getApplication(), "Enviando recibo...", Toast.LENGTH_SHORT).show()
 
-                val inputData = Data.Builder().putString("receipt_url", it.rawValue)
+                val inputData = Data.Builder().putString("receipt_url", it.rawValue).putString("username", appPreferences.name)
                 val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED)
                 val receiptWorkRequest = OneTimeWorkRequest.Builder(ReceiptWorker::class.java)
                     .setInputData(inputData.build())

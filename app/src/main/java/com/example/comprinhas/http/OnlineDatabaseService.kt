@@ -1,6 +1,7 @@
 package com.example.comprinhas.http
 
 import com.example.comprinhas.data.ShoppingItem
+import com.example.comprinhas.ui.receipts.Receipt
 import kotlinx.serialization.Serializable
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -12,7 +13,7 @@ import retrofit2.http.Query
 
 private val retrofit = Retrofit.Builder()
     .addConverterFactory(GsonConverterFactory.create())
-    .baseUrl("http://192.168.100.100:8080")
+    .baseUrl("https://comprinhas-server.fly.dev")
     .build()
 
 object DatabaseApi {
@@ -29,6 +30,18 @@ interface OnlineDatabaseService {
     @POST("/newReceipt")
     suspend fun newReceipt(
         @Body body: BodyRequest
+    ): Response<String>
+
+    @GET("/receipts/get/username")
+    suspend fun getReceiptsByUsername(
+        @Query("username") username: String
+    ): Response<List<Receipt>>
+
+    @POST("/createList")
+    suspend fun createList(
+        @Query("username") username: String,
+        @Query("listName") listName: String,
+        @Query("listPassword") listPassword: String
     )
 
     @GET("/")
