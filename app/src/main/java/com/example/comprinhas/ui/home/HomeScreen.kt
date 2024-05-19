@@ -2,8 +2,13 @@ package com.example.comprinhas.ui.home
 
 import android.app.Application
 import android.content.res.Configuration
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Surface
 import androidx.compose.material3.rememberBottomSheetScaffoldState
@@ -11,24 +16,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.comprinhas.ComprinhasViewModelPreview
-import com.example.comprinhas.IMainViewModel
+import com.example.comprinhas.ComprinhasViewModel
+import com.example.comprinhas.ui.UiState
 import com.example.comprinhas.ui.theme.ComprinhasTheme
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    viewModel: IMainViewModel,
+    viewModel: ComprinhasViewModel,
     toWelcomeScreen: () -> Unit,
     toSettingsScreen: () -> Unit,
+    toReceiptsScreen: () -> Unit,
     showDialog: () -> Unit,
 ) {
     val cartList by viewModel.cartList.collectAsState(initial = emptyList())
     val shoppingList by viewModel.shoppingList.collectAsState(initial = emptyList())
+    val homeState by viewModel.uiState.collectAsState(initial = UiState.LOADING)
 
     val scaffoldState = rememberBottomSheetScaffoldState()
     val scope = rememberCoroutineScope()
@@ -40,8 +48,9 @@ fun HomeScreen(
             Surface {
                 TopBar(
                     showDialog = showDialog,
-                    onQrCodeScan = viewModel::scanQrCode,
-                    onNavigateToSettings = toSettingsScreen
+                    toReceiptsScreen = toReceiptsScreen,
+                    toSettings = toSettingsScreen,
+                    uiState = homeState
                 )
             }
         },
@@ -60,13 +69,25 @@ fun HomeScreen(
             )
         }
     ) {innerPadding ->
-        ShoppingList(
-            shoppingList = shoppingList,
-            modifier = Modifier.padding(innerPadding),
-            onMoveToCart = { viewModel.moveToCart(it) },
-            onDelete = { viewModel.deleteShoppingItem(it) },
-            isLoading = viewModel.isLoading
-        )
+        if (homeState == UiState.LOADING) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier.width(32.dp)
+                )
+            }
+        }
+        else {
+            ShoppingList(
+                shoppingList = shoppingList,
+                modifier = Modifier.padding(innerPadding),
+                onMoveToCart = { viewModel.moveToCart(it) },
+                onDelete = { viewModel.deleteShoppingItem(it) },
+            )
+        }
     }
 }
 
@@ -77,8 +98,8 @@ private fun HomeScreenPreview(
 ) {
     ComprinhasTheme {
         HomeScreen(
-            ComprinhasViewModelPreview(Application()),
-            {}, {}, {}
+            ComprinhasViewModel(Application()),
+            {}, {}, {}, {}
             )
     }
 }

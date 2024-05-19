@@ -7,91 +7,51 @@ import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.work.CoroutineWorker
-import androidx.work.WorkInfo
-import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.example.comprinhas.MainActivity
 import com.example.comprinhas.R
-import com.example.comprinhas.data.PreferencesRepository
 import com.example.comprinhas.data.ShoppingListDatabase
-import com.example.comprinhas.data.ShoppingListRepository
 import com.example.comprinhas.dataStore
+import com.example.comprinhas.ui.UiState
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.takeWhile
 
-class SyncWorker(private val context: Context, params: WorkerParameters)
-    : CoroutineWorker(context, params) {
+class SyncWorker(private val context: Context, params: WorkerParameters) :
+    CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {
         val name = inputData.getString("name") ?: ""
         val listId = inputData.getString("listId") ?: ""
+        val listPassword = inputData.getString("listPassword") ?: ""
 
-        val dataStore = PreferencesRepository(context.dataStore, context)
-        val localLastChanged = dataStore.preferencesFlow.first().lastChanged
+        Log.i("SyncWorker", "dados: $name, $listId, $listPassword")
 
         try {
-            val response = DatabaseApi.retrofitService.getDatabase(name, listId)
-            var onlineDatabase = response.body()!!
-
             val dao = ShoppingListDatabase.getDatabase(context).shoppingItemDao()
 
-            if (onlineDatabase.lastChanged != localLastChanged) {
-                Log.d("SYNC", "Datas diferentes - Iniciando sincronização...")
-                val workManager = WorkManager.getInstance(context)
+            val onlineDatabase = DatabaseApi.retrofitService.getDatabase(
+                name, listId, listPassword
+            ).body()!!
+            Log.d("SYNCWORKER", onlineDatabase.shoppingList.toString())
 
-                val worksFlow = workManager.getWorkInfosByTagFlow("com.example.comprinhas.http.HttpWorker")
-                val works = worksFlow.first()
-
-                Log.d("SYNC-WORKER", works.toString())
-
-                if (works.isNotEmpty()) {
-                    Log.d("SYNC", "Há tarefas pendentes - enviando...")
-
-                    var collecting = true
-
-                    worksFlow.takeWhile { collecting }
-                        .collect { list ->
-                            Log.d("SYNC-WORKER", "list<workinfo> = $list")
-                            if (list.all { it.state == WorkInfo.State.SUCCEEDED || it.state == WorkInfo.State.FAILED }) {
-                                Log.d("SYNC", "Tasks finalizadas. Sincronizando...")
-                                collecting = false
-
-                                workManager.pruneWork()
-                            }
-                        }
+            onlineDatabase.shoppingList.forEach {
+                if (it !in dao.getAllShopping().first()) {
+                    if (!MainActivity.isForeground) postNotification(it.nomeItem, it.adicionadoPor)
                 }
-                else {
-                    Log.d("SYNC", "Sem tarefas para realizar. Sincronizando...")
-                }
-
-                onlineDatabase = DatabaseApi.retrofitService.getDatabase(
-                    name, listId
-                ).body()!!
-                onlineDatabase.shoppingList.forEach {
-                    if (it !in dao.getAllShopping().first()) {
-                        if (!MainActivity.isForeground) postNotification(it.name, it.addedBy)
-                    }
-                }
-                dao.clearList()
-                dao.insertAll(onlineDatabase.shoppingList)
-
-                Log.d("SYNC-WORKER", "Novo valor de lastChanged = ${onlineDatabase.lastChanged}")
-                dataStore.updateLastChanged(onlineDatabase.lastChanged)
-
             }
-            else {
-                Log.d("SYNC", "datas iguais - as bases já estão sincronizadas")
-            }
+
+            dao.clearList()
+            dao.insertAll(onlineDatabase.shoppingList)
 
             return Result.success()
-        }
-        catch (e: Exception) {
-            Log.e("SYNC-WORKER", e.toString())
+        } catch (e: Exception) {
+            Log.e("SYNC-WORKER", e.message.toString())
             return if (runAttemptCount < 3) Result.retry()
             else Result.failure()
         }
         finally {
-            dataStore.updateLoadingScreen(false)
+            context.dataStore.edit { it[intPreferencesKey("ui_state")] = UiState.LOADED.ordinal }
         }
     }
 

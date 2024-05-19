@@ -14,6 +14,7 @@ import androidx.work.Constraints
 import androidx.work.Data
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequest
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
 import com.example.comprinhas.data.AppPreferences
@@ -21,70 +22,19 @@ import com.example.comprinhas.data.PreferencesRepository
 import com.example.comprinhas.data.ShoppingItem
 import com.example.comprinhas.data.ShoppingListDatabase
 import com.example.comprinhas.data.ShoppingListRepository
+import com.example.comprinhas.http.ReceiptWorker
 import com.example.comprinhas.http.SyncWorker
+import com.example.comprinhas.ui.UiState
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit
 
-abstract class IMainViewModel(application: Application)
-    : AndroidViewModel(application) {
-    abstract var shoppingList: Flow<List<ShoppingItem>>
-    abstract var cartList: Flow<List<ShoppingItem>>
-    abstract val isLoading: Boolean
-    abstract val appPreferences: AppPreferences
-
-    abstract fun addShoppingList(item: ShoppingItem)
-    abstract fun deleteShoppingItem(item: ShoppingItem)
-    abstract fun moveToCart(item: ShoppingItem)
-    abstract fun removeFromCart(item: ShoppingItem)
-    abstract fun clearCart()
-    abstract fun updateUserPrefs(name: String, listId: String)
-    abstract fun updateNameAndListId(name: String, listId: String)
-    abstract fun scanQrCode()
-
-}
-
-class ComprinhasViewModelPreview(application: Application)
-    : IMainViewModel(application) {
-    override var shoppingList: Flow<List<ShoppingItem>>
-        get() = flowOf(List(7) {ShoppingItem(name = "$it", addedBy = "Mock")})
-        set(_) {}
-    override var cartList: Flow<List<ShoppingItem>>
-        get() = flowOf(List(3) {ShoppingItem(name = "$it", addedBy = "Mock")})
-        set(_) {}
-    override val isLoading: Boolean
-        get() = false
-    override val appPreferences: AppPreferences
-        get() = AppPreferences(false, "Preview", "main", 123, false)
-
-    override fun addShoppingList(item: ShoppingItem) {}
-
-    override fun deleteShoppingItem(item: ShoppingItem) {}
-
-    override fun moveToCart(item: ShoppingItem) {}
-
-    override fun removeFromCart(item: ShoppingItem) {}
-
-    override fun clearCart() {}
-
-    override fun updateUserPrefs(name: String, listId: String) {}
-
-    override fun updateNameAndListId(name: String, listId: String) {}
-    override fun scanQrCode() {
-        TODO("Not yet implemented")
-    }
-
-
-}
-
-class ComprinhasViewModel(application: Application): IMainViewModel(application) {
+class ComprinhasViewModel(private val application: Application): AndroidViewModel(application) {
     private val db = ShoppingListDatabase.getDatabase(application.applicationContext)
     private val dao = db.shoppingItemDao()
     private val repo = ShoppingListRepository(dao, application.baseContext)
@@ -95,24 +45,34 @@ class ComprinhasViewModel(application: Application): IMainViewModel(application)
         preferencesRepository.preferencesFlow
 
     private var _appPreferences by mutableStateOf(
-        AppPreferences(false, "", "", 0, true)
+        AppPreferences(false, "", "", "", 0)
     )
-    override var shoppingList = repo.shoppingList
-    override var cartList = repo.cartList
+    val appPreferences: AppPreferences
+        get() {
+            viewModelScope.launch {
+                preferencesFlow.collect {
+                    _appPreferences = AppPreferences(it.welcomeScreen, it.name, it.listId, it.listPassword, it.lastChanged)
+                }
+            }
 
-    override val isLoading
-        get() = _appPreferences.isLoading
+            return _appPreferences
+        }
 
-    init {
+    var shoppingList = repo.shoppingList
+    var cartList = repo.cartList
+
+    var uiState = preferencesRepository.uiState
+
+    fun getShoppingList() {
+        runBlocking { preferencesRepository.updateUiState(UiState.LOADING) }
+
         val connectivityManager = application.getSystemService(ConnectivityManager::class.java)
         val networkCapabilities = connectivityManager.activeNetwork
         val actNw = connectivityManager.getNetworkCapabilities(networkCapabilities)
         val hasInternet = actNw?.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED) ?: false
 
-        runBlocking { preferencesRepository.updateLoadingScreen(true) }
-
         if (!hasInternet) {
-            runBlocking { preferencesRepository.updateLoadingScreen(false) }
+            runBlocking { preferencesRepository.updateUiState(UiState.NO_INTERNET) }
             Toast.makeText(
                 application.applicationContext,
                 "Sem conexão com a Internet",
@@ -127,6 +87,7 @@ class ComprinhasViewModel(application: Application): IMainViewModel(application)
         val inputData = Data.Builder()
             .putString("name", runBlocking { appPreferences.name })
             .putString("listId", runBlocking { appPreferences.listId })
+            .putString("listPassword", runBlocking { appPreferences.listPassword })
             .build()
 
         val periodicSync = PeriodicWorkRequest
@@ -144,74 +105,63 @@ class ComprinhasViewModel(application: Application): IMainViewModel(application)
                 periodicSync)
     }
 
-    override val appPreferences: AppPreferences
-        get() {
-            viewModelScope.launch {
-                preferencesFlow.collect {
-                    _appPreferences = AppPreferences(it.welcomeScreen, it.name, it.listId, it.lastChanged, it.isLoading)
-                }
-            }
+    fun createList(username: String, listName: String, listPassword: String) {
+        repo.crateList(username, listName, listPassword)
+    }
 
-            return _appPreferences
-        }
-
-    override fun addShoppingList(item: ShoppingItem) {
+    fun addShoppingListItem(item: ShoppingItem) {
         viewModelScope.launch {
-            preferencesRepository.updateLastChanged(item.id)
-            repo.insert(item)
+//            preferencesRepository.updateLastChanged(item.idItem)
+            repo.insert(item, appPreferences.listId)
         }
     }
 
-    override fun deleteShoppingItem(item: ShoppingItem) {
+    fun deleteShoppingItem(item: ShoppingItem) {
         viewModelScope.launch{
             val lastChanged = ZonedDateTime.now().toEpochSecond()
-            preferencesRepository.updateLastChanged(lastChanged)
-            repo.deleteFromList(item, lastChanged)
+//            preferencesRepository.updateLastChanged(lastChanged)
+            repo.deleteFromList(item, appPreferences.listId, lastChanged)
         }
     }
 
-    override fun moveToCart(item: ShoppingItem) {
+    fun moveToCart(item: ShoppingItem) {
         viewModelScope.launch {
-            repo.moveToCart(item.id)
+            repo.moveToCart(item.idItem)
         }
 
     }
 
-    override fun removeFromCart(item: ShoppingItem) {
-        viewModelScope.launch { repo.removeFromCart(item.id) }
+    fun removeFromCart(item: ShoppingItem) {
+        viewModelScope.launch { repo.removeFromCart(item.idItem) }
     }
-    override fun clearCart() {
+    fun clearCart() {
         viewModelScope.launch {
             val lastChanged = ZonedDateTime.now().toEpochSecond()
 
-            preferencesRepository.updateLastChanged(lastChanged)
-            repo.clearCart(cartList.first().map { it.id }, lastChanged)
+//            preferencesRepository.updateLastChanged(lastChanged)
+            repo.clearCart(cartList.first().map { it.idItem }, appPreferences.listId, lastChanged)
         }
     }
 
-    override fun updateUserPrefs(name: String, listId: String) {
-        viewModelScope.launch {
-            preferencesRepository.updateWelcomeScreen(name, listId)
-        }
-    }
-
-    override fun updateNameAndListId(name: String, listId: String) {
-        viewModelScope.launch {
-            preferencesRepository.updateNameAndListId(name, listId)
-        }
-    }
-
-    override fun scanQrCode() {
+    fun scanQrCode() {
         val options = GmsBarcodeScannerOptions.Builder()
             .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
-            .enableAutoZoom()
             .build()
 
         val scanner = GmsBarcodeScanning.getClient(getApplication(), options)
 
         scanner.startScan()
             .addOnSuccessListener {
-                Toast.makeText(getApplication(), it.rawValue, Toast.LENGTH_SHORT).show()
+                Toast.makeText(getApplication(), "Enviando recibo...", Toast.LENGTH_SHORT).show()
+
+                val inputData = Data.Builder().putString("receipt_url", it.rawValue).putString("username", appPreferences.name)
+                val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED)
+                val receiptWorkRequest = OneTimeWorkRequest.Builder(ReceiptWorker::class.java)
+                    .setInputData(inputData.build())
+                    .setConstraints(constraints.build())
+                    .build()
+
+                WorkManager.getInstance(getApplication()).enqueue(receiptWorkRequest)
             }
             .addOnCanceledListener {
                 Toast.makeText(getApplication(), "QR Code Cancelado", Toast.LENGTH_SHORT).show()

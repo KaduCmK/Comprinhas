@@ -23,7 +23,7 @@ import com.example.comprinhas.ui.theme.ComprinhasTheme
 @Composable
 fun SettingsScreen(
     appPreferences: AppPreferences,
-    updateNameAndListId: (String, String) -> Unit,
+    updateUserPrefs: (String, String, String) -> Unit,
     onNavigateBack: () -> Unit
 ) {
     Surface(
@@ -32,6 +32,7 @@ fun SettingsScreen(
 
         var name by remember { mutableStateOf(appPreferences.name) }
         var listId by remember { mutableStateOf(appPreferences.listId) }
+        var listPassword by remember { mutableStateOf(appPreferences.listPassword) }
 
         Scaffold(
             topBar = { SettingsTopBar { onNavigateBack() } }
@@ -47,15 +48,23 @@ fun SettingsScreen(
                     fieldValue = name,
                     onChange = {
                         name = it
-                        updateNameAndListId(name, listId)
+                        updateUserPrefs(name, listId, listPassword)
                     })
 
                 SettingTextField(
-                    label = "ID da lista: ",
+                    label = "Nome da lista: ",
                     fieldValue = listId,
                     onChange = {
                         listId = it
-                        updateNameAndListId(name, listId)
+                        updateUserPrefs(name, listId, listPassword)
+                    })
+
+                SettingTextField(
+                    label = "Senha da lista:",
+                    fieldValue = listPassword,
+                    onChange = {
+                        listPassword = it
+                        updateUserPrefs(name, listId, listPassword)
                     })
             }
         }
@@ -68,8 +77,8 @@ fun SettingsScreen(
 private fun SettingsScreenPreview() {
     ComprinhasTheme {
         SettingsScreen(
-            AppPreferences(false, "", "", 0, false),
-            {_, _ -> {}},
+            AppPreferences(false, "", "", "",0),
+            {_, _, _ ->},
             {}
         )
     }

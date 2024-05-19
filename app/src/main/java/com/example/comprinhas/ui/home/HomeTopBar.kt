@@ -1,13 +1,15 @@
 package com.example.comprinhas.ui.home
 
 import android.content.res.Configuration
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.QrCodeScanner
+import androidx.compose.material.icons.automirrored.outlined.ReceiptLong
+import androidx.compose.material.icons.outlined.CloudOff
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -20,18 +22,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.comprinhas.ui.UiState
 import com.example.comprinhas.ui.theme.ComprinhasTheme
 
 @Composable
 fun TopBar(
     modifier: Modifier = Modifier,
     showDialog: () -> Unit,
-    onNavigateToSettings: () -> Unit,
-    onQrCodeScan: () -> Unit
+    toSettings: () -> Unit,
+    toReceiptsScreen: () -> Unit,
+    uiState: UiState = UiState.LOADED
 ) {
     Column(
         modifier = modifier
@@ -55,7 +60,7 @@ fun TopBar(
                 )
             )
             IconButton(
-                onClick = onNavigateToSettings,
+                onClick = toSettings,
             )  {
                 Icon(
                     modifier = Modifier.size(35.dp),
@@ -65,10 +70,15 @@ fun TopBar(
         }
 
         Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ){
             Button(
-                modifier = Modifier.weight(0.3f),
+                modifier = modifier,
+                enabled = uiState == UiState.LOADED,
                 onClick = showDialog
             ) {
                 Text(
@@ -78,13 +88,24 @@ fun TopBar(
                 )
             }
             IconButton(
-                modifier = Modifier.padding(start = 64.dp),
-                onClick = onQrCodeScan,
+                onClick = toReceiptsScreen,
+            )  {
+                Icon(imageVector = Icons.AutoMirrored.Outlined.ReceiptLong, contentDescription = null)
+            }
+        }
+
+        if (uiState == UiState.NO_INTERNET) {
+            Row(
+                modifier = Modifier.padding(top = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    imageVector = Icons.Outlined.QrCodeScanner,
-                    contentDescription = "Scan"
-                )
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    imageVector = Icons.Outlined.CloudOff,
+                    contentDescription = "No Connection")
+                Text(
+                    text = "Sem conexão com a internet",
+                    style = MaterialTheme.typography.bodyMedium.copy(fontStyle = FontStyle.Italic))
             }
         }
     }
@@ -96,7 +117,11 @@ fun TopBar(
 private fun TopBarPreview() {
     ComprinhasTheme {
         Surface {
-            TopBar(showDialog = {}, onNavigateToSettings = {}, onQrCodeScan = {})
+            TopBar(
+                showDialog = {},
+                toSettings = {},
+                toReceiptsScreen = {}
+            )
         }
     }
 }

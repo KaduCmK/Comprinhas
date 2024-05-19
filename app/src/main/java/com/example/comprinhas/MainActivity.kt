@@ -17,7 +17,10 @@ import androidx.navigation.compose.dialog
 import androidx.navigation.compose.rememberNavController
 import com.example.comprinhas.data.ShoppingItem
 import com.example.comprinhas.ui.home.HomeScreen
+import com.example.comprinhas.ui.receipts.ReceiptsList
+import com.example.comprinhas.ui.receipts.ReceiptsViewModel
 import com.example.comprinhas.ui.settings.SettingsScreen
+import com.example.comprinhas.ui.settings.SettingsViewModel
 import com.example.comprinhas.ui.theme.ComprinhasTheme
 import com.example.comprinhas.ui.welcome.WelcomeScreen
 import com.google.android.gms.common.moduleinstall.ModuleInstall
@@ -41,37 +44,53 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val navController = rememberNavController()
-            val viewModel: ComprinhasViewModel = viewModel()
-            val appPreferences = viewModel.appPreferences
+
+            val mainviewModel: ComprinhasViewModel = viewModel()
+            val settingsViewModel: SettingsViewModel = viewModel()
+            val receiptsViewModel: ReceiptsViewModel = viewModel()
 
             ComprinhasTheme {
                 NavHost(navController = navController, startDestination = "home") {
                     composable("home") {
+                        mainviewModel.getShoppingList()
                         HomeScreen(
-                            viewModel = viewModel,
+                            viewModel = mainviewModel,
                             toWelcomeScreen = { navController.navigate("welcome") },
                             toSettingsScreen = { navController.navigate("settings") },
+                            toReceiptsScreen = {
+                                navController.navigate("receipts")
+                                receiptsViewModel.getReceiptsList()
+                            },
                             showDialog = { navController.navigate("addItem") }
                         )
                     }
                     composable("welcome") {
-                        WelcomeScreen() { name, listId ->
-                            viewModel.updateUserPrefs(name, listId)
+                        WelcomeScreen() { name, listId, listPassword, newList ->
+                            settingsViewModel.updateUserPrefs(name, listId, listPassword)
+                            if (newList) mainviewModel.createList(name, listId, listPassword)
                             navController.navigate("home")
                         }
                     }
                     composable("settings") {
                         SettingsScreen(
-                            appPreferences = appPreferences,
-                            updateNameAndListId = viewModel::updateNameAndListId,
+                            appPreferences = settingsViewModel.appPreferences,
+                            updateUserPrefs = settingsViewModel::updateUserPrefs,
                             onNavigateBack = navController::popBackStack
                         )
                     }
+                    composable("receipts") {
+                        ReceiptsList(
+                            receiptsFlow = receiptsViewModel.receiptsList,
+                            onQrCodeScan = mainviewModel::scanQrCode,
+                            onNavigateBack = { navController.popBackStack() }
+                        )
+                    }
+
                     dialog("addItem") {
                         InputDialog(
                             onDismiss = navController::popBackStack,
                             setValue = {
-                                viewModel.addShoppingList(ShoppingItem(name = it, addedBy = appPreferences.name))
+                                mainviewModel.addShoppingListItem(ShoppingItem(nomeItem = it, adicionadoPor = settingsViewModel.appPreferences.name))
                             })
                     }
                 }
@@ -118,6 +137,8 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun notificationsConfiguration() {
+        // TODO permissao de notificacao
+
         val name = "Adição e remoção de itens"
         val importance = NotificationManager.IMPORTANCE_DEFAULT
         val channel = NotificationChannel("list_notifications", name, importance)

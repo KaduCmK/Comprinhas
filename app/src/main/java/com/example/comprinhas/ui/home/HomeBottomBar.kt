@@ -106,7 +106,6 @@ fun BottomBar(
         ) {
             items(cartList) {
                 ShoppingItemCard(
-                    defaultColor = MaterialTheme.colorScheme.surfaceTint,
                     shoppingItem = it,
                     actionButton = {
                         IconButton(onClick = { onRemoveItem(it) }) {

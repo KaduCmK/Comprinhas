@@ -22,10 +22,10 @@ interface ShoppingItemDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(items: List<ShoppingItem>)
 
-    @Query("UPDATE items SET onCart = 1 WHERE id = :id")
+    @Query("UPDATE items SET onCart = 1 WHERE idItem = :id")
     suspend fun moveToCart(id: Long)
 
-    @Query("UPDATE items SET onCart = 0 WHERE id = :id")
+    @Query("UPDATE items SET onCart = 0 WHERE idItem = :id")
     suspend fun removeFromCart(id: Long)
 
     @Delete
