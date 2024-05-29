@@ -10,16 +10,21 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AttachMoney
+import androidx.compose.material.icons.filled.Money
 import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.comprinhas.data.Converters
 import com.example.comprinhas.ui.theme.ComprinhasTheme
+import java.text.DecimalFormat
 
 @Composable
 fun ReceiptCard(
@@ -29,7 +34,7 @@ fun ReceiptCard(
 ) {
     Card(
         modifier = Modifier
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(horizontal = 16.dp, vertical = 4.dp)
             .clickable { onOpenReceipt() }
     ) {
         Column(modifier = Modifier
@@ -38,6 +43,7 @@ fun ReceiptCard(
             Text(
                 modifier = Modifier.fillMaxWidth(),
                 text = receipt.nomeMercado,
+                style = MaterialTheme.typography.titleSmall,
                 textAlign = TextAlign.Center
             )
             Row(
@@ -46,17 +52,23 @@ fun ReceiptCard(
                     .padding(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.Center
             ) {
-                Row {
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(imageVector = Icons.Outlined.CalendarMonth, contentDescription = "Data")
                     Text(
-                        text = receipt.dataEmissao,
+                        text = Converters.isoInstantString_to_ExtendedDate(receipt.dataEmissao),
+                        style = MaterialTheme.typography.bodyMedium,
                         textAlign = TextAlign.Center
                     )
                 }
                 Spacer(modifier = Modifier.width(24.dp))
-                Row{
-                    Icon(imageVector = Icons.Default.AttachMoney, contentDescription = "custo")
-                    Text(text = "R$ ${receipt.valorTotal}")
+                Row (
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(imageVector = Icons.Default.Money, contentDescription = "custo")
+                    Text(
+                        text = "R$ ${DecimalFormat("0.00").format(receipt.valorTotal)}",
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
                 }
             }
         }
@@ -68,11 +80,7 @@ fun ReceiptCard(
 private fun ReceiptCardPreview() {
     ComprinhasTheme {
         ReceiptCard(onOpenReceipt = {},
-            receipt = Receipt("Kadu",
-                "17/05/2023",
-                "Supermercado",
-                12.68f,
-                emptyList())
+            receipt = Receipt()
         )
     }
 }

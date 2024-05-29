@@ -58,7 +58,7 @@ class SyncWorker(private val context: Context, params: WorkerParameters) :
     private fun postNotification(name: String, addedBy: String) {
         val builder = NotificationCompat.Builder(context, "list_notifications")
             .setSmallIcon(R.drawable.ic_launcher_foreground)
-            .setContentTitle("Lista de Compras")
+            .setContentTitle("Comprinhas")
             .setContentText("$addedBy adicionou $name à lista de compras")
             .build()
 

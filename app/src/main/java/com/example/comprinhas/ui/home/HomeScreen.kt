@@ -13,6 +13,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Surface
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -24,6 +25,7 @@ import com.example.comprinhas.ComprinhasViewModel
 import com.example.comprinhas.ui.UiState
 import com.example.comprinhas.ui.theme.ComprinhasTheme
 import kotlinx.coroutines.launch
+import java.time.Instant
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,7 +43,10 @@ fun HomeScreen(
     val scaffoldState = rememberBottomSheetScaffoldState()
     val scope = rememberCoroutineScope()
 
-    if (viewModel.appPreferences.welcomeScreen) toWelcomeScreen()
+    LaunchedEffect(key1 = 1) {
+//        if (viewModel.appPreferences.welcomeScreen) toWelcomeScreen()
+        viewModel.getShoppingList()
+    }
 
     BottomSheetScaffold(
         topBar = {

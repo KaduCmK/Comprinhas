@@ -3,6 +3,7 @@ package com.example.comprinhas.http
 import com.example.comprinhas.data.ShoppingItem
 import com.example.comprinhas.ui.receipts.Receipt
 import kotlinx.serialization.Serializable
+import okhttp3.OkHttpClient
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -10,10 +11,18 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Query
+import java.util.concurrent.TimeUnit
+
+private val client = OkHttpClient.Builder()
+    .connectTimeout(10, TimeUnit.SECONDS)
+    .readTimeout(90, TimeUnit.SECONDS)
+    .writeTimeout(90, TimeUnit.SECONDS)
+    .build()
 
 private val retrofit = Retrofit.Builder()
     .addConverterFactory(GsonConverterFactory.create())
     .baseUrl("https://comprinhas-server.fly.dev")
+    .client(client)
     .build()
 
 object DatabaseApi {
@@ -30,7 +39,7 @@ interface OnlineDatabaseService {
     @POST("/newReceipt")
     suspend fun newReceipt(
         @Body body: BodyRequest
-    ): Response<String>
+    ): Response<ReceiptResponse>
 
     @GET("/receipts/get/username")
     suspend fun getReceiptsByUsername(

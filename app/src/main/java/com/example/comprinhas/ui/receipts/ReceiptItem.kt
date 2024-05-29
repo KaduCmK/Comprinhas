@@ -1,7 +1,8 @@
 package com.example.comprinhas.ui.receipts
 
 data class ReceiptItem(
-    val nomeProduto: String,
-    val quantidade: Int,
-    val valor: Float
+    val nomeproduto: String = "nomeProduto",
+    val quantidade: Int = 123,
+    val unidade: String = "UN",
+    val valor: Float = 999.9f
 )

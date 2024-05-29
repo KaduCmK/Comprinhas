@@ -142,33 +142,4 @@ class ComprinhasViewModel(private val application: Application): AndroidViewMode
             repo.clearCart(cartList.first().map { it.idItem }, appPreferences.listId, lastChanged)
         }
     }
-
-    fun scanQrCode() {
-        val options = GmsBarcodeScannerOptions.Builder()
-            .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
-            .build()
-
-        val scanner = GmsBarcodeScanning.getClient(getApplication(), options)
-
-        scanner.startScan()
-            .addOnSuccessListener {
-                Toast.makeText(getApplication(), "Enviando recibo...", Toast.LENGTH_SHORT).show()
-
-                val inputData = Data.Builder().putString("receipt_url", it.rawValue).putString("username", appPreferences.name)
-                val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED)
-                val receiptWorkRequest = OneTimeWorkRequest.Builder(ReceiptWorker::class.java)
-                    .setInputData(inputData.build())
-                    .setConstraints(constraints.build())
-                    .build()
-
-                WorkManager.getInstance(getApplication()).enqueue(receiptWorkRequest)
-            }
-            .addOnCanceledListener {
-                Toast.makeText(getApplication(), "QR Code Cancelado", Toast.LENGTH_SHORT).show()
-            }
-            .addOnFailureListener {
-                Toast.makeText(getApplication(), "Falha no leitor de QR Code", Toast.LENGTH_SHORT).show()
-                Log.d("ViewModel-QRCODE", it.message.toString())
-            }
-    }
 }
