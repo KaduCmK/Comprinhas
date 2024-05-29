@@ -16,7 +16,6 @@ import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 fun ReceiptsList(
-    modifier: Modifier = Modifier,
     receiptsFlow: StateFlow<List<Receipt>>,
     onQrCodeScan: () -> Unit = {},
     onNavigateBack: () -> Unit = {}
