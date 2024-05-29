@@ -39,10 +39,4 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
             preferencesRepository.updateUserPrefs(name, listId, listPassword)
         }
     }
-
-    fun updateNameAndListId(name: String, listId: String) {
-        viewModelScope.launch {
-            preferencesRepository.updateNameAndListId(name, listId)
-        }
-    }
 }
