@@ -31,17 +31,21 @@ import com.example.comprinhas.ui.UiState
 import com.example.comprinhas.ui.theme.ComprinhasTheme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.flowOf
 
 @Composable
 fun SetListScreen(
     uiFlow: Flow<UiState>,
     newList: Boolean,
+    login: Flow<Boolean>,
+    completeLogin: () -> Unit,
     onLogin: (String, String) -> Unit
 ) {
     var listName by remember { mutableStateOf("") }
     var listPassword by remember { mutableStateOf("") }
     val uiState by uiFlow.collectAsState(initial = UiState.LOADED)
+    val loginState by login.collectAsState(initial = false)
+
+    if (loginState) completeLogin()
 
     Surface(
         modifier = Modifier.fillMaxSize()
@@ -89,6 +93,6 @@ fun SetListScreen(
 @Composable
 private fun SetListScreenPreview() {
     ComprinhasTheme {
-        SetListScreen(emptyFlow(),true, { _, _ -> })
+        SetListScreen(emptyFlow(), login = emptyFlow(), newList = false, completeLogin = {}, onLogin = { _, _ -> })
     }
 }

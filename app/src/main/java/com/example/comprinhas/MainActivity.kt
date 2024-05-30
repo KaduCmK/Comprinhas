@@ -25,6 +25,7 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.comprinhas.data.ShoppingItem
+import com.example.comprinhas.ui.UiState
 import com.example.comprinhas.ui.home.HomeScreen
 import com.example.comprinhas.ui.receipts.ReceiptsList
 import com.example.comprinhas.ui.receipts.ReceiptsViewModel
@@ -63,6 +64,8 @@ class MainActivity : ComponentActivity() {
                 NavHost(navController = navController, startDestination = "home") {
                     navigation(startDestination = "welcome/username", route = "welcome") {
                         composable("welcome/username") {
+                            settingsViewModel.updateUiState(UiState.LOADED)
+
                             UsernameScreen { username, newList ->
                                 navController.navigate(
                                     "welcome/setList/$username/$newList"
@@ -87,13 +90,15 @@ class MainActivity : ComponentActivity() {
                             val newList = it.arguments?.getBoolean("newList") ?: false
                             val uiFlow = mainviewModel.uiState
 
-                            SetListScreen(uiFlow = uiFlow, newList = newList) {listName, listPassword ->
+                            SetListScreen(
+                                uiFlow = uiFlow,
+                                newList = newList,
+                                login = settingsViewModel.login,
+                                completeLogin = { navController.popBackStack("home", inclusive = false) }
+                            ) {listName, listPassword ->
                                 if (newList) {
-                                    if (
-                                        mainviewModel.createList(username, listName, listPassword)
-                                        ) {
-                                        navController.popBackStack("home", inclusive = false)
-                                    }
+                                    settingsViewModel.createList(username, listName, listPassword)
+//                                    navController.popBackStack("home", inclusive = false)
                                 }
                                 else {
                                     settingsViewModel.updateUserPrefs(username, listName, listPassword)

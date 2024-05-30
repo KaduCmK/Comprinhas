@@ -3,7 +3,6 @@ package com.example.comprinhas.ui.receipts
 import android.app.Application
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.runtime.mutableStateOf
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,9 +13,7 @@ import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
-import com.example.comprinhas.data.PreferencesRepository
 import com.example.comprinhas.dataStore
-import com.example.comprinhas.http.BodyRequest
 import com.example.comprinhas.http.DatabaseApi
 import com.example.comprinhas.http.ReceiptWorker
 import com.example.comprinhas.ui.UiState
@@ -27,7 +24,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.time.Instant
@@ -35,11 +31,12 @@ import java.time.Instant
 class ReceiptsViewModel(private val application: Application) : AndroidViewModel(application) {
     private val retrofitService = DatabaseApi.retrofitService
 
-    private val username = runBlocking {
-        application.baseContext.dataStore.data.map {
-            it[stringPreferencesKey("user_name")] ?: ""
-        }.first()
-    }
+    private val username: String
+        get() = runBlocking {
+            application.baseContext.dataStore.data.map {
+                it[stringPreferencesKey("user_name")] ?: ""
+            }.first()
+        }
 
     private var _receiptsList = MutableStateFlow<List<Receipt>>(emptyList())
     val receiptsList: StateFlow<List<Receipt>>

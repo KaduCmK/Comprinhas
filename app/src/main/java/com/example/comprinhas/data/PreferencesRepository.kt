@@ -10,6 +10,7 @@ import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.example.comprinhas.ui.UiState
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 
 data class AppPreferences(
@@ -46,8 +47,8 @@ class PreferencesRepository(
     suspend fun updateUiState(state: UiState) {
         preferencesDatastore.edit{ it[PreferencesKeys.UI_STATE] = state.ordinal}
     }
-    val uiState: Flow<UiState> = preferencesDatastore.data.map {
-        val e = it[PreferencesKeys.UI_STATE] ?: UiState.LOADED
+    val uiState: Flow<UiState> = preferencesDatastore.data.map { preferences ->
+        val e = preferences[PreferencesKeys.UI_STATE] ?: 1
         enumValues<UiState>().first { it.ordinal == e }
     }
 

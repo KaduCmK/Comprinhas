@@ -35,7 +35,7 @@ class Converters {
         fun parseUnit(qtd: Int, unit: String): Number {
             val weightUnits = listOf("KG", "ML")
 
-            return if (unit in weightUnits) qtd / 1000f
+            return if (unit.uppercase() in weightUnits) qtd / 1000f
             else qtd
         }
     }

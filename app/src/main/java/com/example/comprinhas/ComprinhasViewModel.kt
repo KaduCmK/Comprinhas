@@ -3,7 +3,6 @@ package com.example.comprinhas
 import android.app.Application
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -14,7 +13,6 @@ import androidx.work.Constraints
 import androidx.work.Data
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
-import androidx.work.OneTimeWorkRequest
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
 import com.example.comprinhas.data.AppPreferences
@@ -22,12 +20,8 @@ import com.example.comprinhas.data.PreferencesRepository
 import com.example.comprinhas.data.ShoppingItem
 import com.example.comprinhas.data.ShoppingListDatabase
 import com.example.comprinhas.data.ShoppingListRepository
-import com.example.comprinhas.http.ReceiptWorker
 import com.example.comprinhas.http.SyncWorker
 import com.example.comprinhas.ui.UiState
-import com.google.mlkit.vision.barcode.common.Barcode
-import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
-import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -56,6 +50,13 @@ class ComprinhasViewModel(private val application: Application): AndroidViewMode
             }
 
             return _appPreferences
+        }
+
+    val welcomeScreen: Boolean
+        get() {
+            return runBlocking {
+                preferencesFlow.first().welcomeScreen
+            }
         }
 
     var shoppingList = repo.shoppingList
@@ -105,19 +106,17 @@ class ComprinhasViewModel(private val application: Application): AndroidViewMode
                 periodicSync)
     }
 
-    fun createList(username: String, listName: String, listPassword: String): Boolean {
-        return runBlocking {
+    fun createList(username: String, listName: String, listPassword: String) {
+        viewModelScope.launch {
             preferencesRepository.updateUiState(UiState.LOADING)
             val response = repo.crateList(username, listName, listPassword)
 
             if (response == 200) {
                 preferencesRepository.updateUiState(UiState.LOADED)
                 preferencesRepository.updateUserPrefs(username, listName, listPassword)
-                true
             }
             else {
                 preferencesRepository.updateUiState(UiState.NO_INTERNET)
-                false
             }
         }
     }

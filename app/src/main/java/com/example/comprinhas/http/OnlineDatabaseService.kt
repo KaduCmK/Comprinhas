@@ -39,7 +39,7 @@ interface OnlineDatabaseService {
     @POST("/newReceipt")
     suspend fun newReceipt(
         @Body body: BodyRequest
-    ): Response<ReceiptResponse>
+    ): Response<ResponseBody>
 
     @GET("/receipts/get/username")
     suspend fun getReceiptsByUsername(
@@ -51,7 +51,7 @@ interface OnlineDatabaseService {
         @Query("username") username: String,
         @Query("listName") listName: String,
         @Query("listPassword") listPassword: String
-    ): Response<String>
+    ): Response<ResponseBody>
 
     @GET("/")
     suspend fun getDatabase(

@@ -44,7 +44,7 @@ fun HomeScreen(
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(key1 = 1) {
-        if (viewModel.appPreferences.welcomeScreen) toWelcomeScreen()
+        if (viewModel.welcomeScreen) toWelcomeScreen()
         else viewModel.getShoppingList()
     }
 

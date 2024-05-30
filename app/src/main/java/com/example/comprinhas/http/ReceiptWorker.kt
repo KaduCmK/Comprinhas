@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
-import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -40,7 +39,7 @@ class ReceiptWorker(private val context: Context, params: WorkerParameters)
                 return Result.success(output.build())
             }
             else {
-                val message = Gson().fromJson(response.errorBody()!!.charStream(), ReceiptResponse::class.java)
+                val message = Gson().fromJson(response.errorBody()!!.charStream(), ResponseBody::class.java)
                 Log.i("ReceiptWorker", "${response.code()} -- ${message.error} ")
 
                 receiptNotification(false, message.error)
