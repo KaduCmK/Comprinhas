@@ -51,7 +51,7 @@ interface OnlineDatabaseService {
         @Query("username") username: String,
         @Query("listName") listName: String,
         @Query("listPassword") listPassword: String
-    )
+    ): Response<String>
 
     @GET("/")
     suspend fun getDatabase(

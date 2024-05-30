@@ -105,8 +105,21 @@ class ComprinhasViewModel(private val application: Application): AndroidViewMode
                 periodicSync)
     }
 
-    fun createList(username: String, listName: String, listPassword: String) {
-        repo.crateList(username, listName, listPassword)
+    fun createList(username: String, listName: String, listPassword: String): Boolean {
+        return runBlocking {
+            preferencesRepository.updateUiState(UiState.LOADING)
+            val response = repo.crateList(username, listName, listPassword)
+
+            if (response == 200) {
+                preferencesRepository.updateUiState(UiState.LOADED)
+                preferencesRepository.updateUserPrefs(username, listName, listPassword)
+                true
+            }
+            else {
+                preferencesRepository.updateUiState(UiState.NO_INTERNET)
+                false
+            }
+        }
     }
 
     fun addShoppingListItem(item: ShoppingItem) {

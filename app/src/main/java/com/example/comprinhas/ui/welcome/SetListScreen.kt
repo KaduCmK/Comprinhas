@@ -11,12 +11,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Login
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,15 +27,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.comprinhas.ui.UiState
 import com.example.comprinhas.ui.theme.ComprinhasTheme
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flowOf
 
 @Composable
 fun SetListScreen(
+    uiFlow: Flow<UiState>,
     newList: Boolean,
     onLogin: (String, String) -> Unit
 ) {
     var listName by remember { mutableStateOf("") }
     var listPassword by remember { mutableStateOf("") }
+    val uiState by uiFlow.collectAsState(initial = UiState.LOADED)
 
     Surface(
         modifier = Modifier.fillMaxSize()
@@ -59,13 +67,19 @@ fun SetListScreen(
                 label = { Text(text = "Senha") }
             )
             Spacer(modifier = Modifier.height(16.dp))
-            Button(onClick = { onLogin(listName, listPassword) }) {
+            Button(
+                onClick = { onLogin(listName, listPassword) },
+                enabled = uiState == UiState.LOADED
+            ) {
                 Icon(
                     modifier = Modifier.padding(end = 4.dp),
                     imageVector = if (newList) Icons.Outlined.Add else Icons.AutoMirrored.Outlined.Login,
                     contentDescription = null
                 )
                 Text(text = if (newList) "Criar Lista" else "Entrar")
+            }
+            if (uiState == UiState.LOADING) {
+                CircularProgressIndicator(modifier = Modifier.padding(top = 32.dp))
             }
         }
     }
@@ -75,6 +89,6 @@ fun SetListScreen(
 @Composable
 private fun SetListScreenPreview() {
     ComprinhasTheme {
-        SetListScreen(true, { _, _ -> })
+        SetListScreen(emptyFlow(),true, { _, _ -> })
     }
 }

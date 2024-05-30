@@ -6,6 +6,7 @@ import androidx.work.Data
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
+import com.example.comprinhas.http.DatabaseApi
 import com.example.comprinhas.http.HttpWorker
 import com.example.comprinhas.http.NewListWorker
 import com.example.comprinhas.http.WorkerOperation
@@ -16,6 +17,8 @@ class ShoppingListRepository(private val dao: ShoppingItemDao, private val conte
 
     val shoppingList: Flow<List<ShoppingItem>> = dao.getAllShopping()
     val cartList: Flow<List<ShoppingItem>> = dao.getAllCart()
+
+    private val retrofitService = DatabaseApi.retrofitService
 
     private fun buildHttpWorkRequest(
         operation: Int,
@@ -44,18 +47,10 @@ class ShoppingListRepository(private val dao: ShoppingItemDao, private val conte
             .build()
     }
 
-    fun crateList(username: String, listName: String, listPassword: String) {
-        val inputData = Data.Builder()
-            .putString("username", username)
-            .putString("listName", listName)
-            .putString("listPassword", listPassword)
-            .build()
+    suspend fun crateList(username: String, listName: String, listPassword: String): Int {
+        val response = retrofitService.createList(username, listName, listPassword)
 
-        val newListWorker = OneTimeWorkRequest.Builder(NewListWorker::class.java)
-            .setInputData(inputData)
-            .build()
-
-        WorkManager.getInstance(context).enqueue(newListWorker)
+        return response.code()
     }
 
     suspend fun insert(item: ShoppingItem, listName: String) {

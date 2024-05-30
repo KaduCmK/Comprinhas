@@ -85,18 +85,25 @@ class MainActivity : ComponentActivity() {
                         ) {
                             val username = it.arguments?.getString("username") ?: ""
                             val newList = it.arguments?.getBoolean("newList") ?: false
+                            val uiFlow = mainviewModel.uiState
 
-                            SetListScreen(newList = newList) {listName, listPassword ->
-                                settingsViewModel.updateUserPrefs(username, listName, listPassword)
+                            SetListScreen(uiFlow = uiFlow, newList = newList) {listName, listPassword ->
+                                if (newList) {
+                                    if (
+                                        mainviewModel.createList(username, listName, listPassword)
+                                        ) {
+                                        navController.popBackStack("home", inclusive = false)
+                                    }
+                                }
+                                else {
+                                    settingsViewModel.updateUserPrefs(username, listName, listPassword)
+                                    navController.popBackStack("home", inclusive = false)
+                                }
 
-                                if (newList) mainviewModel.createList(username, listName, listPassword)
-
-                                navController.popBackStack("home", inclusive = false)
                             }
                         }
                     }
                     composable("home") {
-                        mainviewModel.getShoppingList()
                         HomeScreen(
                             viewModel = mainviewModel,
                             toWelcomeScreen = { navController.navigate("welcome") },
@@ -118,7 +125,8 @@ class MainActivity : ComponentActivity() {
                     composable("receipts") {
                         ReceiptsList(
                             receiptsFlow = receiptsViewModel.receiptsList,
-                            onQrCodeScan = mainviewModel::scanQrCode,
+                            onQrCodeScan = receiptsViewModel::scanQrCode,
+                            uiFlow = receiptsViewModel.uiState,
                             onNavigateBack = { navController.popBackStack() }
                         )
                     }

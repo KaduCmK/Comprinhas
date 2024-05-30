@@ -47,7 +47,7 @@ class PreferencesRepository(
         preferencesDatastore.edit{ it[PreferencesKeys.UI_STATE] = state.ordinal}
     }
     val uiState: Flow<UiState> = preferencesDatastore.data.map {
-        val e = it[PreferencesKeys.UI_STATE] ?: UiState.LOADING
+        val e = it[PreferencesKeys.UI_STATE] ?: UiState.LOADED
         enumValues<UiState>().first { it.ordinal == e }
     }
 

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Login
+import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -60,7 +61,7 @@ fun UsernameScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
-                modifier = Modifier.width(190.dp),
+                modifier = Modifier.width(235.dp),
                 onClick = {
                     if (name.isEmpty()) error = true
                     else onContinue(name, false)
@@ -71,23 +72,23 @@ fun UsernameScreen(
                         imageVector = Icons.AutoMirrored.Outlined.Login,
                         contentDescription = "Lista Existente"
                     )
-                    Text(modifier = Modifier.padding(2.dp), text = "Lista Existente")
+                    Text(modifier = Modifier.padding(2.dp), text = "Entrar em Lista existente")
                 }
             }
 
             Button(
-                modifier = Modifier.width(190.dp),
+                modifier = Modifier.width(235.dp),
                 onClick = {
                     if (name.isEmpty()) error = true
-                    else onContinue(name, false)
+                    else onContinue(name, true)
                 }
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
-                        imageVector = Icons.AutoMirrored.Outlined.Login,
+                        imageVector = Icons.Outlined.Add,
                         contentDescription = "Nova Lista"
                     )
-                    Text(modifier = Modifier.padding(2.dp), text = "Nova Lista")
+                    Text(modifier = Modifier.padding(2.dp), text = "Criar nova Lista")
                 }
             }
         }
