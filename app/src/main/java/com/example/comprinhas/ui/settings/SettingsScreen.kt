@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.comprinhas.data.AppPreferences
+import com.example.comprinhas.ui.TopBar
 import com.example.comprinhas.ui.theme.ComprinhasTheme
 
 @Composable
@@ -35,7 +36,12 @@ fun SettingsScreen(
         var listPassword by remember { mutableStateOf(appPreferences.listPassword) }
 
         Scaffold(
-            topBar = { SettingsTopBar { onNavigateBack() } }
+            topBar = {
+                TopBar(
+                    title = "Configurações",
+                    backButton = onNavigateBack
+                )
+            }
         ) { paddingValues ->
             Column(
                 modifier = Modifier.padding(paddingValues),
@@ -57,7 +63,8 @@ fun SettingsScreen(
                     onChange = {
                         listId = it
                         updateUserPrefs(name, listId, listPassword)
-                    })
+                    }
+                )
 
                 SettingTextField(
                     label = "Senha da lista:",
@@ -65,14 +72,16 @@ fun SettingsScreen(
                     onChange = {
                         listPassword = it
                         updateUserPrefs(name, listId, listPassword)
-                    })
+                    },
+                    isPassword = true
+                )
             }
         }
     }
 }
 
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+//@Preview
 @Composable
 private fun SettingsScreenPreview() {
     ComprinhasTheme {

@@ -56,7 +56,8 @@ fun UsernameScreen(
                         text = "Nome de usuário inválido",
                         color = MaterialTheme.colorScheme.error
                     )
-                }
+                },
+                maxLines = 1
             )
             Spacer(modifier = Modifier.height(16.dp))
 

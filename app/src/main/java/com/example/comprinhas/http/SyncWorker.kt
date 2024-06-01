@@ -35,6 +35,7 @@ class SyncWorker(private val context: Context, params: WorkerParameters) :
             ).body()!!
             Log.d("SYNCWORKER", onlineDatabase.shoppingList.toString())
 
+            // TODO: possivel problema de notificacao sendo causado por esse trecho
             onlineDatabase.shoppingList.forEach {
                 if (it !in dao.getAllShopping().first()) {
                     if (!MainActivity.isForeground) postNotification(it.nomeItem, it.adicionadoPor)

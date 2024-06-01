@@ -18,7 +18,7 @@ import kotlinx.coroutines.runBlocking
 class SettingsViewModel(application: Application) : AndroidViewModel(application) {
 
     private val preferencesRepository =
-        PreferencesRepository(application.dataStore, application.applicationContext)
+        PreferencesRepository(application.dataStore)
     private val preferencesFlow =
         preferencesRepository.preferencesFlow
     private val retrofitService = DatabaseApi.retrofitService
@@ -40,8 +40,11 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
             return _appPreferences
         }
 
-    fun updateUserPrefs(name: String, listId: String, listPassword: String) {
-        runBlocking {
+    fun updateUserPrefs(rawName: String, rawListId: String, listPassword: String) {
+        val name = rawName.trim()
+        val listId = rawListId.trim()
+
+        viewModelScope.launch {
             preferencesRepository.updateUserPrefs(name, listId, listPassword)
         }
     }
@@ -52,7 +55,10 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    fun createList(username: String, listName: String, listPassword: String) {
+    fun createList(rawUsername: String, rawListName: String, listPassword: String) {
+        val username = rawUsername.trim()
+        val listName = rawListName.trim()
+
         viewModelScope.launch {
             preferencesRepository.updateUiState(UiState.LOADING)
             val response = retrofitService.createList(username, listName, listPassword)

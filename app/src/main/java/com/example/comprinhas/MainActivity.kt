@@ -11,6 +11,8 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.datastore.core.DataStore
@@ -60,6 +62,8 @@ class MainActivity : ComponentActivity() {
             val settingsViewModel: SettingsViewModel = viewModel()
             val receiptsViewModel: ReceiptsViewModel = viewModel()
 
+            val uiState by mainviewModel.uiState.collectAsState(initial = UiState.LOADED)
+
             ComprinhasTheme {
                 NavHost(navController = navController, startDestination = "home") {
                     navigation(startDestination = "welcome/username", route = "welcome") {
@@ -88,17 +92,15 @@ class MainActivity : ComponentActivity() {
                         ) {
                             val username = it.arguments?.getString("username") ?: ""
                             val newList = it.arguments?.getBoolean("newList") ?: false
-                            val uiFlow = mainviewModel.uiState
 
                             SetListScreen(
-                                uiFlow = uiFlow,
+                                uiState = uiState,
                                 newList = newList,
                                 login = settingsViewModel.login,
                                 completeLogin = { navController.popBackStack("home", inclusive = false) }
                             ) {listName, listPassword ->
                                 if (newList) {
                                     settingsViewModel.createList(username, listName, listPassword)
-//                                    navController.popBackStack("home", inclusive = false)
                                 }
                                 else {
                                     settingsViewModel.updateUserPrefs(username, listName, listPassword)
@@ -108,9 +110,16 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                     }
-                    composable("home") {
+
+                    composable(
+                        route = "home",
+                        popEnterTransition = {
+                            slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.End)
+                        }
+                    ) {
                         HomeScreen(
                             viewModel = mainviewModel,
+                            uiState = uiState,
                             toWelcomeScreen = { navController.navigate("welcome") },
                             toSettingsScreen = { navController.navigate("settings") },
                             toReceiptsScreen = {
@@ -120,18 +129,34 @@ class MainActivity : ComponentActivity() {
                             showDialog = { navController.navigate("addItem") }
                         )
                     }
-                    composable("settings") {
+                    composable(
+                        route = "settings",
+                        enterTransition = {
+                            slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start)
+                        },
+                        popExitTransition = {
+                            slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.End)
+                        }
+                    ) {
                         SettingsScreen(
                             appPreferences = settingsViewModel.appPreferences,
                             updateUserPrefs = settingsViewModel::updateUserPrefs,
                             onNavigateBack = navController::popBackStack
                         )
                     }
-                    composable("receipts") {
+                    composable(
+                        route = "receipts",
+                        enterTransition = {
+                            slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start)
+                        },
+                        popExitTransition = {
+                            slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.End)
+                        }
+                    ) {
                         ReceiptsList(
                             receiptsFlow = receiptsViewModel.receiptsList,
                             onQrCodeScan = receiptsViewModel::scanQrCode,
-                            uiFlow = receiptsViewModel.uiState,
+                            uiState = uiState,
                             onNavigateBack = { navController.popBackStack() }
                         )
                     }

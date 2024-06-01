@@ -31,7 +31,7 @@ import com.example.comprinhas.ui.UiState
 import com.example.comprinhas.ui.theme.ComprinhasTheme
 
 @Composable
-fun TopBar(
+fun HomeTopBar(
     modifier: Modifier = Modifier,
     showDialog: () -> Unit,
     toSettings: () -> Unit,
@@ -112,12 +112,11 @@ fun TopBar(
 }
 
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Preview(showBackground = true)
 @Composable
 private fun TopBarPreview() {
     ComprinhasTheme {
         Surface {
-            TopBar(
+            HomeTopBar(
                 showDialog = {},
                 toSettings = {},
                 toReceiptsScreen = {}

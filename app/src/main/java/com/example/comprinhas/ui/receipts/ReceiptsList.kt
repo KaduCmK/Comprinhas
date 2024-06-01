@@ -1,10 +1,18 @@
 package com.example.comprinhas.ui.receipts
 
 import android.content.res.Configuration
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.QrCodeScanner
+import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -14,6 +22,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.example.comprinhas.ui.TopBar
 import com.example.comprinhas.ui.UiState
 import com.example.comprinhas.ui.receipt.ReceiptBottomSheet
 import com.example.comprinhas.ui.theme.ComprinhasTheme
@@ -22,26 +32,45 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.emptyFlow
 
+// TODO: tratar acesso a lista quando nao há internet
+
 @Composable
 fun ReceiptsList(
     receiptsFlow: StateFlow<List<Receipt>>,
     onQrCodeScan: () -> Unit = {},
     onNavigateBack: () -> Unit = {},
-    uiFlow: Flow<UiState>
+    uiState: UiState = UiState.LOADED
 ) {
     val receiptsList by receiptsFlow.collectAsState(initial = emptyList())
-    val uiState by uiFlow.collectAsState(initial = UiState.LOADING)
     var currentReceipt by remember { mutableStateOf<Receipt?>(null) }
 
     Scaffold(
-        topBar = { ReceiptsTopBar(onQrCodeScan, onNavigateBack, uiState) }
+        topBar = {
+            TopBar(
+                title = "Notas Fiscais",
+                backButton = onNavigateBack,
+                mainButton = {
+                    Button(onClick = onQrCodeScan) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Outlined.QrCodeScanner,
+                                contentDescription = "Escanear QR Code"
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(text = "Escanear QR Code")
+                        }
+                    }
+                },
+                uiState = uiState
+            )
+        }
     ) {paddingValues ->
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),
             contentPadding = paddingValues,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            items(receiptsList) {
+            items(key = { it.chaveAcesso }, items = receiptsList) {
                 ReceiptCard(receipt = it, onOpenReceipt = { currentReceipt = it })
             }
         }
@@ -59,6 +88,6 @@ fun ReceiptsList(
 @Composable
 private fun ReceiptsScreenPreview() {
     ComprinhasTheme {
-        ReceiptsList(receiptsFlow = MutableStateFlow(emptyList()), uiFlow = emptyFlow())
+        ReceiptsList(receiptsFlow = MutableStateFlow(emptyList()))
     }
 }

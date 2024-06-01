@@ -34,14 +34,14 @@ class ComprinhasViewModel(private val application: Application): AndroidViewMode
     private val repo = ShoppingListRepository(dao, application.baseContext)
 
     private val preferencesRepository =
-        PreferencesRepository(application.dataStore, application.applicationContext)
+        PreferencesRepository(application.dataStore)
     private val preferencesFlow =
         preferencesRepository.preferencesFlow
 
     private var _appPreferences by mutableStateOf(
         AppPreferences(false, "", "", "", 0)
     )
-    val appPreferences: AppPreferences
+    private val appPreferences: AppPreferences
         get() {
             viewModelScope.launch {
                 preferencesFlow.collect {
@@ -65,59 +65,48 @@ class ComprinhasViewModel(private val application: Application): AndroidViewMode
     var uiState = preferencesRepository.uiState
 
     fun getShoppingList() {
-        runBlocking { preferencesRepository.updateUiState(UiState.LOADING) }
-
-        val connectivityManager = application.getSystemService(ConnectivityManager::class.java)
-        val networkCapabilities = connectivityManager.activeNetwork
-        val actNw = connectivityManager.getNetworkCapabilities(networkCapabilities)
-        val hasInternet = actNw?.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED) ?: false
-
-        if (!hasInternet) {
-            runBlocking { preferencesRepository.updateUiState(UiState.NO_INTERNET) }
-            Toast.makeText(
-                application.applicationContext,
-                "Sem conexão com a Internet",
-                Toast.LENGTH_SHORT)
-                .show()
-        }
-
-        val constraints = Constraints.Builder()
-            .setRequiredNetworkType(NetworkType.CONNECTED)
-            .build()
-
-        val inputData = Data.Builder()
-            .putString("name", runBlocking { appPreferences.name })
-            .putString("listId", runBlocking { appPreferences.listId })
-            .putString("listPassword", runBlocking { appPreferences.listPassword })
-            .build()
-
-        val periodicSync = PeriodicWorkRequest
-            .Builder(SyncWorker::class.java, 15, TimeUnit.MINUTES)
-            .setConstraints(constraints)
-            .setInputData(inputData)
-            .build()
-
-        val workManager = WorkManager.getInstance(application.applicationContext)
-
-        workManager
-            .enqueueUniquePeriodicWork(
-                "periodicSync",
-                ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
-                periodicSync)
-    }
-
-    fun createList(username: String, listName: String, listPassword: String) {
         viewModelScope.launch {
             preferencesRepository.updateUiState(UiState.LOADING)
-            val response = repo.crateList(username, listName, listPassword)
 
-            if (response == 200) {
-                preferencesRepository.updateUiState(UiState.LOADED)
-                preferencesRepository.updateUserPrefs(username, listName, listPassword)
-            }
-            else {
+            // TODO: sugestao de alterar check de internet p um listener constante
+
+            val connectivityManager = application.getSystemService(ConnectivityManager::class.java)
+            val networkCapabilities = connectivityManager.activeNetwork
+            val actNw = connectivityManager.getNetworkCapabilities(networkCapabilities)
+            val hasInternet = actNw?.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED) ?: false
+
+            if (!hasInternet) {
                 preferencesRepository.updateUiState(UiState.NO_INTERNET)
+                Toast.makeText(
+                    application.applicationContext,
+                    "Sem conexão com a Internet",
+                    Toast.LENGTH_SHORT)
+                    .show()
             }
+
+            val constraints = Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build()
+
+            val inputData = Data.Builder()
+                .putString("name", appPreferences.name)
+                .putString("listId", appPreferences.listId)
+                .putString("listPassword", appPreferences.listPassword)
+                .build()
+
+            val periodicSync = PeriodicWorkRequest
+                .Builder(SyncWorker::class.java, 30, TimeUnit.MINUTES)
+                .setConstraints(constraints)
+                .setInputData(inputData)
+                .build()
+
+            val workManager = WorkManager.getInstance(application.applicationContext)
+
+            workManager
+                .enqueueUniquePeriodicWork(
+                    "periodicSync",
+                    ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
+                    periodicSync)
         }
     }
 

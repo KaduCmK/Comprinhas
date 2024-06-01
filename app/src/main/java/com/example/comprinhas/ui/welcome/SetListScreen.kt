@@ -25,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.comprinhas.ui.UiState
@@ -34,7 +35,7 @@ import kotlinx.coroutines.flow.emptyFlow
 
 @Composable
 fun SetListScreen(
-    uiFlow: Flow<UiState>,
+    uiState: UiState,
     newList: Boolean,
     login: Flow<Boolean>,
     completeLogin: () -> Unit,
@@ -42,7 +43,6 @@ fun SetListScreen(
 ) {
     var listName by remember { mutableStateOf("") }
     var listPassword by remember { mutableStateOf("") }
-    val uiState by uiFlow.collectAsState(initial = UiState.LOADED)
     val loginState by login.collectAsState(initial = false)
 
     if (loginState) completeLogin()
@@ -62,13 +62,16 @@ fun SetListScreen(
             OutlinedTextField(
                 value = listName,
                 onValueChange = { listName = it },
-                label = { Text(text = "Nome da Lista") }
+                label = { Text(text = "Nome da Lista") },
+                maxLines = 1
             )
             Spacer(modifier = Modifier.height(4.dp))
             OutlinedTextField(
                 value = listPassword,
                 onValueChange = { listPassword = it },
-                label = { Text(text = "Senha") }
+                label = { Text(text = "Senha") },
+                visualTransformation = PasswordVisualTransformation(),
+                maxLines = 1
             )
             Spacer(modifier = Modifier.height(16.dp))
             Button(
@@ -93,6 +96,12 @@ fun SetListScreen(
 @Composable
 private fun SetListScreenPreview() {
     ComprinhasTheme {
-        SetListScreen(emptyFlow(), login = emptyFlow(), newList = false, completeLogin = {}, onLogin = { _, _ -> })
+        SetListScreen(
+            UiState.LOADED,
+            login = emptyFlow(),
+            newList = false,
+            completeLogin = {},
+            onLogin = { _, _ -> }
+        )
     }
 }
