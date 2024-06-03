@@ -1,95 +1,110 @@
 package com.example.comprinhas.data
 
 import android.content.Context
-import androidx.work.Constraints
-import androidx.work.Data
-import androidx.work.NetworkType
-import androidx.work.OneTimeWorkRequest
-import androidx.work.WorkManager
+import android.util.Log
+import com.example.comprinhas.data.shoppingItem.ShoppingItem
+import com.example.comprinhas.data.shoppingItem.ShoppingItemDao
+import com.example.comprinhas.data.shoppingList.ShoppingList
+import com.example.comprinhas.data.shoppingList.ShoppingListDao
 import com.example.comprinhas.http.DatabaseApi
-import com.example.comprinhas.http.HttpWorker
-import com.example.comprinhas.http.NewListWorker
-import com.example.comprinhas.http.WorkerOperation
+import com.example.comprinhas.http.responses.CreateListError
+import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
-import java.time.ZonedDateTime
 
-class ShoppingListRepository(private val dao: ShoppingItemDao, private val context: Context) {
+class ShoppingListRepository(
+    private val shoppingItemDao: ShoppingItemDao,
+    private val shoppingListDao: ShoppingListDao,
+    private val context: Context
+) {
 
-    val shoppingList: Flow<List<ShoppingItem>> = dao.getAllShopping()
-    val cartList: Flow<List<ShoppingItem>> = dao.getAllCart()
+    val shoppingLists: Flow<List<ShoppingList>> = shoppingListDao.getAllShoppingLists()
+    val shoppingList: Flow<List<ShoppingItem>> = shoppingItemDao.getAllShopping()
+    val cartList: Flow<List<ShoppingItem>> = shoppingItemDao.getAllCart()
 
     private val retrofitService = DatabaseApi.retrofitService
 
-    private fun buildHttpWorkRequest(
-        operation: Int,
-        item: ShoppingItem? = null,
-        listName: String = "",
-        idList: List<Long> = emptyList(),
-        lastChanged: Long = ZonedDateTime.now().toEpochSecond()
-    ): OneTimeWorkRequest {
+    suspend fun createShoppingList(username: String, listName: String, listPassword: String): String {
+        val response = retrofitService.createList(
+            username,
+            listName,
+            listPassword
+        )
 
-        val constraints = Constraints.Builder()
-            .setRequiredNetworkType(NetworkType.CONNECTED)
-            .build()
-        val inputData = Data.Builder()
-            .putInt("workerOperation", operation)
-            .putString("listName", listName)
-            .putLong("id", item?.idItem ?: -1)
-            .putString("name", item?.nomeItem)
-            .putString("addedBy", item?.adicionadoPor)
-            .putLongArray("idList", idList.toLongArray())
-            .putLong("lastChanged", lastChanged)
-            .build()
+        if (response.code() == 200) {
+            shoppingListDao.createShoppingList(
+                ShoppingList(response.body()!!.idLista, listName, listPassword, username)
+            )
+            Log.d("REPOSITORY",
+                "Criando Lista ${response.body()?.idLista ?: "undefined"} $listName"
+            )
 
-        return OneTimeWorkRequest.Builder(HttpWorker::class.java)
-            .setConstraints(constraints)
-            .setInputData(inputData)
-            .build()
+            return "OK"
+        }
+        else {
+            val error = Gson().fromJson(
+                response.errorBody()!!.charStream(), CreateListError::class.java
+            )
+
+            Log.w("REPOSITORY", "Erro ao criar lista: ${error.message}")
+            return error.message
+        }
     }
 
-    suspend fun crateList(username: String, listName: String, listPassword: String): Int {
-        val response = retrofitService.createList(username, listName, listPassword)
-
-        return response.code()
+    suspend fun exitShoppingList(listName: String, listPassword: String) {
+        shoppingListDao.deleteShoppingList(listName, listPassword)
     }
 
-    suspend fun insert(item: ShoppingItem, listName: String) {
-        dao.insert(item)
+    suspend fun deleteList(username: String, listName: String, listPassword: String) {
+        val response = retrofitService.deleteList(username, listName, listPassword)
 
-        val insertWorker = buildHttpWorkRequest(WorkerOperation.INSERT, item, listName = listName)
-        WorkManager.getInstance(context).enqueue(insertWorker)
+        shoppingListDao.deleteShoppingList(listName, listPassword)
     }
 
-    suspend fun deleteFromList(item: ShoppingItem, listName: String, lastChanged: Long) {
-        dao.deleteFromList(item)
+    suspend fun joinShoppingList(name: String, listName: String, listPassword: String): String? {
+        val response = retrofitService.joinShoppingList(name, listName, listPassword)
 
-        val deleteWorker = buildHttpWorkRequest(WorkerOperation.DELETE_FROM_LIST, item, listName, lastChanged = lastChanged)
-        WorkManager.getInstance(context).enqueue(deleteWorker)
+        if (response.code() == 200) {
+            shoppingListDao.createShoppingList(ShoppingList(
+                response.body()!!.idLista,
+                listName,
+                listPassword,
+                response.body()!!.criadoPor
+            ))
+
+            return null
+        }
+        else {
+            val error = Gson().fromJson(
+                response.errorBody()!!.charStream(), CreateListError::class.java
+            )
+
+            return error.message
+        }
+    }
+
+    suspend fun insert(item: ShoppingItem) {
+        shoppingItemDao.insert(item)
+        retrofitService.addNewItem(item.idLista, item.idItem, item.nomeItem, item.adicionadoPor)
+    }
+
+    suspend fun deleteFromList(item: ShoppingItem, lastChanged: Long) {
+        shoppingItemDao.deleteFromList(item)
+        retrofitService.removeItem(item.idLista, item.idItem, item.adicionadoPor, lastChanged)
     }
 
     suspend fun clearList() {
-        dao.clearList()
+        shoppingItemDao.clearList()
     }
 
     suspend fun moveToCart(id: Long) {
-        dao.moveToCart(id)
+        shoppingItemDao.moveToCart(id)
     }
 
     suspend fun removeFromCart(id: Long) {
-        dao.removeFromCart(id)
+        shoppingItemDao.removeFromCart(id)
     }
 
-    suspend fun clearCart(idList: List<Long>, listName: String, lastChanged: Long) {
-        dao.clearCart()
-
-        val clearListWorker = buildHttpWorkRequest(
-            WorkerOperation.CLEAR_CART,
-            idList = idList,
-            listName = listName,
-            lastChanged = lastChanged
-        )
-
-        WorkManager.getInstance(context).enqueue(clearListWorker)
+    suspend fun clearCart(idList: List<Long>, listId: Int, lastChanged: Long) {
+        shoppingItemDao.clearCart()
     }
-
 }

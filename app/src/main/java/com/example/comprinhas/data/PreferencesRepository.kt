@@ -14,8 +14,6 @@ import kotlinx.coroutines.flow.map
 data class AppPreferences(
     val welcomeScreen: Boolean,
     val name: String,
-    val listId: String,
-    val listPassword: String,
     val lastChanged: Long,
 )
 
@@ -26,8 +24,6 @@ class PreferencesRepository(
     private object PreferencesKeys {
         val WELCOME_SCREEN = booleanPreferencesKey("welcome_screen")
         val USER_NAME = stringPreferencesKey("user_name")
-        val LIST_ID = stringPreferencesKey("list_id")
-        val LIST_PASSWORD = stringPreferencesKey("list_password")
         val LAST_CHANGED = longPreferencesKey("last_changed")
         val UI_STATE = intPreferencesKey("ui_state")
     }
@@ -35,10 +31,8 @@ class PreferencesRepository(
     val preferencesFlow: Flow<AppPreferences> = preferencesDatastore.data.map { preferences ->
         val welcomeScreen = preferences[PreferencesKeys.WELCOME_SCREEN] ?: true
         val name = preferences[PreferencesKeys.USER_NAME] ?: ""
-        val listId = preferences[PreferencesKeys.LIST_ID] ?: ""
-        val listPassword = preferences[PreferencesKeys.LIST_PASSWORD] ?: ""
         val lastChanged = preferences[PreferencesKeys.LAST_CHANGED] ?: -1
-        AppPreferences(welcomeScreen, name, listId, listPassword, lastChanged)
+        AppPreferences(welcomeScreen, name, lastChanged)
     }
 
     suspend fun updateUiState(state: UiState) {
@@ -49,12 +43,10 @@ class PreferencesRepository(
         enumValues<UiState>().first { it.ordinal == e }
     }
 
-    suspend fun updateUserPrefs(name: String, listId: String, listPassword: String) {
+    suspend fun updateUserPrefs(name: String) {
         preferencesDatastore.edit {preferences ->
             preferences[PreferencesKeys.WELCOME_SCREEN] = false
             preferences[PreferencesKeys.USER_NAME] = name
-            preferences[PreferencesKeys.LIST_ID] = listId
-            preferences[PreferencesKeys.LIST_PASSWORD] = listPassword
         }
     }
 }

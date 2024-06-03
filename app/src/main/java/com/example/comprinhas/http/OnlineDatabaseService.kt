@@ -1,6 +1,8 @@
 package com.example.comprinhas.http
 
-import com.example.comprinhas.data.ShoppingItem
+import com.example.comprinhas.data.shoppingItem.ShoppingItem
+import com.example.comprinhas.http.responses.CreateListResponse
+import com.example.comprinhas.http.responses.ResponseBody
 import com.example.comprinhas.ui.receipts.Receipt
 import kotlinx.serialization.Serializable
 import okhttp3.OkHttpClient
@@ -32,7 +34,7 @@ object DatabaseApi {
 }
 
 @Serializable
-data class ListaCompras(val lastChanged: Long, val shoppingList: List<ShoppingItem>)
+data class ListaCompras(val shoppingList: List<ShoppingItem>)
 
 interface OnlineDatabaseService {
 
@@ -46,23 +48,36 @@ interface OnlineDatabaseService {
         @Query("username") username: String
     ): Response<List<Receipt>>
 
-    @POST("/createList")
+    @POST("/shoppingList/create")
     suspend fun createList(
         @Query("username") username: String,
         @Query("listName") listName: String,
         @Query("listPassword") listPassword: String
-    ): Response<ResponseBody>
+    ): Response<CreateListResponse>
+
+    @POST("/shoppingList/join")
+    suspend fun joinShoppingList(
+        @Query("username") username: String,
+        @Query("listName") listName: String,
+        @Query("listPassword") listPassword: String
+    ): Response<CreateListResponse>
+
+    @POST("/shoppingList/delete")
+    suspend fun deleteList(
+        @Query("username") username: String,
+        @Query("listName") listId: String,
+        @Query("listPassword") listPassword: String
+    )
 
     @GET("/")
     suspend fun getDatabase(
         @Query("name") name: String,
-        @Query("listName") listId: String,
-        @Query("listPassword") listPassword: String
+        @Query("idList") idList: List<Int>
     ): Response<ListaCompras>
 
     @POST("/newItem")
     suspend fun addNewItem(
-        @Query("listName") listName: String,
+        @Query("listId") listId: Int,
         @Query("itemId") id: Long,
         @Query("itemName") name: String,
         @Query("addedBy") addedBy: String
@@ -70,7 +85,7 @@ interface OnlineDatabaseService {
 
     @POST("/removeItem")
     suspend fun removeItem(
-        @Query("listName") listName: String,
+        @Query("listName") listId: Int,
         @Query("itemId") itemId: Long,
         @Query("addedBy") addedBy: String,
         @Query("lastChanged") lastChanged: Long
@@ -79,6 +94,6 @@ interface OnlineDatabaseService {
     @POST("/clearCart")
     suspend fun clearCart(
         @Query("idList") idList: List<Long>,
-        @Query("listName") listName: String,
+        @Query("listName") listId: Int,
         @Query("lastChanged") lastChanged: Long)
 }

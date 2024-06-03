@@ -13,7 +13,6 @@ import com.example.comprinhas.http.DatabaseApi
 import com.example.comprinhas.ui.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 class SettingsViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -24,7 +23,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     private val retrofitService = DatabaseApi.retrofitService
 
     private var _appPreferences by mutableStateOf(
-        AppPreferences(false, "", "", "",0)
+        AppPreferences(false,  "",0)
     )
 
     val login = MutableStateFlow(false)
@@ -33,25 +32,18 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         get() {
             viewModelScope.launch {
                 preferencesFlow.collect {
-                    _appPreferences = AppPreferences(it.welcomeScreen, it.name, it.listId, it.listPassword, it.lastChanged)
+                    _appPreferences = AppPreferences(it.welcomeScreen, it.name, it.lastChanged)
                 }
             }
 
             return _appPreferences
         }
 
-    fun updateUserPrefs(rawName: String, rawListId: String, listPassword: String) {
+    fun updateUserPrefs(rawName: String) {
         val name = rawName.trim()
-        val listId = rawListId.trim()
 
         viewModelScope.launch {
-            preferencesRepository.updateUserPrefs(name, listId, listPassword)
-        }
-    }
-
-    fun updateUiState(uiState: UiState) {
-        runBlocking {
-            preferencesRepository.updateUiState(uiState)
+            preferencesRepository.updateUserPrefs(name)
         }
     }
 
@@ -65,11 +57,11 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
 
             if (response.code() == 200) {
                 preferencesRepository.updateUiState(UiState.LOADED)
-                preferencesRepository.updateUserPrefs(username, listName, listPassword)
+                preferencesRepository.updateUserPrefs(username)
                 login.value = true
             }
             else {
-                preferencesRepository.updateUiState(UiState.NO_INTERNET)
+                preferencesRepository.updateUiState(UiState.NO_CONNECTION)
             }
         }
     }

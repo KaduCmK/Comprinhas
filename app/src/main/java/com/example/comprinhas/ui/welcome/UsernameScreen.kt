@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Login
-import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -31,7 +30,7 @@ import com.example.comprinhas.ui.theme.ComprinhasTheme
 
 @Composable
 fun UsernameScreen(
-    onContinue: (String, Boolean) -> Unit
+    onContinue: (String) -> Unit
 ) {
     var name by remember { mutableStateOf("") }
     var error by remember { mutableStateOf(false) }
@@ -65,7 +64,7 @@ fun UsernameScreen(
                 modifier = Modifier.width(235.dp),
                 onClick = {
                     if (name.isEmpty()) error = true
-                    else onContinue(name, false)
+                    else onContinue(name)
                 }
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -77,21 +76,21 @@ fun UsernameScreen(
                 }
             }
 
-            Button(
-                modifier = Modifier.width(235.dp),
-                onClick = {
-                    if (name.isEmpty()) error = true
-                    else onContinue(name, true)
-                }
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = Icons.Outlined.Add,
-                        contentDescription = "Nova Lista"
-                    )
-                    Text(modifier = Modifier.padding(2.dp), text = "Criar nova Lista")
-                }
-            }
+//            Button(
+//                modifier = Modifier.width(235.dp),
+//                onClick = {
+//                    if (name.isEmpty()) error = true
+//                    else onContinue(name, true)
+//                }
+//            ) {
+//                Row(verticalAlignment = Alignment.CenterVertically) {
+//                    Icon(
+//                        imageVector = Icons.Outlined.Add,
+//                        contentDescription = "Nova Lista"
+//                    )
+//                    Text(modifier = Modifier.padding(2.dp), text = "Criar nova Lista")
+//                }
+//            }
         }
     }
 }
@@ -100,6 +99,6 @@ fun UsernameScreen(
 @Composable
 private fun WelcomeScreenPreview() {
     ComprinhasTheme {
-        UsernameScreen { _, _ ->}
+        UsernameScreen {}
     }
 }

@@ -1,4 +1,4 @@
-package com.example.comprinhas.http
+package com.example.comprinhas.http.responses
 
 import com.example.comprinhas.ui.receipts.Receipt
 

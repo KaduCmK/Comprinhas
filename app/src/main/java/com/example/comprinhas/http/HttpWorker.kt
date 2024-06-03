@@ -10,12 +10,13 @@ object WorkerOperation {
     const val DELETE_FROM_LIST = 3
 }
 
+@Deprecated("nao é poggers")
 class HttpWorker(context: Context, params: WorkerParameters)
     : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {
         val retrofitService = DatabaseApi.retrofitService
 
-        val listName = inputData.getString("listName") ?: ""
+        val listName = inputData.getInt("listName", -1)
         val id = inputData.getLong("id", 0)
         val name = inputData.getString("name") ?: ""
         val addedBy = inputData.getString("addedBy") ?: ""

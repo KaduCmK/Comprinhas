@@ -6,19 +6,20 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.ReceiptLong
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.outlined.CloudOff
 import androidx.compose.material.icons.outlined.QrCodeScanner
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -97,7 +98,7 @@ fun TopBar(
                 if (bottomButton != null) bottomButton()
             }
 
-            if (uiState == UiState.NO_INTERNET) {
+            if (uiState == UiState.NO_CONNECTION) {
                 Row(
                     modifier = Modifier.padding(top = 16.dp),
                     verticalAlignment = Alignment.CenterVertically
@@ -108,10 +109,14 @@ fun TopBar(
                         contentDescription = "No Connection"
                     )
                     Text(
-                        text = "Sem conexão com a internet",
+                        text = "Sem conexão com o servidor",
                         style = MaterialTheme.typography.bodyMedium.copy(fontStyle = FontStyle.Italic)
                     )
                 }
+            }
+            else if (uiState == UiState.LOADING) {
+                Spacer(modifier = Modifier.height(16.dp))
+                LinearProgressIndicator()
             }
         }
     }

@@ -11,6 +11,9 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.core.app.ActivityCompat
@@ -26,15 +29,17 @@ import androidx.navigation.compose.dialog
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.comprinhas.data.ShoppingItem
+import com.example.comprinhas.data.shoppingItem.ShoppingItem
 import com.example.comprinhas.ui.UiState
+import com.example.comprinhas.ui.home.EditListDialog
 import com.example.comprinhas.ui.home.HomeScreen
+import com.example.comprinhas.ui.home.NewListDialog
+import com.example.comprinhas.ui.list.ShoppingListScreen
 import com.example.comprinhas.ui.receipts.ReceiptsList
 import com.example.comprinhas.ui.receipts.ReceiptsViewModel
 import com.example.comprinhas.ui.settings.SettingsScreen
 import com.example.comprinhas.ui.settings.SettingsViewModel
 import com.example.comprinhas.ui.theme.ComprinhasTheme
-import com.example.comprinhas.ui.welcome.SetListScreen
 import com.example.comprinhas.ui.welcome.UsernameScreen
 import com.google.android.gms.common.moduleinstall.ModuleInstall
 import com.google.android.gms.common.moduleinstall.ModuleInstallRequest
@@ -66,47 +71,14 @@ class MainActivity : ComponentActivity() {
 
             ComprinhasTheme {
                 NavHost(navController = navController, startDestination = "home") {
-                    navigation(startDestination = "welcome/username", route = "welcome") {
+                    navigation(
+                        startDestination = "welcome/username",
+                        route = "welcome"
+                    ) {
                         composable("welcome/username") {
-                            settingsViewModel.updateUiState(UiState.LOADED)
-
-                            UsernameScreen { username, newList ->
-                                navController.navigate(
-                                    "welcome/setList/$username/$newList"
-                                )
-                            }
-                        }
-
-                        composable(
-                            route = "welcome/setList/{username}/{newList}",
-                            arguments = listOf(
-                                navArgument("username") { type = NavType.StringType },
-                                navArgument("newList") { type = NavType.BoolType }
-                            ),
-                            enterTransition = {
-                                slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start)
-                            },
-                            popExitTransition = {
-                                slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.End)
-                            }
-                        ) {
-                            val username = it.arguments?.getString("username") ?: ""
-                            val newList = it.arguments?.getBoolean("newList") ?: false
-
-                            SetListScreen(
-                                uiState = uiState,
-                                newList = newList,
-                                login = settingsViewModel.login,
-                                completeLogin = { navController.popBackStack("home", inclusive = false) }
-                            ) {listName, listPassword ->
-                                if (newList) {
-                                    settingsViewModel.createList(username, listName, listPassword)
-                                }
-                                else {
-                                    settingsViewModel.updateUserPrefs(username, listName, listPassword)
-                                    navController.popBackStack("home", inclusive = false)
-                                }
-
+                            UsernameScreen { username ->
+                                settingsViewModel.updateUserPrefs(username)
+                                navController.popBackStack("home", inclusive = false)
                             }
                         }
                     }
@@ -114,20 +86,101 @@ class MainActivity : ComponentActivity() {
                     composable(
                         route = "home",
                         popEnterTransition = {
-                            slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.End)
+                            EnterTransition.None
                         }
                     ) {
+                        val shoppingLists by
+                            mainviewModel.shoppingLists.collectAsState(initial = emptyList())
+
                         HomeScreen(
-                            viewModel = mainviewModel,
-                            uiState = uiState,
+                            shoppingLists = shoppingLists,
+                            welcome = mainviewModel.welcomeScreen,
                             toWelcomeScreen = { navController.navigate("welcome") },
-                            toSettingsScreen = { navController.navigate("settings") },
-                            toReceiptsScreen = {
-                                navController.navigate("receipts")
-                                receiptsViewModel.getReceiptsList()
+                            getShoppingItems = mainviewModel::getShoppingList,
+                            onJoinList = { navController.navigate("joinList/$it") },
+                            onNavigateToList = { navController.navigate("shoppingList/$it") },
+                            onHoldList = {
+                                         navController.navigate("editList/${it.nomeLista}/${it.senhaLista}")
                             },
-                            showDialog = { navController.navigate("addItem") }
+                            uiState = uiState
                         )
+                    }
+                    dialog(
+                        route = "joinList/{newList}",
+                        arguments = listOf(navArgument("newList") { type = NavType.BoolType })
+                    ) {
+                        val newList = it.arguments?.getBoolean("newList") ?: false
+
+                        NewListDialog(
+                            onDismiss = navController::popBackStack,
+                            newList = newList
+                        ) { listName, listPassword ->
+                            if (newList) mainviewModel.createShopplingList(listName, listPassword)
+                            else mainviewModel.joinShoppingList(listName, listPassword)
+                        }
+                    }
+                    dialog(
+                        route = "editList/{listName}/{listPassword}",
+                        arguments = listOf(
+                            navArgument("listName") { type = NavType.StringType },
+                            navArgument("listPassword") { type = NavType.StringType }
+                        )
+                    ) {
+                        val listName = it.arguments?.getString("listName") ?: ""
+                        val listPassword = it.arguments?.getString("listPassword") ?: ""
+
+                        EditListDialog(
+                            onDismissRequest = navController::popBackStack,
+                            listName = listName,
+                            onDeleteList = {
+                                mainviewModel.deleteList(listName, listPassword)
+                                navController.popBackStack()
+                            },
+                            onEditList = {},
+                            onExitList = {
+                                mainviewModel.exitShoppingList(listName, listPassword)
+                            }
+                        )
+                    }
+
+                    navigation("shoppingList/{listId}", route = "shoppingList") {
+                        composable(
+                            route = "shoppingList/{listId}",
+                            arguments = listOf(navArgument("listId") { type = NavType.IntType }),
+                            enterTransition = { expandVertically() },
+                            popExitTransition = { shrinkVertically() }
+                        ) {
+                            val listId = it.arguments?.getInt("listId") ?: -1
+
+                            ShoppingListScreen(
+                                viewModel = mainviewModel,
+                                uiState = uiState,
+                                listId = listId,
+                                toWelcomeScreen = { navController.navigate("welcome") },
+                                toSettingsScreen = { navController.navigate("settings") },
+                                toReceiptsScreen = {
+                                    navController.navigate("receipts")
+                                    receiptsViewModel.getReceiptsList()
+                                },
+                                showDialog = { navController.navigate("shoppingList/addItem/$listId") }
+                            )
+                        }
+                        dialog(
+                            route = "shoppingList/addItem/{listId}",
+                            arguments = listOf(navArgument("listId") { type = NavType.IntType }),
+                        ) {
+                            InputDialog(
+                                onDismiss = navController::popBackStack,
+                                setValue = {nome ->
+                                    mainviewModel.addShoppingListItem(
+                                        ShoppingItem(
+                                            nomeItem = nome,
+                                            adicionadoPor = settingsViewModel.appPreferences.name,
+                                            idLista = it.arguments?.getInt("listId") ?: -1
+                                        ),
+                                    )
+                                })
+                        }
                     }
                     composable(
                         route = "settings",
@@ -159,14 +212,6 @@ class MainActivity : ComponentActivity() {
                             uiState = uiState,
                             onNavigateBack = { navController.popBackStack() }
                         )
-                    }
-
-                    dialog("addItem") {
-                        InputDialog(
-                            onDismiss = navController::popBackStack,
-                            setValue = {
-                                mainviewModel.addShoppingListItem(ShoppingItem(nomeItem = it, adicionadoPor = settingsViewModel.appPreferences.name))
-                            })
                     }
                 }
             }

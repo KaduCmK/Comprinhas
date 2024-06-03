@@ -24,7 +24,7 @@ import com.example.comprinhas.ui.theme.ComprinhasTheme
 @Composable
 fun SettingsScreen(
     appPreferences: AppPreferences,
-    updateUserPrefs: (String, String, String) -> Unit,
+    updateUserPrefs: (String) -> Unit,
     onNavigateBack: () -> Unit
 ) {
     Surface(
@@ -32,8 +32,8 @@ fun SettingsScreen(
     ) {
 
         var name by remember { mutableStateOf(appPreferences.name) }
-        var listId by remember { mutableStateOf(appPreferences.listId) }
-        var listPassword by remember { mutableStateOf(appPreferences.listPassword) }
+//        var listId by remember { mutableStateOf(appPreferences.listId) }
+//        var listPassword by remember { mutableStateOf(appPreferences.listPassword) }
 
         Scaffold(
             topBar = {
@@ -54,27 +54,27 @@ fun SettingsScreen(
                     fieldValue = name,
                     onChange = {
                         name = it
-                        updateUserPrefs(name, listId, listPassword)
+                        updateUserPrefs(name)
                     })
 
-                SettingTextField(
-                    label = "Nome da lista: ",
-                    fieldValue = listId,
-                    onChange = {
-                        listId = it
-                        updateUserPrefs(name, listId, listPassword)
-                    }
-                )
-
-                SettingTextField(
-                    label = "Senha da lista:",
-                    fieldValue = listPassword,
-                    onChange = {
-                        listPassword = it
-                        updateUserPrefs(name, listId, listPassword)
-                    },
-                    isPassword = true
-                )
+//                SettingTextField(
+//                    label = "Nome da lista: ",
+//                    fieldValue = listId,
+//                    onChange = {
+//                        listId = it
+//                        updateUserPrefs(name, listId, listPassword)
+//                    }
+//                )
+//
+//                SettingTextField(
+//                    label = "Senha da lista:",
+//                    fieldValue = listPassword,
+//                    onChange = {
+//                        listPassword = it
+//                        updateUserPrefs(name, listId, listPassword)
+//                    },
+//                    isPassword = true
+//                )
             }
         }
     }
@@ -86,8 +86,8 @@ fun SettingsScreen(
 private fun SettingsScreenPreview() {
     ComprinhasTheme {
         SettingsScreen(
-            AppPreferences(false, "", "", "",0),
-            {_, _, _ ->},
+            AppPreferences(false, "",0),
+            {},
             {}
         )
     }

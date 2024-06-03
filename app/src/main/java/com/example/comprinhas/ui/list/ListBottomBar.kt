@@ -1,4 +1,4 @@
-package com.example.comprinhas.ui.home
+package com.example.comprinhas.ui.list
 
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedContent
@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.comprinhas.R
 import com.example.comprinhas.ShoppingItemCard
-import com.example.comprinhas.data.ShoppingItem
+import com.example.comprinhas.data.shoppingItem.ShoppingItem
 import com.example.comprinhas.ui.theme.ComprinhasTheme
 
 @Composable
