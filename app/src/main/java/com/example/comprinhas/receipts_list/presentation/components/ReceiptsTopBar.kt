@@ -1,4 +1,4 @@
-package com.example.comprinhas.ui.receipts
+package com.example.comprinhas.receipts_list.presentation.components
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement

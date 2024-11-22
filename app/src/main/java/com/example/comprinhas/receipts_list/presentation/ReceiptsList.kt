@@ -1,4 +1,4 @@
-package com.example.comprinhas.ui.receipts
+package com.example.comprinhas.receipts_list.presentation
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Row
@@ -23,14 +23,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.comprinhas.ui.TopBar
+import com.example.comprinhas.core.presentation.TopBar
 import com.example.comprinhas.ui.UiState
-import com.example.comprinhas.ui.receipt.ReceiptBottomSheet
+import com.example.comprinhas.receipt.presentation.components.ReceiptBottomSheet
+import com.example.comprinhas.receipts_list.data.model.Receipt
+import com.example.comprinhas.receipts_list.presentation.components.ReceiptCard
 import com.example.comprinhas.ui.theme.ComprinhasTheme
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.emptyFlow
 
 // TODO: tratar acesso a lista quando nao há internet
 

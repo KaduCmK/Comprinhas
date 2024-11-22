@@ -34,7 +34,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.comprinhas.R
-import com.example.comprinhas.ShoppingItemCard
 import com.example.comprinhas.list.data.model.ShoppingItem
 import com.example.comprinhas.ui.theme.ComprinhasTheme
 

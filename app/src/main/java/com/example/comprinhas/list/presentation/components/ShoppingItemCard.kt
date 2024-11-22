@@ -1,4 +1,4 @@
-package com.example.comprinhas
+package com.example.comprinhas.list.presentation.components
 
 import android.content.res.Configuration
 import androidx.compose.animation.animateColorAsState

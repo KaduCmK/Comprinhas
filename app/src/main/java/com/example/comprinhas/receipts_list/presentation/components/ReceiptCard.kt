@@ -1,4 +1,4 @@
-package com.example.comprinhas.ui.receipts
+package com.example.comprinhas.receipts_list.presentation.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.Money
 import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material3.Card
@@ -23,6 +22,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.comprinhas.data.Converters
+import com.example.comprinhas.receipts_list.data.model.Receipt
 import com.example.comprinhas.ui.theme.ComprinhasTheme
 import java.text.DecimalFormat
 

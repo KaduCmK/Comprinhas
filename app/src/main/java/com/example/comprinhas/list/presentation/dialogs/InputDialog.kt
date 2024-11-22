@@ -1,4 +1,4 @@
-package com.example.comprinhas
+package com.example.comprinhas.list.presentation.dialogs
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row

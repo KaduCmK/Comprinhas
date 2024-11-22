@@ -36,12 +36,13 @@ import com.example.comprinhas.home.presentation.dialogs.EditListDialog
 import com.example.comprinhas.home.presentation.HomeScreen
 import com.example.comprinhas.home.presentation.dialogs.NewListDialog
 import com.example.comprinhas.list.presentation.ShoppingListScreen
-import com.example.comprinhas.ui.receipts.ReceiptsList
-import com.example.comprinhas.ui.receipts.ReceiptsViewModel
+import com.example.comprinhas.receipts_list.presentation.ReceiptsList
+import com.example.comprinhas.receipts_list.presentation.ReceiptsViewModel
 import com.example.comprinhas.ui.settings.SettingsScreen
 import com.example.comprinhas.ui.settings.SettingsViewModel
 import com.example.comprinhas.ui.theme.ComprinhasTheme
 import com.example.comprinhas.auth.presentation.UsernameScreen
+import com.example.comprinhas.list.presentation.dialogs.InputDialog
 import com.google.android.gms.common.moduleinstall.ModuleInstall
 import com.google.android.gms.common.moduleinstall.ModuleInstallRequest
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning

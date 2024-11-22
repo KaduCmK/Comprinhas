@@ -1,4 +1,4 @@
-package com.example.comprinhas.ui.receipts
+package com.example.comprinhas.receipts_list.data.model
 
 data class Receipt(
     val chaveAcesso: String = "00000000000000000000000000000000000000000000",

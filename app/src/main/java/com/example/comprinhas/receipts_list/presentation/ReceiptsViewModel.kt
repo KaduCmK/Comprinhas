@@ -1,4 +1,4 @@
-package com.example.comprinhas.ui.receipts
+package com.example.comprinhas.receipts_list.presentation
 
 import android.app.Application
 import android.util.Log
@@ -17,6 +17,7 @@ import com.example.comprinhas.dataStore
 import com.example.comprinhas.http.DatabaseApi
 import com.example.comprinhas.http.ReceiptWorker
 import com.example.comprinhas.ui.UiState
+import com.example.comprinhas.receipts_list.data.model.Receipt
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning

@@ -27,7 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.comprinhas.ComprinhasViewModel
-import com.example.comprinhas.ui.TopBar
+import com.example.comprinhas.core.presentation.TopBar
 import com.example.comprinhas.ui.UiState
 import com.example.comprinhas.list.presentation.components.BottomBar
 import kotlinx.coroutines.launch

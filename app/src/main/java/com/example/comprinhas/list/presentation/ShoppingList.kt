@@ -25,7 +25,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.comprinhas.R
-import com.example.comprinhas.ShoppingItemCard
+import com.example.comprinhas.list.presentation.components.ShoppingItemCard
 import com.example.comprinhas.list.data.model.ShoppingItem
 import com.example.comprinhas.ui.theme.ComprinhasTheme
 

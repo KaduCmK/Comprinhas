@@ -27,7 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.comprinhas.home.data.ShoppingList
-import com.example.comprinhas.ui.TopBar
+import com.example.comprinhas.core.presentation.TopBar
 import com.example.comprinhas.ui.UiState
 import com.example.comprinhas.home.presentation.components.ShoppingListCard
 import com.example.comprinhas.ui.theme.ComprinhasTheme
