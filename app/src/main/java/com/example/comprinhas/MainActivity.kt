@@ -72,7 +72,7 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
 
             ComprinhasTheme {
-                MainNavGraph(navController)
+                MainNavGraph(navController, authService)
             }
         }
     }

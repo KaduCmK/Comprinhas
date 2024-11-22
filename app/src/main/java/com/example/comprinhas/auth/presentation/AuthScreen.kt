@@ -19,6 +19,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,18 +29,37 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.comprinhas.R
+import com.example.comprinhas.auth.data.AuthService
+import com.example.comprinhas.auth.data.model.AuthUiEvent
+import com.example.comprinhas.auth.data.model.AuthUiState
 import com.example.comprinhas.ui.theme.ComprinhasTheme
+import com.google.rpc.context.AttributeContext.Auth
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Serializer
 
 @Composable
+fun AuthScreenRoot(modifier: Modifier = Modifier, authService: AuthService) {
+    val viewModel: AuthViewModel = hiltViewModel()
+    AuthScreen(
+        modifier = modifier,
+        authService = authService,
+        uiState = viewModel.uiState.collectAsState().value,
+        uiEvent = viewModel::onEvent
+    )
+}
+
+@Composable
 fun AuthScreen(
-//    onContinue: (String) -> Unit
+    modifier: Modifier = Modifier,
+    authService: AuthService?,
+    uiState: AuthUiState,
+    uiEvent: (AuthUiEvent) -> Unit
 ) {
-    Surface(modifier = Modifier
-        .fillMaxSize(),
-        ) {
+    Surface(
+        modifier = modifier.fillMaxSize(),
+    ) {
         Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
@@ -48,9 +68,12 @@ fun AuthScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
-                onClick = {}
+                onClick = { uiEvent(AuthUiEvent.OnLogin(authService!!)) },
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
                     Icon(
                         modifier = Modifier.size(20.dp),
                         painter = painterResource(R.drawable.google_icon_logo_svgrepo_com),
@@ -67,6 +90,10 @@ fun AuthScreen(
 @Composable
 private fun AuthScreenPreview() {
     ComprinhasTheme {
-        AuthScreen()
+        AuthScreen(
+            authService = null,
+            uiState = AuthUiState.Unauthenticated,
+            uiEvent = {}
+        )
     }
 }
