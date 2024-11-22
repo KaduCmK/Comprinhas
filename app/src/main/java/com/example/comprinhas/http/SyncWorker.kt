@@ -11,7 +11,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.example.comprinhas.MainActivity
 import com.example.comprinhas.R
-import com.example.comprinhas.data.ComprinhasDatabase
+import com.example.comprinhas.core.data.db.ComprinhasDatabase
 import com.example.comprinhas.data.PreferencesRepository
 import com.example.comprinhas.dataStore
 import com.example.comprinhas.ui.UiState

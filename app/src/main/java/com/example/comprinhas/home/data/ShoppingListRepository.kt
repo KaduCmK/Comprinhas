@@ -1,11 +1,9 @@
-package com.example.comprinhas.data
+package com.example.comprinhas.home.data
 
 import android.content.Context
 import android.util.Log
 import com.example.comprinhas.data.shoppingItem.ShoppingItem
 import com.example.comprinhas.data.shoppingItem.ShoppingItemDao
-import com.example.comprinhas.data.shoppingList.ShoppingList
-import com.example.comprinhas.data.shoppingList.ShoppingListDao
 import com.example.comprinhas.http.DatabaseApi
 import com.example.comprinhas.http.responses.CreateListError
 import com.google.gson.Gson
@@ -64,12 +62,14 @@ class ShoppingListRepository(
         val response = retrofitService.joinShoppingList(name, listName, listPassword)
 
         if (response.code() == 200) {
-            shoppingListDao.createShoppingList(ShoppingList(
+            shoppingListDao.createShoppingList(
+                ShoppingList(
                 response.body()!!.idLista,
                 listName,
                 listPassword,
                 response.body()!!.criadoPor
-            ))
+            )
+            )
 
             return null
         }

@@ -3,7 +3,7 @@ package com.example.comprinhas.data.shoppingItem
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import com.example.comprinhas.data.shoppingList.ShoppingList
+import com.example.comprinhas.home.data.ShoppingList
 import kotlinx.serialization.Serializable
 import java.time.ZonedDateTime
 

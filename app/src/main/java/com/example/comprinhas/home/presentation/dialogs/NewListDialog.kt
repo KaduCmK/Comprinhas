@@ -1,4 +1,4 @@
-package com.example.comprinhas.ui.home
+package com.example.comprinhas.home.presentation.dialogs
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row

@@ -1,4 +1,4 @@
-package com.example.comprinhas.ui.home
+package com.example.comprinhas.home.presentation
 
 import android.content.res.Configuration
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -26,9 +26,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.comprinhas.data.shoppingList.ShoppingList
+import com.example.comprinhas.home.data.ShoppingList
 import com.example.comprinhas.ui.TopBar
 import com.example.comprinhas.ui.UiState
+import com.example.comprinhas.home.presentation.components.ShoppingListCard
 import com.example.comprinhas.ui.theme.ComprinhasTheme
 
 @OptIn(ExperimentalFoundationApi::class)

@@ -32,9 +32,9 @@ import androidx.navigation.navArgument
 import com.example.comprinhas.auth.data.AuthService
 import com.example.comprinhas.data.shoppingItem.ShoppingItem
 import com.example.comprinhas.ui.UiState
-import com.example.comprinhas.ui.home.EditListDialog
-import com.example.comprinhas.ui.home.HomeScreen
-import com.example.comprinhas.ui.home.NewListDialog
+import com.example.comprinhas.home.presentation.dialogs.EditListDialog
+import com.example.comprinhas.home.presentation.HomeScreen
+import com.example.comprinhas.home.presentation.dialogs.NewListDialog
 import com.example.comprinhas.ui.list.ShoppingListScreen
 import com.example.comprinhas.ui.receipts.ReceiptsList
 import com.example.comprinhas.ui.receipts.ReceiptsViewModel

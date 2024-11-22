@@ -1,4 +1,4 @@
-package com.example.comprinhas.ui.home
+package com.example.comprinhas.home.presentation.components
 
 import android.content.res.Configuration
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -17,7 +17,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.comprinhas.data.shoppingList.ShoppingList
+import com.example.comprinhas.home.data.ShoppingList
 import com.example.comprinhas.ui.theme.ComprinhasTheme
 
 @OptIn(ExperimentalFoundationApi::class)

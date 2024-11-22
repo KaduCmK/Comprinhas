@@ -19,9 +19,9 @@ import androidx.work.WorkManager
 import com.example.comprinhas.data.AppPreferences
 import com.example.comprinhas.data.PreferencesRepository
 import com.example.comprinhas.data.shoppingItem.ShoppingItem
-import com.example.comprinhas.data.ComprinhasDatabase
-import com.example.comprinhas.data.ShoppingListRepository
-import com.example.comprinhas.data.shoppingList.ShoppingList
+import com.example.comprinhas.core.data.db.ComprinhasDatabase
+import com.example.comprinhas.home.data.ShoppingListRepository
+import com.example.comprinhas.home.data.ShoppingList
 import com.example.comprinhas.http.SyncWorker
 import com.example.comprinhas.ui.UiState
 import kotlinx.coroutines.flow.first

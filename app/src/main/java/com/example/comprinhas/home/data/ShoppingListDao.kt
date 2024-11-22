@@ -1,4 +1,4 @@
-package com.example.comprinhas.data.shoppingList
+package com.example.comprinhas.home.data
 
 import androidx.room.Dao
 import androidx.room.Insert
