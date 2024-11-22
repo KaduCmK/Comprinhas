@@ -29,6 +29,7 @@ import androidx.navigation.compose.dialog
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.comprinhas.auth.data.AuthService
 import com.example.comprinhas.data.shoppingItem.ShoppingItem
 import com.example.comprinhas.ui.UiState
 import com.example.comprinhas.ui.home.EditListDialog
@@ -40,14 +41,19 @@ import com.example.comprinhas.ui.receipts.ReceiptsViewModel
 import com.example.comprinhas.ui.settings.SettingsScreen
 import com.example.comprinhas.ui.settings.SettingsViewModel
 import com.example.comprinhas.ui.theme.ComprinhasTheme
-import com.example.comprinhas.ui.welcome.UsernameScreen
+import com.example.comprinhas.auth.presentation.UsernameScreen
 import com.google.android.gms.common.moduleinstall.ModuleInstall
 import com.google.android.gms.common.moduleinstall.ModuleInstallRequest
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @Inject lateinit var authService: AuthService
+
     companion object {
         var isForeground = false
     }

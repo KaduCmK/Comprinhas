@@ -4,6 +4,8 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
     id("com.google.devtools.ksp")
+    alias(libs.plugins.googleGmsGoogleServices)
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -93,4 +95,13 @@ android {
         debugImplementation(libs.androidx.ui.tooling)
         debugImplementation(libs.androidx.ui.test.manifest)
     }
+}
+dependencies {
+    implementation(libs.firebase.auth)
+    implementation(libs.androidx.credentials)
+    implementation(libs.credentials.play.services.auth)
+    implementation(libs.googleid)
+    implementation(libs.hilt.android)
+    implementation(libs.firebase.firestore.ktx)
+    ksp(libs.hilt.android.compiler)
 }
