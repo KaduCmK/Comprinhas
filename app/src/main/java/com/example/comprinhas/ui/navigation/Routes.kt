@@ -1,12 +1,13 @@
 package com.example.comprinhas.ui.navigation
 
+import com.example.comprinhas.core.data.model.Usuario
 import kotlinx.serialization.Serializable
 
 @Serializable
-sealed class Routes
+data object Auth
 
 @Serializable
-data object Auth : Routes()
+data object Home
 
 @Serializable
-data object Home : Routes()
+data class ShoppingList(val id: String)

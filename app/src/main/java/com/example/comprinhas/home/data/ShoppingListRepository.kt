@@ -15,8 +15,8 @@ class ShoppingListRepository(
     private val context: Context
 ) {
 
-    val shoppingLists: Flow<List<ShoppingList>> = shoppingListDao.getAllShoppingLists()
-    val shoppingList: Flow<List<ShoppingItem>> = shoppingItemDao.getAllShopping()
+    val lists: Flow<List<ShoppingList>> = shoppingListDao.getAllShoppingLists()
+    val list: Flow<List<ShoppingItem>> = shoppingItemDao.getAllShopping()
     val cartList: Flow<List<ShoppingItem>> = shoppingItemDao.getAllCart()
 
     private val retrofitService = DatabaseApi.retrofitService
@@ -30,7 +30,7 @@ class ShoppingListRepository(
 
         if (response.code() == 200) {
             shoppingListDao.createShoppingList(
-                ShoppingList(response.body()!!.idLista, listName, listPassword, username)
+                ShoppingList(response.body()!!.idLista.toString(), listName, listPassword, username)
             )
             Log.d("REPOSITORY",
                 "Criando Lista ${response.body()?.idLista ?: "undefined"} $listName"
@@ -64,7 +64,7 @@ class ShoppingListRepository(
         if (response.code() == 200) {
             shoppingListDao.createShoppingList(
                 ShoppingList(
-                response.body()!!.idLista,
+                response.body()!!.idLista.toString(),
                 listName,
                 listPassword,
                 response.body()!!.criadoPor

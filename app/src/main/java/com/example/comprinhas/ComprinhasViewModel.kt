@@ -27,7 +27,6 @@ import com.example.comprinhas.ui.UiState
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit
 
@@ -58,16 +57,8 @@ class ComprinhasViewModel(private val application: Application): AndroidViewMode
             return _appPreferences
         }
 
-    val welcomeScreen: Boolean
-        get() {
-            return runBlocking {
-                preferencesFlow.first().welcomeScreen
-            }
-        }
-
-
-    var shoppingLists = repo.shoppingLists
-    var shoppingList = repo.shoppingList
+    var shoppingLists = repo.lists
+    var shoppingList = repo.list
     var cartList = repo.cartList
 
     var uiState = preferencesRepository.uiState
@@ -83,92 +74,43 @@ class ComprinhasViewModel(private val application: Application): AndroidViewMode
         }
     }
 
-    fun joinShoppingList(listName: String, listPassword: String) {
+//    fun joinShoppingList(listName: String, listPassword: String) {
+//        viewModelScope.launch {
+//            preferencesRepository.updateUiState(UiState.LOADING)
+//
+//            val res = repo.joinShoppingList(appPreferences.name, listName, listPassword)
+//            if (res.isNullOrEmpty()) {
+//                getShoppingList()
+//            }
+//            else {
+//                Toast.makeText(application.baseContext, res, Toast.LENGTH_SHORT).show()
+//            }
+//
+//            preferencesRepository.updateUiState(UiState.LOADED)
+//        }
+//    }
+//
+//    fun deleteList(listName: String, listPassword: String) {
+//        viewModelScope.launch {
+//            repo.deleteList(appPreferences.name, listName, listPassword)
+//        }
+//    }
+//
+//    fun exitShoppingList(listName: String, listPassword: String) {
+//        viewModelScope.launch {
+//            repo.exitShoppingList(listName, listPassword)
+//        }
+//    }
+
+    var currentList by mutableStateOf(ShoppingList("sadasdasdad", "", "", ""))
+    fun getCurrentList(listId: String) {
         viewModelScope.launch {
-            preferencesRepository.updateUiState(UiState.LOADING)
-
-            val res = repo.joinShoppingList(appPreferences.name, listName, listPassword)
-            if (res.isNullOrEmpty()) {
-                getShoppingList()
-            }
-            else {
-                Toast.makeText(application.baseContext, res, Toast.LENGTH_SHORT).show()
-            }
-
-            preferencesRepository.updateUiState(UiState.LOADED)
-        }
-    }
-
-    fun deleteList(listName: String, listPassword: String) {
-        viewModelScope.launch {
-            repo.deleteList(appPreferences.name, listName, listPassword)
-        }
-    }
-
-    fun exitShoppingList(listName: String, listPassword: String) {
-        viewModelScope.launch {
-            repo.exitShoppingList(listName, listPassword)
-        }
-    }
-
-    var currentList by mutableStateOf(ShoppingList(-1, "", "", ""))
-    fun getCurrentList(listId: Int) {
-        viewModelScope.launch {
-            repo.shoppingLists.collect { list ->
-                currentList = list.find { it.idLista == listId } ?: ShoppingList(-1, "", "", "")
+            repo.lists.collect { list ->
+                currentList = list.find { it.idLista == listId } ?: ShoppingList("asdad", "", "", "")
                 Log.d("VIEW-MODEL", "Mudando para lista ${currentList.idLista}/${currentList.nomeLista}")
             }
         }
 
-    }
-
-    fun getShoppingList() {
-        viewModelScope.launch {
-            preferencesRepository.updateUiState(UiState.LOADING)
-
-            // TODO: sugestao de alterar check de internet p um listener constante
-
-            val connectivityManager = application.getSystemService(ConnectivityManager::class.java)
-            val networkCapabilities = connectivityManager.activeNetwork
-            val actNw = connectivityManager.getNetworkCapabilities(networkCapabilities)
-            val hasInternet = actNw?.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED) ?: false
-
-            if (!hasInternet) {
-                preferencesRepository.updateUiState(UiState.NO_CONNECTION)
-                Toast.makeText(
-                    application.applicationContext,
-                    "Sem conexão com a Internet",
-                    Toast.LENGTH_SHORT)
-                    .show()
-            }
-
-            val constraints = Constraints.Builder()
-                .setRequiredNetworkType(NetworkType.CONNECTED)
-                .build()
-
-            val listId = repo.shoppingLists.stateIn(viewModelScope)
-                .value
-                .map { it.idLista }
-
-            val inputData = Data.Builder()
-                .putString("name", appPreferences.name)
-                .putIntArray("idList", listId.toIntArray())
-                .build()
-
-            val periodicSync = PeriodicWorkRequest
-                .Builder(SyncWorker::class.java, 20, TimeUnit.MINUTES)
-                .setConstraints(constraints)
-                .setInputData(inputData)
-                .build()
-
-            val workManager = WorkManager.getInstance(application.applicationContext)
-
-            workManager
-                .enqueueUniquePeriodicWork(
-                    "periodicSync",
-                    ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
-                    periodicSync)
-        }
     }
 
     fun addShoppingListItem(item: ShoppingItem) {

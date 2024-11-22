@@ -32,6 +32,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.comprinhas.home.data.model.HomeUiState
 import com.example.comprinhas.ui.UiState
 import com.example.comprinhas.ui.theme.ComprinhasTheme
 
@@ -42,8 +43,8 @@ fun TopBar(
     backButton: (() -> Unit)? = null,
     topButton: @Composable (() -> Unit)? = null,
     bottomButton: @Composable (() -> Unit)? = null,
-    mainButton: @Composable ((uiState: UiState) -> Unit)? = null,
-    uiState: UiState = UiState.LOADED,
+    mainButton: @Composable ((uiState: HomeUiState) -> Unit)? = null,
+    uiState: HomeUiState,
 ) {
     Surface {
         Column(
@@ -99,7 +100,7 @@ fun TopBar(
                 if (bottomButton != null) bottomButton()
             }
 
-            if (uiState == UiState.NO_CONNECTION) {
+            if (uiState is HomeUiState.NoInternet) {
                 Row(
                     modifier = Modifier.padding(top = 16.dp),
                     verticalAlignment = Alignment.CenterVertically
@@ -115,7 +116,7 @@ fun TopBar(
                     )
                 }
             }
-            else if (uiState == UiState.LOADING) {
+            else if (uiState is HomeUiState.Loading) {
                 Spacer(modifier = Modifier.height(16.dp))
                 LinearProgressIndicator()
             }
@@ -141,7 +142,7 @@ private fun HomeTopBarPreview() {
             },
             mainButton = {
                 Button(
-                    enabled = it == UiState.LOADED,
+                    enabled = it is HomeUiState.Loaded,
                     onClick = {}
                 ) {
                     Text(
@@ -157,7 +158,8 @@ private fun HomeTopBarPreview() {
                 )  {
                     Icon(imageVector = Icons.AutoMirrored.Outlined.ReceiptLong, contentDescription = null)
                 }
-            }
+            },
+            uiState = HomeUiState.Loading(null)
         )
     }
 }
@@ -168,7 +170,8 @@ private fun SettingsTopBarPreview() {
     ComprinhasTheme {
         TopBar(
             title = "Configurações",
-            backButton = {}
+            backButton = {},
+            uiState = HomeUiState.Loading(null)
         )
     }
 }
@@ -191,7 +194,8 @@ private fun ReceiptsTopBarPreview() {
                         Text(text = "Escanear QR Code")
                     }
                 }
-            }
+            },
+            uiState = HomeUiState.Loading(null)
         )
     }
 }

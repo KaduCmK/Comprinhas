@@ -1,11 +1,10 @@
 package com.example.comprinhas.home.presentation
 
 import android.content.res.Configuration
-import androidx.compose.foundation.ExperimentalFoundationApi
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -18,46 +17,65 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.comprinhas.home.data.ShoppingList
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.example.comprinhas.core.data.model.Usuario
 import com.example.comprinhas.core.presentation.TopBar
-import com.example.comprinhas.ui.UiState
+import com.example.comprinhas.home.data.model.HomeUiEvent
+import com.example.comprinhas.home.data.model.HomeUiState
 import com.example.comprinhas.home.presentation.components.ShoppingListCard
+import com.example.comprinhas.ui.navigation.Auth
 import com.example.comprinhas.ui.theme.ComprinhasTheme
 
-@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun HomeScreenRoot(
+    modifier: Modifier = Modifier,
+    navController: NavController,
+    currentUser: Usuario?
+) {
+    val viewModel = hiltViewModel<HomeViewModel>()
+    viewModel.setCurrentUser(currentUser)
+
+    HomeScreen(
+        modifier = modifier,
+        uiState = viewModel.uiState.collectAsState().value,
+        uiEvent = viewModel::onEvent,
+        navController = navController,
+    )
+}
+
 @Composable
 fun HomeScreen(
-    shoppingLists: List<ShoppingList>,
-    welcome: Boolean,
-    getShoppingItems: () -> Unit,
-    toWelcomeScreen: () -> Unit,
-    onJoinList: (Boolean) -> Unit,
-    onNavigateToList: (listId: Int) -> Unit,
-    onHoldList: (ShoppingList) -> Unit,
-    uiState: UiState
+    modifier: Modifier = Modifier,
+    uiState: HomeUiState,
+    uiEvent: (HomeUiEvent) -> Unit,
+    navController: NavController
 ) {
     LaunchedEffect(key1 = 1) {
-        if (welcome) toWelcomeScreen()
-        else getShoppingItems()
+        if (uiState .currentUser == null)
+            navController.navigate(Auth)
+        else uiEvent(HomeUiEvent.OnGetShoppingLists)
     }
 
     Scaffold(
+        modifier = modifier,
         contentWindowInsets = WindowInsets(16, 8, 16, 4),
         topBar = {
             TopBar(
                 title = "Comprinhas",
                 mainButton = {
                     Button(
-                        onClick = { onJoinList(true) },
-                        enabled = uiState == UiState.LOADED
+                        onClick = { },
+                        enabled = uiState is HomeUiState.Loaded
                     ) {
                         Icon(
                             imageVector = Icons.Outlined.LibraryAdd,
@@ -72,8 +90,8 @@ fun HomeScreen(
                 },
                 bottomButton = {
                     TextButton(
-                        onClick = { onJoinList(false) },
-                        enabled = uiState == UiState.LOADED
+                        onClick = { },
+                        enabled = uiState is HomeUiState.Loaded
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Outlined.Login,
@@ -90,25 +108,40 @@ fun HomeScreen(
             )
         }
     ) { paddingValues ->
-        Surface (
-            modifier = Modifier
-                .padding(paddingValues)
-                .fillMaxSize()
-        )  {
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                items(shoppingLists, key = { it.idLista }) {
-                    ShoppingListCard(
-                        modifier = Modifier.animateItemPlacement(),
-                        shoppingList = it,
-                        onCardClick = { onNavigateToList(it.idLista) },
-                        onCardHold = { onHoldList(it) }
-                    )
+        LazyVerticalGrid(
+            modifier = Modifier.padding(paddingValues),
+            columns = GridCells.Fixed(2),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            when (uiState) {
+                is HomeUiState.Loading -> {
+
+                }
+                is HomeUiState.NoInternet -> {
+
+                }
+                is HomeUiState.Error -> {
+
+                }
+                is HomeUiState.Loaded -> {
+                    items(uiState.lists, key = { it.idLista }) {
+                        ShoppingListCard(
+                            modifier = Modifier.animateItem(),
+                            shoppingList = it,
+                            onCardClick = {
+                                navController.navigate(
+                                    com.example.comprinhas.ui.navigation.ShoppingList(
+                                        it.idLista
+                                    )
+                                )
+                            },
+                            onCardHold = { list -> uiEvent(HomeUiEvent.OnHoldCard(list)) }
+                        )
+                    }
                 }
             }
+
         }
     }
 }
@@ -118,18 +151,14 @@ fun HomeScreen(
 private fun HomeScreenPreview() {
     ComprinhasTheme {
         HomeScreen(
-            onJoinList = {},
-            shoppingLists = listOf(
-                ShoppingList(0, "Daiso", "", "Kadu"),
-                ShoppingList(1, "Centro", "", "Kadu"),
-                ShoppingList(2, "Mercado", "", "Kadu"),
-            ),
-            welcome = false,
-            toWelcomeScreen = {},
-            getShoppingItems = {},
-            onNavigateToList = {},
-            onHoldList = {},
-            uiState = UiState.LOADED
+//            lists = listOf(
+//                ShoppingList(0, "Daiso", "", "Kadu"),
+//                ShoppingList(1, "Centro", "", "Kadu"),
+//                ShoppingList(2, "Mercado", "", "Kadu"),
+//            ),
+            uiState = HomeUiState.Loading(null),
+            uiEvent = {},
+            navController = rememberNavController()
         )
     }
 }

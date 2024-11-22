@@ -1,7 +1,9 @@
 package com.example.comprinhas.core.data.model
 
 import com.google.firebase.auth.FirebaseUser
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class Usuario(
     val uid: String? = null,
     val displayName: String? = null,

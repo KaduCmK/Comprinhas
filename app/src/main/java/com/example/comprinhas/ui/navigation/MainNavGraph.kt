@@ -6,16 +6,21 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.comprinhas.auth.data.AuthService
 import com.example.comprinhas.auth.presentation.AuthScreenRoot
+import com.example.comprinhas.core.data.model.Usuario
+import com.example.comprinhas.home.presentation.HomeScreenRoot
 
 @Composable
 fun MainNavGraph(navController: NavHostController, authService: AuthService) {
-    NavHost(navController = navController, startDestination = Auth) {
+    NavHost(navController = navController, startDestination = Home) {
         composable<Auth> {
-            AuthScreenRoot(authService = authService)
+            AuthScreenRoot(authService = authService, navController = navController)
         }
 
-//        composable<Home> {
-//            HomeScreen()
-//        }
+        composable<Home> {
+            HomeScreenRoot(
+                navController = navController,
+                currentUser = authService.getSignedInUser()?.let { fu -> Usuario(fu) }
+            )
+        }
     }
 }

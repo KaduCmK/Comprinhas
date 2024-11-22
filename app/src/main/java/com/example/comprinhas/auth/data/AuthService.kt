@@ -41,7 +41,7 @@ class AuthService @Inject constructor (
 
                 val googleIdOption = GetGoogleIdOption.Builder()
                     .setFilterByAuthorizedAccounts(false)
-                    .setServerClientId("600733064538-q8t5nvkqs4mdfhcbara67d794cdiamha.apps.googleusercontent.com")
+                    .setServerClientId("409916661575-n8gbkvn98f9rtst955uv5qg8se40nvdi.apps.googleusercontent.com")
                     .setNonce(hashedNonce)
                     .build()
 

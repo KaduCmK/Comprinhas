@@ -69,7 +69,7 @@ fun ShoppingList(
         else {
             items(items = shoppingList, key = { it.idItem }) {
                 ShoppingItemCard(
-                    modifier = Modifier.animateItemPlacement(),
+                    modifier = Modifier.animateItem(),
                     shoppingItem = it,
                     onDelete = { onDelete(it) },
                     actionButton = {

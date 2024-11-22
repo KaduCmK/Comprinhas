@@ -68,7 +68,7 @@ private fun ShoppingListCardPreview() {
     ComprinhasTheme {
         ShoppingListCard(
             shoppingList = ShoppingList(
-                idLista = -1,
+                idLista = "-1",
                 nomeLista = "Daiso",
                 senhaLista = "123",
                 criadoPor = "Kadu"
