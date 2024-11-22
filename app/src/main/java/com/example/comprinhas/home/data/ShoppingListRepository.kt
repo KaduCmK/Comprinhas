@@ -2,8 +2,8 @@ package com.example.comprinhas.home.data
 
 import android.content.Context
 import android.util.Log
-import com.example.comprinhas.data.shoppingItem.ShoppingItem
-import com.example.comprinhas.data.shoppingItem.ShoppingItemDao
+import com.example.comprinhas.list.data.model.ShoppingItem
+import com.example.comprinhas.list.data.model.ShoppingItemDao
 import com.example.comprinhas.http.DatabaseApi
 import com.example.comprinhas.http.responses.CreateListError
 import com.google.gson.Gson

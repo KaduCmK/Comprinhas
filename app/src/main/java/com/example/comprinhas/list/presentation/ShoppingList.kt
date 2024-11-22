@@ -1,4 +1,4 @@
-package com.example.comprinhas.ui.list
+package com.example.comprinhas.list.presentation
 
 import android.content.res.Configuration
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -26,7 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.comprinhas.R
 import com.example.comprinhas.ShoppingItemCard
-import com.example.comprinhas.data.shoppingItem.ShoppingItem
+import com.example.comprinhas.list.data.model.ShoppingItem
 import com.example.comprinhas.ui.theme.ComprinhasTheme
 
 @OptIn(ExperimentalFoundationApi::class)

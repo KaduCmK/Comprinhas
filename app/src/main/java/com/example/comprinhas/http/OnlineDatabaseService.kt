@@ -1,6 +1,6 @@
 package com.example.comprinhas.http
 
-import com.example.comprinhas.data.shoppingItem.ShoppingItem
+import com.example.comprinhas.list.data.model.ShoppingItem
 import com.example.comprinhas.http.responses.CreateListResponse
 import com.example.comprinhas.http.responses.ResponseBody
 import com.example.comprinhas.ui.receipts.Receipt

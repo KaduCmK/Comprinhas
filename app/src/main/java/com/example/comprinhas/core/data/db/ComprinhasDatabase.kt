@@ -4,8 +4,8 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.example.comprinhas.data.shoppingItem.ShoppingItem
-import com.example.comprinhas.data.shoppingItem.ShoppingItemDao
+import com.example.comprinhas.list.data.model.ShoppingItem
+import com.example.comprinhas.list.data.model.ShoppingItemDao
 import com.example.comprinhas.home.data.ShoppingList
 import com.example.comprinhas.home.data.ShoppingListDao
 

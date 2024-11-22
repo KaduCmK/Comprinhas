@@ -1,4 +1,4 @@
-package com.example.comprinhas.data.shoppingItem
+package com.example.comprinhas.list.data.model
 
 import androidx.room.Dao
 import androidx.room.Delete

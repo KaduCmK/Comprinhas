@@ -1,4 +1,4 @@
-package com.example.comprinhas.ui.list
+package com.example.comprinhas.list.presentation
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import com.example.comprinhas.ComprinhasViewModel
 import com.example.comprinhas.ui.TopBar
 import com.example.comprinhas.ui.UiState
+import com.example.comprinhas.list.presentation.components.BottomBar
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)

@@ -18,7 +18,7 @@ import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
 import com.example.comprinhas.data.AppPreferences
 import com.example.comprinhas.data.PreferencesRepository
-import com.example.comprinhas.data.shoppingItem.ShoppingItem
+import com.example.comprinhas.list.data.model.ShoppingItem
 import com.example.comprinhas.core.data.db.ComprinhasDatabase
 import com.example.comprinhas.home.data.ShoppingListRepository
 import com.example.comprinhas.home.data.ShoppingList
