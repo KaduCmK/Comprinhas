@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.googleGmsGoogleServices)
     id("com.google.dagger.hilt.android")
     kotlin("plugin.serialization")
+    alias(libs.plugins.composeCompiler)
 }
 
 android {
@@ -111,8 +112,8 @@ dependencies {
 
     // Room
     implementation(libs.androidx.room.ktx)
-    ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.runtime)
+    ksp(libs.androidx.room.compiler)
 
     implementation(libs.androidx.navigation.compose)
 }

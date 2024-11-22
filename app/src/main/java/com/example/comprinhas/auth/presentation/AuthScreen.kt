@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Login
@@ -24,8 +25,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.comprinhas.R
 import com.example.comprinhas.ui.theme.ComprinhasTheme
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Serializer
@@ -34,9 +37,6 @@ import kotlinx.serialization.Serializer
 fun AuthScreen(
 //    onContinue: (String) -> Unit
 ) {
-    var name by remember { mutableStateOf("") }
-    var error by remember { mutableStateOf(false) }
-
     Surface(modifier = Modifier
         .fillMaxSize(),
         ) {
@@ -47,51 +47,18 @@ fun AuthScreen(
             Text(text = "Bem-Vindo!", style = MaterialTheme.typography.titleLarge)
             Spacer(modifier = Modifier.height(16.dp))
 
-            OutlinedTextField(
-                value = name,
-                onValueChange = { name = it },
-                label = { Text(text = "Nome de Usuário") },
-                isError = error,
-                supportingText = {
-                    if (error) Text(
-                        text = "Nome de usuário inválido",
-                        color = MaterialTheme.colorScheme.error
-                    )
-                },
-                maxLines = 1
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-
             Button(
-                modifier = Modifier.width(235.dp),
-                onClick = {
-                    if (name.isEmpty()) error = true
-                }
+                onClick = {}
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                     Icon(
-                        imageVector = Icons.AutoMirrored.Outlined.Login,
+                        modifier = Modifier.size(20.dp),
+                        painter = painterResource(R.drawable.google_icon_logo_svgrepo_com),
                         contentDescription = "Lista Existente"
                     )
-                    Text(modifier = Modifier.padding(2.dp), text = "Entrar em Lista existente")
+                    Text(text = "Entrar com Google", style = MaterialTheme.typography.bodyMedium)
                 }
             }
-
-//            Button(
-//                modifier = Modifier.width(235.dp),
-//                onClick = {
-//                    if (name.isEmpty()) error = true
-//                    else onContinue(name, true)
-//                }
-//            ) {
-//                Row(verticalAlignment = Alignment.CenterVertically) {
-//                    Icon(
-//                        imageVector = Icons.Outlined.Add,
-//                        contentDescription = "Nova Lista"
-//                    )
-//                    Text(modifier = Modifier.padding(2.dp), text = "Criar nova Lista")
-//                }
-//            }
         }
     }
 }

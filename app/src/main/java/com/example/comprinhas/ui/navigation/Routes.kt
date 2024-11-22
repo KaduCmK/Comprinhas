@@ -1,8 +1,12 @@
 package com.example.comprinhas.ui.navigation
 
-sealed class Routes {
-    sealed class Auth() : Routes() {
-        data object Username : Auth()
-    }
-    data object Home : Routes()
-}
+import kotlinx.serialization.Serializable
+
+@Serializable
+sealed class Routes
+
+@Serializable
+data object Auth : Routes()
+
+@Serializable
+data object Home : Routes()
