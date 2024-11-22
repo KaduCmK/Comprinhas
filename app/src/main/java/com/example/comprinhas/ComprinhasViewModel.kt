@@ -16,13 +16,13 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
-import com.example.comprinhas.data.AppPreferences
-import com.example.comprinhas.data.PreferencesRepository
+import com.example.comprinhas.core.data.AppPreferences
+import com.example.comprinhas.core.data.PreferencesRepository
 import com.example.comprinhas.list.data.model.ShoppingItem
-import com.example.comprinhas.core.data.db.ComprinhasDatabase
+import com.example.comprinhas.core.data.database.ComprinhasDatabase
 import com.example.comprinhas.home.data.ShoppingListRepository
 import com.example.comprinhas.home.data.ShoppingList
-import com.example.comprinhas.http.SyncWorker
+import com.example.comprinhas.core.data.http.SyncWorker
 import com.example.comprinhas.ui.UiState
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn

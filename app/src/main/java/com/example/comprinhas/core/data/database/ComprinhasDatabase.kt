@@ -1,4 +1,4 @@
-package com.example.comprinhas.core.data.db
+package com.example.comprinhas.core.data.database
 
 import android.content.Context
 import androidx.room.Database

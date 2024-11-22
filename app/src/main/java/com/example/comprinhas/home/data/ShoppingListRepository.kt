@@ -4,8 +4,8 @@ import android.content.Context
 import android.util.Log
 import com.example.comprinhas.list.data.model.ShoppingItem
 import com.example.comprinhas.list.data.model.ShoppingItemDao
-import com.example.comprinhas.http.DatabaseApi
-import com.example.comprinhas.http.responses.CreateListError
+import com.example.comprinhas.core.data.http.DatabaseApi
+import com.example.comprinhas.core.data.http.responses.CreateListError
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
 

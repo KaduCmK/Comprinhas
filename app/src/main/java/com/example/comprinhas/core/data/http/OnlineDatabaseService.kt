@@ -1,8 +1,8 @@
-package com.example.comprinhas.http
+package com.example.comprinhas.core.data.http
 
 import com.example.comprinhas.list.data.model.ShoppingItem
-import com.example.comprinhas.http.responses.CreateListResponse
-import com.example.comprinhas.http.responses.ResponseBody
+import com.example.comprinhas.core.data.http.responses.CreateListResponse
+import com.example.comprinhas.core.data.http.responses.ResponseBody
 import com.example.comprinhas.receipts_list.data.model.Receipt
 import kotlinx.serialization.Serializable
 import okhttp3.OkHttpClient

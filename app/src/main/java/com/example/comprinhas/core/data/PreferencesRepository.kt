@@ -1,4 +1,4 @@
-package com.example.comprinhas.data
+package com.example.comprinhas.core.data
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences

@@ -1,4 +1,4 @@
-package com.example.comprinhas.http
+package com.example.comprinhas.core.data.http
 
 import android.content.Context
 import androidx.work.CoroutineWorker

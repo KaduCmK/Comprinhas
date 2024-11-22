@@ -1,4 +1,4 @@
-package com.example.comprinhas.ui.settings
+package com.example.comprinhas.settings.presentation
 
 import android.app.Application
 import androidx.compose.runtime.getValue
@@ -6,10 +6,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.comprinhas.data.AppPreferences
-import com.example.comprinhas.data.PreferencesRepository
+import com.example.comprinhas.core.data.AppPreferences
+import com.example.comprinhas.core.data.PreferencesRepository
 import com.example.comprinhas.dataStore
-import com.example.comprinhas.http.DatabaseApi
+import com.example.comprinhas.core.data.http.DatabaseApi
 import com.example.comprinhas.ui.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch

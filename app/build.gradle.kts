@@ -6,6 +6,7 @@ plugins {
     id("com.google.devtools.ksp")
     alias(libs.plugins.googleGmsGoogleServices)
     id("com.google.dagger.hilt.android")
+    kotlin("plugin.serialization")
 }
 
 android {
@@ -69,15 +70,9 @@ android {
 
         implementation(libs.androidx.material.icons.extended)
 
-        implementation(libs.androidx.datastore.core)
         implementation(libs.androidx.lifecycle.livedata.ktx)
         implementation(libs.androidx.work.runtime.ktx)
         implementation(libs.material)
-        implementation(libs.androidx.navigation.compose)
-        ksp(libs.androidx.room.compiler)
-        implementation(libs.androidx.room.runtime)
-        implementation(libs.androidx.room.ktx)
-        implementation(libs.androidx.datastore.preferences)
         implementation(libs.androidx.core.ktx)
         implementation(libs.androidx.lifecycle.runtime.ktx)
         implementation(libs.androidx.activity.compose)
@@ -97,11 +92,27 @@ android {
     }
 }
 dependencies {
-    implementation(libs.firebase.auth)
+    // Hilt
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.android.compiler)
+
+    // Credential Manager
     implementation(libs.androidx.credentials)
     implementation(libs.credentials.play.services.auth)
+
+    // Firebase
+    implementation(libs.firebase.auth)
     implementation(libs.googleid)
-    implementation(libs.hilt.android)
     implementation(libs.firebase.firestore.ktx)
-    ksp(libs.hilt.android.compiler)
+
+    // Datastore
+    implementation(libs.androidx.datastore.core)
+    implementation(libs.androidx.datastore.preferences)
+
+    // Room
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.runtime)
+
+    implementation(libs.androidx.navigation.compose)
 }

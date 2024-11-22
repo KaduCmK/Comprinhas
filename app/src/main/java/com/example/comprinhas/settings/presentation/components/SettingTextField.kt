@@ -1,4 +1,4 @@
-package com.example.comprinhas.ui.settings
+package com.example.comprinhas.settings.presentation.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row

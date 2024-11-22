@@ -1,4 +1,4 @@
-package com.example.comprinhas.ui.settings
+package com.example.comprinhas.settings.presentation
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
@@ -17,8 +17,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.comprinhas.data.AppPreferences
+import com.example.comprinhas.core.data.AppPreferences
 import com.example.comprinhas.core.presentation.TopBar
+import com.example.comprinhas.settings.presentation.components.SettingTextField
 import com.example.comprinhas.ui.theme.ComprinhasTheme
 
 @Composable

@@ -21,7 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.comprinhas.data.Converters
+import com.example.comprinhas.core.data.Converters
 import com.example.comprinhas.receipts_list.data.model.Receipt
 import com.example.comprinhas.ui.theme.ComprinhasTheme
 import java.text.DecimalFormat

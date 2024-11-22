@@ -1,7 +1,6 @@
-package com.example.comprinhas.ui.settings
+package com.example.comprinhas.settings.presentation.components
 
 import android.content.res.Configuration
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding

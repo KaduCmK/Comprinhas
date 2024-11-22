@@ -1,4 +1,4 @@
-package com.example.comprinhas.data
+package com.example.comprinhas.core.data
 
 import java.time.Instant
 import java.time.ZoneId

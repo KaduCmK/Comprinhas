@@ -14,14 +14,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DismissDirection
-import androidx.compose.material3.DismissValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SwipeToDismiss
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberDismissState
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -30,10 +29,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.comprinhas.list.data.model.ShoppingItem
-import com.example.comprinhas.data.TimeDiff
+import com.example.comprinhas.core.data.TimeDiff
 import com.example.comprinhas.ui.theme.ComprinhasTheme
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShoppingItemCard(
     modifier: Modifier = Modifier,
@@ -41,28 +39,27 @@ fun ShoppingItemCard(
     onDelete: () -> Unit = {},
     actionButton: @Composable () -> Unit,
 ) {
-    val dismissState = rememberDismissState(
+    val dismissState = rememberSwipeToDismissBoxState(
         confirmValueChange = {
-            if (it == DismissValue.DismissedToEnd) {
+            if (it == SwipeToDismissBoxValue.StartToEnd) {
                 onDelete()
                 true
             } else false
-        },
-        positionalThreshold = { 150.dp.toPx()}
+        }
     )
     val dismissColor by animateColorAsState(
-        if (dismissState.dismissDirection == DismissDirection.StartToEnd) {
+        if (dismissState.dismissDirection == SwipeToDismissBoxValue.StartToEnd) {
             MaterialTheme.colorScheme.errorContainer
         } else {
             Color.Transparent
         }, label = "swipe to dismiss"
     )
 
-    SwipeToDismiss(
+    SwipeToDismissBox(
         modifier = modifier,
         state = dismissState,
-        directions = setOf(DismissDirection.StartToEnd),
-        background = {
+        enableDismissFromEndToStart = false,
+        backgroundContent = {
             Row(
                 modifier = Modifier
                     .fillMaxSize()
@@ -74,7 +71,7 @@ fun ShoppingItemCard(
                 Icon(imageVector = Icons.Outlined.Delete, contentDescription = null)
             }
         },
-        dismissContent = {
+        content = {
             Card(
                 modifier = modifier
                     .fillMaxWidth(),

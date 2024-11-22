@@ -1,4 +1,4 @@
-package com.example.comprinhas.data
+package com.example.comprinhas.core.data
 
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter

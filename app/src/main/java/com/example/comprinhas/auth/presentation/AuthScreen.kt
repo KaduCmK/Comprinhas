@@ -27,10 +27,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.comprinhas.ui.theme.ComprinhasTheme
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Serializer
 
 @Composable
-fun UsernameScreen(
-    onContinue: (String) -> Unit
+fun AuthScreen(
+//    onContinue: (String) -> Unit
 ) {
     var name by remember { mutableStateOf("") }
     var error by remember { mutableStateOf(false) }
@@ -64,7 +66,6 @@ fun UsernameScreen(
                 modifier = Modifier.width(235.dp),
                 onClick = {
                     if (name.isEmpty()) error = true
-                    else onContinue(name)
                 }
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -97,8 +98,8 @@ fun UsernameScreen(
 
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-private fun WelcomeScreenPreview() {
+private fun AuthScreenPreview() {
     ComprinhasTheme {
-        UsernameScreen {}
+        AuthScreen()
     }
 }

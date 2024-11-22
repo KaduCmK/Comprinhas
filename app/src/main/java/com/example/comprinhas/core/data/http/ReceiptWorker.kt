@@ -1,4 +1,4 @@
-package com.example.comprinhas.http
+package com.example.comprinhas.core.data.http
 
 import android.Manifest
 import android.content.Context
@@ -11,7 +11,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.Data
 import androidx.work.WorkerParameters
 import com.example.comprinhas.R
-import com.example.comprinhas.http.responses.ResponseBody
+import com.example.comprinhas.core.data.http.responses.ResponseBody
 import com.google.gson.Gson
 
 class ReceiptWorker(private val context: Context, params: WorkerParameters)

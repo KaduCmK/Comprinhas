@@ -1,4 +1,4 @@
-package com.example.comprinhas.http
+package com.example.comprinhas.core.data.http
 
 import android.Manifest
 import android.content.Context
@@ -11,8 +11,8 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.example.comprinhas.MainActivity
 import com.example.comprinhas.R
-import com.example.comprinhas.core.data.db.ComprinhasDatabase
-import com.example.comprinhas.data.PreferencesRepository
+import com.example.comprinhas.core.data.database.ComprinhasDatabase
+import com.example.comprinhas.core.data.PreferencesRepository
 import com.example.comprinhas.dataStore
 import com.example.comprinhas.ui.UiState
 import kotlinx.coroutines.flow.first

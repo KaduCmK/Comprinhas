@@ -14,8 +14,8 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.example.comprinhas.dataStore
-import com.example.comprinhas.http.DatabaseApi
-import com.example.comprinhas.http.ReceiptWorker
+import com.example.comprinhas.core.data.http.DatabaseApi
+import com.example.comprinhas.core.data.http.ReceiptWorker
 import com.example.comprinhas.ui.UiState
 import com.example.comprinhas.receipts_list.data.model.Receipt
 import com.google.mlkit.vision.barcode.common.Barcode
