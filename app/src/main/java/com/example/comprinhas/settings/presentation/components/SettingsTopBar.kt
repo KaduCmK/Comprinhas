@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
@@ -36,7 +36,7 @@ fun SettingsTopBar(
         ) {
             Icon(
                 modifier = Modifier.size(32.dp),
-                imageVector = Icons.Default.ArrowBack, contentDescription = "Back Button")
+                imageVector = Icons.AutoMirrored.Default.ArrowBack, contentDescription = "Back Button")
         }
         Text(
             modifier = Modifier.padding(start = 16.dp),

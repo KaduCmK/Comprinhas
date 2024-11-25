@@ -10,10 +10,10 @@ data class Usuario(
     val email: String? = null,
     val photoUrl: String? = null
 ) {
-    constructor(usuarioFirebase: FirebaseUser) : this(
-        uid = usuarioFirebase.uid,
-        photoUrl = usuarioFirebase.photoUrl.toString(),
-        displayName = usuarioFirebase.displayName ?: "",
-        email = usuarioFirebase.email ?: ""
+    constructor(firebaseUser: FirebaseUser) : this(
+        uid = firebaseUser.uid,
+        photoUrl = firebaseUser.photoUrl.toString(),
+        displayName = firebaseUser.displayName ?: "",
+        email = firebaseUser.email ?: ""
     )
 }

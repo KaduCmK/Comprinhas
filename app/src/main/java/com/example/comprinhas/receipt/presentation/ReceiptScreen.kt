@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.VpnKey
 import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -59,7 +60,7 @@ fun ReceiptScreen(receipt: Receipt) {
             textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.height(8.dp))
-        Divider(
+        HorizontalDivider(
             color = MaterialTheme.colorScheme.primary,
             thickness = 2.dp
         )
@@ -92,7 +93,7 @@ fun ReceiptScreen(receipt: Receipt) {
                 textAlign = TextAlign.End
             )
         }
-        Divider(
+        HorizontalDivider(
             color = MaterialTheme.colorScheme.onBackground,
             thickness = 1.dp
         )
@@ -138,7 +139,7 @@ fun ReceiptScreen(receipt: Receipt) {
             )
             Text(text = receipt.chaveAcesso, style = MaterialTheme.typography.bodySmall)
         }
-        Divider(
+        HorizontalDivider(
             color = MaterialTheme.colorScheme.primary,
             thickness = 2.dp
         )

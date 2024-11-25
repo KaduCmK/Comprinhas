@@ -96,6 +96,7 @@ dependencies {
     // Hilt
     implementation(libs.hilt.android)
     implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.coil.compose)
     ksp(libs.hilt.android.compiler)
 
     // Credential Manager

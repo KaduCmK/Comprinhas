@@ -1,7 +1,6 @@
 package com.example.comprinhas.home.presentation
 
 import android.content.res.Configuration
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -12,6 +11,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Login
+import androidx.compose.material.icons.outlined.CloudOff
 import androidx.compose.material.icons.outlined.LibraryAdd
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -32,6 +32,7 @@ import com.example.comprinhas.core.data.model.Usuario
 import com.example.comprinhas.core.presentation.TopBar
 import com.example.comprinhas.home.data.model.HomeUiEvent
 import com.example.comprinhas.home.data.model.HomeUiState
+import com.example.comprinhas.home.data.model.ShoppingList
 import com.example.comprinhas.home.presentation.components.ShoppingListCard
 import com.example.comprinhas.ui.navigation.Auth
 import com.example.comprinhas.ui.theme.ComprinhasTheme
@@ -43,10 +44,9 @@ fun HomeScreenRoot(
     currentUser: Usuario?
 ) {
     val viewModel = hiltViewModel<HomeViewModel>()
-    viewModel.setCurrentUser(currentUser)
-
     HomeScreen(
         modifier = modifier,
+        currentUser = currentUser,
         uiState = viewModel.uiState.collectAsState().value,
         uiEvent = viewModel::onEvent,
         navController = navController,
@@ -56,14 +56,15 @@ fun HomeScreenRoot(
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
+    currentUser: Usuario?,
     uiState: HomeUiState,
     uiEvent: (HomeUiEvent) -> Unit,
     navController: NavController
 ) {
     LaunchedEffect(key1 = 1) {
-        if (uiState .currentUser == null)
+        if (currentUser == null)
             navController.navigate(Auth)
-        else uiEvent(HomeUiEvent.OnGetShoppingLists)
+        else uiEvent(HomeUiEvent.OnGetShoppingLists(currentUser))
     }
 
     Scaffold(
@@ -74,7 +75,7 @@ fun HomeScreen(
                 title = "Comprinhas",
                 mainButton = {
                     Button(
-                        onClick = { },
+                        onClick = { uiEvent(HomeUiEvent.OnCreateShoppingList("Teste", "123")) },
                         enabled = uiState is HomeUiState.Loaded
                     ) {
                         Icon(
@@ -115,33 +116,40 @@ fun HomeScreen(
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             when (uiState) {
-                is HomeUiState.Loading -> {
+                is HomeUiState.Loading -> {}
 
-                }
                 is HomeUiState.NoInternet -> {
-
+                    item {
+                        Icon(
+                            imageVector = Icons.Outlined.CloudOff,
+                            contentDescription = "Sem Internet"
+                        )
+                    }
                 }
+
                 is HomeUiState.Error -> {
-
+                    item {
+                        Text(text = "Erro: ${uiState.message}")
+                    }
                 }
+
                 is HomeUiState.Loaded -> {
-                    items(uiState.lists, key = { it.idLista }) {
+                    items(uiState.lists, key = { it.id }) {
                         ShoppingListCard(
                             modifier = Modifier.animateItem(),
                             shoppingList = it,
                             onCardClick = {
-                                navController.navigate(
-                                    com.example.comprinhas.ui.navigation.ShoppingList(
-                                        it.idLista
-                                    )
-                                )
+//                                navController.navigate(
+//                                    com.example.comprinhas.ui.navigation.ShoppingList(
+//                                        it.id
+//                                    )
+//                                )
                             },
                             onCardHold = { list -> uiEvent(HomeUiEvent.OnHoldCard(list)) }
                         )
                     }
                 }
             }
-
         }
     }
 }
@@ -149,14 +157,17 @@ fun HomeScreen(
 @Preview(showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun HomeScreenPreview() {
+    val creator = Usuario("1", "Kadu", "")
     ComprinhasTheme {
         HomeScreen(
-//            lists = listOf(
-//                ShoppingList(0, "Daiso", "", "Kadu"),
-//                ShoppingList(1, "Centro", "", "Kadu"),
-//                ShoppingList(2, "Mercado", "", "Kadu"),
-//            ),
-            uiState = HomeUiState.Loading(null),
+            currentUser = null,
+            uiState = HomeUiState.Loaded(
+                null, listOf(
+                    ShoppingList("0", "Daiso", "", criador = creator, participantes = emptyList()),
+                    ShoppingList("1", "Centro", "", criador = creator, participantes = emptyList()),
+                    ShoppingList("2", "Mercado", "", criador = creator, participantes = emptyList()),
+                )
+            ),
             uiEvent = {},
             navController = rememberNavController()
         )

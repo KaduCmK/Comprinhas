@@ -1,7 +1,6 @@
 package com.example.comprinhas.home.data.model
 
 import com.example.comprinhas.core.data.model.Usuario
-import com.example.comprinhas.home.data.ShoppingList
 
 sealed class HomeUiState {
     abstract val currentUser: Usuario?

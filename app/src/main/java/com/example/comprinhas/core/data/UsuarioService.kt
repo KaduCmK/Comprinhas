@@ -23,6 +23,14 @@ class UsuarioService @Inject constructor() {
         }
     }
 
+//    suspend fun getUsuario(uid: String): Usuario {
+//        try {
+//            db.collection("users")
+//                .whereEqualTo("uid", uid)
+//                .
+//        }
+//    }
+
     suspend fun findUsuario(str: String): List<Usuario> {
         return try {
             val usuarios = db.collection("users")
