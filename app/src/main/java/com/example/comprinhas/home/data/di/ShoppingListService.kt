@@ -40,7 +40,7 @@ class ShoppingListService @Inject constructor(
                 id = doc.id,
                 criador = shoppingListDto?.criador!!,
                 nome = shoppingListDto.nome!!,
-                senha = shoppingListDto.senha!!,
+                senha = shoppingListDto.senha,
                 imgUrl = shoppingListDto.imgUrl,
                 participantes = listaParticipantes
             )
@@ -54,6 +54,21 @@ class ShoppingListService @Inject constructor(
         return try {
             val docRef = db.collection("shoppingLists").document()
             docRef.set(shoppingList).await()
+
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun joinShoppingList(uid: String, currentUser: Usuario): Result<Unit> {
+        val db = Firebase.firestore
+
+        return try {
+            val participantesRef = db.collection("shoppingLists")
+                .document(uid)
+                .collection("participantes")
+            participantesRef.add(currentUser).await()
 
             Result.success(Unit)
         }

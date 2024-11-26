@@ -31,6 +31,7 @@ class HomeViewModel @Inject constructor(
         when (uiEvent) {
             is HomeUiEvent.OnGetShoppingLists -> {
                 viewModelScope.launch {
+                    _uiState.update { HomeUiState.Loading(it.currentUser) }
                     shoppingListService.getOwnedShoppingLists(uiEvent.currentUser.uid!!)
                         .let { result ->
                             _uiState.update {
@@ -42,6 +43,7 @@ class HomeViewModel @Inject constructor(
 
             is HomeUiEvent.OnCreateShoppingList -> {
                 viewModelScope.launch {
+                    _uiState.update { HomeUiState.Loading(it.currentUser) }
                     val shoppingList = ShoppingListFirestore(
                         criador = _uiState.value.currentUser,
                         nome = uiEvent.nome,
@@ -56,7 +58,17 @@ class HomeViewModel @Inject constructor(
                 }
             }
 
-            is HomeUiEvent.OnJoinShoppingList -> {}
+            is HomeUiEvent.OnJoinShoppingList -> {
+                viewModelScope.launch {
+                    _uiState.update { HomeUiState.Loading(it.currentUser) }
+                    shoppingListService.joinShoppingList(uiEvent.uid, _uiState.value.currentUser!!)
+                    _uiState.update {
+                        (it as HomeUiState.Loaded).copy(
+                            lists = shoppingListService.getOwnedShoppingLists(_uiState.value.currentUser?.uid!!)
+                        )
+                    }
+                }
+            }
 
             is HomeUiEvent.OnHoldCard -> {}
         }

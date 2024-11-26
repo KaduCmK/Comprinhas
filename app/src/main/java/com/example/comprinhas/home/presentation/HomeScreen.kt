@@ -122,7 +122,7 @@ fun HomeScreen(
                 newList = it,
                 onJoinList = { name, password ->
                     if (it) uiEvent(HomeUiEvent.OnCreateShoppingList(name, password))
-                    else uiEvent(HomeUiEvent.OnJoinShoppingList(name, password))
+                    else uiEvent(HomeUiEvent.OnJoinShoppingList("Vz7CnFBXRgeEskqj9wY3"))
                 })
         }
 

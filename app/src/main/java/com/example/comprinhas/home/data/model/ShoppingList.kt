@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
 data class ShoppingList(
     val id: String,
     val nome: String,
-    val senha: String,
+    val senha: String? = null,
     val criador: Usuario,
     val imgUrl: String? = null,
     val participantes: List<Usuario>
