@@ -68,6 +68,8 @@ class ReceiptsViewModel(private val application: Application) : AndroidViewModel
         }
     }
 
+
+
     fun scanQrCode() {
         val options = GmsBarcodeScannerOptions.Builder()
             .setBarcodeFormats(Barcode.FORMAT_QR_CODE)

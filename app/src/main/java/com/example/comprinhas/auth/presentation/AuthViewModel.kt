@@ -2,6 +2,7 @@ package com.example.comprinhas.auth.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.comprinhas.auth.data.AuthService
 import com.example.comprinhas.auth.data.model.AuthUiEvent
 import com.example.comprinhas.auth.data.model.AuthUiState
 import com.example.comprinhas.core.data.model.Usuario
@@ -12,7 +13,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AuthViewModel @Inject constructor() : ViewModel() {
+class AuthViewModel @Inject constructor(
+) : ViewModel() {
     private val _uiState = MutableStateFlow<AuthUiState>(AuthUiState.Unauthenticated(null))
     val uiState = _uiState.asStateFlow()
 

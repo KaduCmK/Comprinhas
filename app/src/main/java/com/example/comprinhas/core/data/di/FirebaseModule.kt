@@ -1,9 +1,12 @@
 package com.example.comprinhas.core.data.di
 
+import android.content.Context
 import com.example.comprinhas.core.data.UsuarioService
+import com.example.comprinhas.home.data.di.ShoppingListService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 
 @Module
@@ -12,4 +15,12 @@ object FirebaseModule {
 
     @Provides
     fun provideUsuarioService(): UsuarioService = UsuarioService()
+
+    @Provides
+    fun provideShoppingListService(usuarioService: UsuarioService): ShoppingListService =
+        ShoppingListService(usuarioService)
+
+    @Provides
+    fun provideQrCodeService(@ApplicationContext context: Context): QrCodeService =
+        QrCodeService(context)
 }

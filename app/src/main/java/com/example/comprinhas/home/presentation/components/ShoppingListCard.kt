@@ -130,7 +130,7 @@ fun ShoppingListCard(
                         AsyncImage(
                             modifier = Modifier.fillMaxSize(),
                             model = ImageRequest.Builder(LocalContext.current)
-                                .data("it.imgUrl")
+                                .data(shoppingList.criador.photoUrl)
                                 .crossfade(true)
                                 .build(),
                             placeholder = rememberVectorPainter(Icons.Default.Person),
