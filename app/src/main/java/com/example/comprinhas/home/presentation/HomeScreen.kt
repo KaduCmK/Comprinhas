@@ -22,17 +22,12 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.comprinhas.core.data.http.NewListWorker
 import com.example.comprinhas.core.data.model.Usuario
 import com.example.comprinhas.core.presentation.TopBar
 import com.example.comprinhas.home.data.model.HomeUiEvent
@@ -40,7 +35,8 @@ import com.example.comprinhas.home.data.model.HomeUiState
 import com.example.comprinhas.home.data.model.ShoppingList
 import com.example.comprinhas.home.presentation.components.ShoppingListCard
 import com.example.comprinhas.home.presentation.dialogs.NewListDialog
-import com.example.comprinhas.ui.navigation.Auth
+import com.example.comprinhas.ui.navigation.ToAuth
+import com.example.comprinhas.ui.navigation.ToShoppingList
 import com.example.comprinhas.ui.theme.ComprinhasTheme
 
 @Composable
@@ -69,10 +65,9 @@ fun HomeScreen(
 ) {
     LaunchedEffect(key1 = 1) {
         if (currentUser == null)
-            navController.navigate(Auth)
+            navController.navigate(ToAuth)
         else uiEvent(HomeUiEvent.OnGetShoppingLists(currentUser))
     }
-    var createOrJoinList by remember { mutableStateOf<Boolean?>(null) }
 
     Scaffold(
         modifier = modifier,
@@ -82,7 +77,7 @@ fun HomeScreen(
                 title = "Comprinhas",
                 mainButton = {
                     Button(
-                        onClick = { createOrJoinList = true },
+                        onClick = { uiEvent(HomeUiEvent.OnDialog(true)) },
                         enabled = uiState is HomeUiState.Loaded
                     ) {
                         Icon(
@@ -98,7 +93,7 @@ fun HomeScreen(
                 },
                 bottomButton = {
                     TextButton(
-                        onClick = { createOrJoinList = false },
+                        onClick = { uiEvent(HomeUiEvent.OnDialog(false)) },
                         enabled = uiState is HomeUiState.Loaded
                     ) {
                         Icon(
@@ -116,51 +111,49 @@ fun HomeScreen(
             )
         }
     ) { paddingValues ->
-        createOrJoinList?.let {
-            NewListDialog(
-                onDismiss = { createOrJoinList = null },
-                newList = it,
-                onJoinList = { name, password ->
-                    if (it) uiEvent(HomeUiEvent.OnCreateShoppingList(name, password))
-                    else uiEvent(HomeUiEvent.OnJoinShoppingList("Vz7CnFBXRgeEskqj9wY3"))
-                })
-        }
+        when (uiState) {
+            is HomeUiState.Loading -> {}
 
-        LazyVerticalGrid(
-            modifier = Modifier.padding(paddingValues),
-            columns = GridCells.Fixed(2),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            when (uiState) {
-                is HomeUiState.Loading -> {}
+            is HomeUiState.NoInternet -> {
+                Icon(
+                    imageVector = Icons.Outlined.CloudOff,
+                    contentDescription = "Sem Internet"
+                )
+            }
 
-                is HomeUiState.NoInternet -> {
-                    item {
-                        Icon(
-                            imageVector = Icons.Outlined.CloudOff,
-                            contentDescription = "Sem Internet"
-                        )
-                    }
+            is HomeUiState.Error -> {
+                Text(text = "Erro: ${uiState.message}")
+            }
+
+            is HomeUiState.Loaded -> {
+                uiState.dialogState?.let {
+                    NewListDialog(
+                        onDismiss = { uiEvent(HomeUiEvent.OnDialog(null)) },
+                        dialogState = uiState.dialogState,
+                        onSearch = { uiEvent(HomeUiEvent.OnSearchShoppingList(it)) },
+                        onJoinList = { nameOrId, password ->
+                            if (it.newList) uiEvent(
+                                HomeUiEvent.OnCreateShoppingList(
+                                    nameOrId,
+                                    password
+                                )
+                            )
+                            else uiEvent(HomeUiEvent.OnJoinShoppingList(nameOrId, password))
+                        })
                 }
 
-                is HomeUiState.Error -> {
-                    item {
-                        Text(text = "Erro: ${uiState.message}")
-                    }
-                }
-
-                is HomeUiState.Loaded -> {
+                LazyVerticalGrid(
+                    modifier = Modifier.padding(paddingValues),
+                    columns = GridCells.Fixed(2),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
                     items(uiState.lists, key = { it.id }) {
                         ShoppingListCard(
                             modifier = Modifier.animateItem(),
                             shoppingList = it,
                             onCardClick = {
-//                                navController.navigate(
-//                                    com.example.comprinhas.ui.navigation.ShoppingList(
-//                                        it.id
-//                                    )
-//                                )
+                                navController.navigate(ToShoppingList(it.id))
                             },
                             onCardHold = { list -> uiEvent(HomeUiEvent.OnHoldCard(list)) }
                         )
@@ -168,6 +161,7 @@ fun HomeScreen(
                 }
             }
         }
+
     }
 }
 
@@ -179,7 +173,8 @@ private fun HomeScreenPreview() {
         HomeScreen(
             currentUser = null,
             uiState = HomeUiState.Loaded(
-                null, listOf(
+                null,
+                listOf(
                     ShoppingList(
                         "0", "Daiso", "", criador = creator, participantes = listOf(
                             creator, creator
@@ -193,7 +188,8 @@ private fun HomeScreenPreview() {
                         criador = creator,
                         participantes = emptyList()
                     ),
-                )
+                ),
+                null
             ),
             uiEvent = {},
             navController = rememberNavController()

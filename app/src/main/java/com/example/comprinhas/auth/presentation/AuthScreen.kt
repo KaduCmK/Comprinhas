@@ -8,24 +8,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.Login
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -39,11 +29,8 @@ import com.example.comprinhas.R
 import com.example.comprinhas.auth.data.AuthService
 import com.example.comprinhas.auth.data.model.AuthUiEvent
 import com.example.comprinhas.auth.data.model.AuthUiState
-import com.example.comprinhas.ui.navigation.Home
+import com.example.comprinhas.ui.navigation.ToHome
 import com.example.comprinhas.ui.theme.ComprinhasTheme
-import com.google.rpc.context.AttributeContext.Auth
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.Serializer
 
 @Composable
 fun AuthScreenRoot(
@@ -112,7 +99,7 @@ fun AuthScreen(
 
                 is AuthUiState.Authenticated -> {
                     Toast.makeText(LocalContext.current, "Login efetuado com sucesso", Toast.LENGTH_SHORT).show()
-                    navController.navigate(Home)
+                    navController.navigate(ToHome)
                 }
             }
         }

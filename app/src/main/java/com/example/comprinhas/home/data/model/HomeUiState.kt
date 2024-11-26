@@ -5,7 +5,11 @@ import com.example.comprinhas.core.data.model.Usuario
 sealed class HomeUiState {
     abstract val currentUser: Usuario?
 
-    data class Loaded(override val currentUser: Usuario?, val lists: List<ShoppingList>) :
+    data class Loaded(
+        override val currentUser: Usuario?,
+        val lists: List<ShoppingList>,
+        val dialogState: DialogState?
+    ) :
         HomeUiState()
 
     data class Loading(override val currentUser: Usuario?) : HomeUiState()

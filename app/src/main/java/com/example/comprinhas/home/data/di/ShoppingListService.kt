@@ -1,12 +1,9 @@
 package com.example.comprinhas.home.data.di
 
-import android.util.Log
 import com.example.comprinhas.core.data.UsuarioService
 import com.example.comprinhas.core.data.model.Usuario
 import com.example.comprinhas.home.data.model.ShoppingList
 import com.example.comprinhas.home.data.model.ShoppingListFirestore
-import com.google.android.play.integrity.internal.s
-import com.google.android.play.integrity.internal.u
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
@@ -23,10 +20,10 @@ class ShoppingListService @Inject constructor(
             .get()
             .await()
 
-//        val participatingListsSnapshot = db.collectionGroup("participantes")
-//            .whereEqualTo("uid", uid)
-//            .get()
-//            .await()
+        val participatingListsSnapshot = db.collectionGroup("participantes")
+            .whereEqualTo("uid", uid)
+            .get()
+            .await()
 
         val createdLists = createdListsSnapshot.documents.mapNotNull { doc ->
             val shoppingListDto = doc.toObject(ShoppingListFirestore::class.java)
@@ -45,7 +42,56 @@ class ShoppingListService @Inject constructor(
                 participantes = listaParticipantes
             )
         }
-        return createdLists
+        val participatingLists = participatingListsSnapshot.documents.mapNotNull { doc ->
+            val shoppingListRef = doc.reference.parent.parent
+            val shoppingListDto =
+                shoppingListRef?.get()?.await()?.toObject(ShoppingListFirestore::class.java)
+
+            val listaParticipantes = shoppingListRef?.collection("participantes")?.get()?.await()
+                ?.documents?.mapNotNull { participante ->
+                    participante.toObject(Usuario::class.java)
+                }
+
+            ShoppingList(
+                id = doc.id,
+                criador = shoppingListDto?.criador!!,
+                nome = shoppingListDto.nome!!,
+                senha = shoppingListDto.senha,
+                imgUrl = shoppingListDto.imgUrl,
+                participantes = listaParticipantes ?: emptyList()
+            )
+        }
+
+        return createdLists + participatingLists
+    }
+
+    suspend fun searchShoppingList(nome: String): List<ShoppingList> {
+        val db = Firebase.firestore
+
+        val shoppingListsSnapshot = db.collection("shoppingLists")
+            .whereGreaterThanOrEqualTo("nome", nome)
+            .whereLessThanOrEqualTo("nome", nome + "\uf7ff")
+            .get()
+            .await()
+
+        val shoppingLists = shoppingListsSnapshot.documents.mapNotNull { doc ->
+            val shoppingListDto = doc.toObject(ShoppingListFirestore::class.java)
+
+            val listaParticipantes = doc.reference.collection("participantes").get().await()
+                .documents.mapNotNull { participante ->
+                    participante.toObject(Usuario::class.java)
+                }
+
+            ShoppingList(
+                id = doc.id,
+                criador = shoppingListDto?.criador!!,
+                nome = shoppingListDto.nome!!,
+                senha = shoppingListDto.senha,
+                imgUrl = shoppingListDto.imgUrl,
+                participantes = listaParticipantes
+            )
+        }
+        return shoppingLists
     }
 
     suspend fun createShoppingList(shoppingList: ShoppingListFirestore): Result<Unit> {
@@ -61,15 +107,36 @@ class ShoppingListService @Inject constructor(
         }
     }
 
-    suspend fun joinShoppingList(uid: String, currentUser: Usuario): Result<Unit> {
+    suspend fun joinShoppingList(
+        uid: String,
+        password: String,
+        currentUser: Usuario
+    ): Result<Unit> {
         val db = Firebase.firestore
 
         return try {
-            val participantesRef = db.collection("shoppingLists")
-                .document(uid)
+            val shoppingListRef = db.collection("shoppingLists").document(uid)
+            val participantesRef = shoppingListRef
                 .collection("participantes")
-            participantesRef.add(currentUser).await()
 
+            val shoppingList =
+                shoppingListRef.get().await().toObject(ShoppingListFirestore::class.java)
+
+            if (shoppingList?.senha == password)
+                participantesRef.add(currentUser).await()
+            else throw Exception("Senha incorreta")
+
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun deleteShoppingList(uid: String): Result<Unit> {
+        val db = Firebase.firestore
+
+        return try {
+            db.collection("shoppingLists").document(uid).delete().await()
             Result.success(Unit)
         }
         catch (e: Exception) {

@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
@@ -25,9 +24,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
@@ -47,6 +48,7 @@ import com.example.comprinhas.R
 import com.example.comprinhas.core.data.model.Usuario
 import com.example.comprinhas.home.data.model.ShoppingList
 import com.example.comprinhas.ui.theme.ComprinhasTheme
+import kotlin.random.Random
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -64,6 +66,9 @@ fun ShoppingListCard(
             .crossfade(true)
             .build()
     )
+    val randomColor = remember {
+        Color(Random.nextInt(150), Random.nextInt(150), Random.nextInt(150))
+    }
 
     ElevatedCard(
         modifier = modifier
@@ -81,17 +86,17 @@ fun ShoppingListCard(
                 .fillMaxWidth()
                 .height(164.dp)
                 .background(
-                    color = MaterialTheme.colorScheme.surfaceVariant,
+                    color = randomColor,
                     shape = CardDefaults.elevatedShape
                 ),
             contentAlignment = Alignment.Center
         ) {
             Image(painter, contentDescription = null, contentScale = ContentScale.FillWidth)
             if (painter.state !is AsyncImagePainter.State.Success)
-                Icon(
-                    modifier = Modifier.size(64.dp),
-                    imageVector = Icons.Default.ShoppingCart,
-                    contentDescription = null
+                Text(
+                    text = shoppingList.nome[0].toString(),
+                    style = MaterialTheme.typography.displayLarge,
+                    fontWeight = FontWeight.Bold
                 )
         }
         Column(modifier = Modifier.padding(8.dp)) {
@@ -119,6 +124,7 @@ fun ShoppingListCard(
                     Icon(
                         modifier = Modifier.size(16.dp),
                         painter = painterResource(id = R.drawable.pictogrammers_material_crown),
+                        tint = MaterialTheme.colorScheme.onSurface,
                         contentDescription = null
                     )
                     Box(
@@ -138,7 +144,7 @@ fun ShoppingListCard(
                         )
                     }
                 }
-                shoppingList.participantes.forEach { _ ->
+                shoppingList.participantes.forEach {
                     Box(
                         modifier = modifier
                             .size(28.dp)
@@ -148,7 +154,7 @@ fun ShoppingListCard(
                         AsyncImage(
                             modifier = Modifier.fillMaxSize(),
                             model = ImageRequest.Builder(LocalContext.current)
-                                .data("it.imgUrl")
+                                .data(it.photoUrl)
                                 .crossfade(true)
                                 .build(),
                             placeholder = rememberVectorPainter(Icons.Default.Person),
@@ -161,6 +167,7 @@ fun ShoppingListCard(
     }
 }
 
+@Preview()
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun ShoppingListCardPreview() {

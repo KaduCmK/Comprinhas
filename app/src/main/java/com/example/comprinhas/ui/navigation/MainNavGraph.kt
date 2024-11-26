@@ -11,12 +11,12 @@ import com.example.comprinhas.home.presentation.HomeScreenRoot
 
 @Composable
 fun MainNavGraph(navController: NavHostController, authService: AuthService) {
-    NavHost(navController = navController, startDestination = Home) {
-        composable<Auth> {
+    NavHost(navController = navController, startDestination = ToHome) {
+        composable<ToAuth> {
             AuthScreenRoot(authService = authService, navController = navController)
         }
 
-        composable<Home> {
+        composable<ToHome> {
             HomeScreenRoot(
                 navController = navController,
                 currentUser = authService.getSignedInUser()?.let { fu -> Usuario(fu) }
