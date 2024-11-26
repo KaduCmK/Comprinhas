@@ -22,18 +22,24 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.comprinhas.core.data.http.NewListWorker
 import com.example.comprinhas.core.data.model.Usuario
 import com.example.comprinhas.core.presentation.TopBar
 import com.example.comprinhas.home.data.model.HomeUiEvent
 import com.example.comprinhas.home.data.model.HomeUiState
 import com.example.comprinhas.home.data.model.ShoppingList
 import com.example.comprinhas.home.presentation.components.ShoppingListCard
+import com.example.comprinhas.home.presentation.dialogs.NewListDialog
 import com.example.comprinhas.ui.navigation.Auth
 import com.example.comprinhas.ui.theme.ComprinhasTheme
 
@@ -66,6 +72,7 @@ fun HomeScreen(
             navController.navigate(Auth)
         else uiEvent(HomeUiEvent.OnGetShoppingLists(currentUser))
     }
+    var createOrJoinList by remember { mutableStateOf<Boolean?>(null) }
 
     Scaffold(
         modifier = modifier,
@@ -75,7 +82,7 @@ fun HomeScreen(
                 title = "Comprinhas",
                 mainButton = {
                     Button(
-                        onClick = { uiEvent(HomeUiEvent.OnCreateShoppingList("Teste", "123")) },
+                        onClick = { createOrJoinList = true },
                         enabled = uiState is HomeUiState.Loaded
                     ) {
                         Icon(
@@ -91,7 +98,7 @@ fun HomeScreen(
                 },
                 bottomButton = {
                     TextButton(
-                        onClick = { },
+                        onClick = { createOrJoinList = false },
                         enabled = uiState is HomeUiState.Loaded
                     ) {
                         Icon(
@@ -109,6 +116,16 @@ fun HomeScreen(
             )
         }
     ) { paddingValues ->
+        createOrJoinList?.let {
+            NewListDialog(
+                onDismiss = { createOrJoinList = null },
+                newList = it,
+                onJoinList = { name, password ->
+                    if (it) uiEvent(HomeUiEvent.OnCreateShoppingList(name, password))
+                    else uiEvent(HomeUiEvent.OnJoinShoppingList(name, password))
+                })
+        }
+
         LazyVerticalGrid(
             modifier = Modifier.padding(paddingValues),
             columns = GridCells.Fixed(2),
@@ -163,9 +180,19 @@ private fun HomeScreenPreview() {
             currentUser = null,
             uiState = HomeUiState.Loaded(
                 null, listOf(
-                    ShoppingList("0", "Daiso", "", criador = creator, participantes = emptyList()),
+                    ShoppingList(
+                        "0", "Daiso", "", criador = creator, participantes = listOf(
+                            creator, creator
+                        )
+                    ),
                     ShoppingList("1", "Centro", "", criador = creator, participantes = emptyList()),
-                    ShoppingList("2", "Mercado", "", criador = creator, participantes = emptyList()),
+                    ShoppingList(
+                        "2",
+                        "Mercado",
+                        "",
+                        criador = creator,
+                        participantes = emptyList()
+                    ),
                 )
             ),
             uiEvent = {},

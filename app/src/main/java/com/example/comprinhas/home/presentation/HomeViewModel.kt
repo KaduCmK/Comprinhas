@@ -56,6 +56,8 @@ class HomeViewModel @Inject constructor(
                 }
             }
 
+            is HomeUiEvent.OnJoinShoppingList -> {}
+
             is HomeUiEvent.OnHoldCard -> {}
         }
     }

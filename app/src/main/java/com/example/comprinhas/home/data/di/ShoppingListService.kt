@@ -1,5 +1,6 @@
 package com.example.comprinhas.home.data.di
 
+import android.util.Log
 import com.example.comprinhas.core.data.UsuarioService
 import com.example.comprinhas.core.data.model.Usuario
 import com.example.comprinhas.home.data.model.ShoppingList
@@ -18,7 +19,7 @@ class ShoppingListService @Inject constructor(
         val db = Firebase.firestore
 
         val createdListsSnapshot = db.collection("shoppingLists")
-            .whereEqualTo("criador", uid)
+            .whereEqualTo("criador.uid", uid)
             .get()
             .await()
 
@@ -31,14 +32,16 @@ class ShoppingListService @Inject constructor(
             val shoppingListDto = doc.toObject(ShoppingListFirestore::class.java)
 
             val listaParticipantes = doc.reference.collection("participantes").get().await()
-                .documents.mapNotNull { participante -> participante.toObject(Usuario::class.java) }
+                .documents.mapNotNull { participante ->
+                    participante.toObject(Usuario::class.java)
+                }
 
             ShoppingList(
                 id = doc.id,
                 criador = shoppingListDto?.criador!!,
                 nome = shoppingListDto.nome!!,
                 senha = shoppingListDto.senha!!,
-                imgUrl = shoppingListDto.imgUrl!!,
+                imgUrl = shoppingListDto.imgUrl,
                 participantes = listaParticipantes
             )
         }

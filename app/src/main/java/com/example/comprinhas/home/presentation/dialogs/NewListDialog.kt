@@ -116,5 +116,5 @@ fun NewListDialog(
 @Preview
 @Composable
 private fun NewListDialogPreview() {
-    NewListDialog({}, false, {_,_->})
+    NewListDialog({}, true, {_,_->})
 }
