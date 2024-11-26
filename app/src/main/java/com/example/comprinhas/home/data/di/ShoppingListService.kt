@@ -1,17 +1,35 @@
 package com.example.comprinhas.home.data.di
 
-import com.example.comprinhas.core.data.UsuarioService
 import com.example.comprinhas.core.data.model.Usuario
 import com.example.comprinhas.home.data.model.ShoppingList
 import com.example.comprinhas.home.data.model.ShoppingListFirestore
+import com.google.firebase.firestore.Source
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
-class ShoppingListService @Inject constructor(
-    private val usuarioService: UsuarioService
-) {
+class ShoppingListService @Inject constructor() {
+    suspend fun getShoppingListById(listUid: String): ShoppingList {
+        val db = Firebase.firestore
+
+        val shoppingListSnapshot = db.collection("shoppingLists")
+            .document(listUid)
+            .get(Source.CACHE)
+            .await()
+
+        val shoppingList = shoppingListSnapshot.toObject(ShoppingListFirestore::class.java)
+
+        return ShoppingList(
+            id = shoppingListSnapshot.id,
+            criador = shoppingList?.criador!!,
+            nome = shoppingList.nome!!,
+            senha = shoppingList.senha,
+            imgUrl = shoppingList.imgUrl,
+            participantes = emptyList()
+        )
+    }
+
     suspend fun getOwnedShoppingLists(uid: String): List<ShoppingList> {
         val db = Firebase.firestore
 

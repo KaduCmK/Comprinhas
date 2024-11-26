@@ -164,38 +164,38 @@ private fun HomeTopBarPreview() {
     }
 }
 
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-private fun SettingsTopBarPreview() {
-    ComprinhasTheme {
-        TopBar(
-            title = "Configurações",
-            backButton = {},
-            uiState = HomeUiState.Loading(null)
-        )
-    }
-}
-
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-private fun ReceiptsTopBarPreview() {
-    ComprinhasTheme {
-        TopBar(
-            title = "Notas Fiscais",
-            backButton = {},
-            mainButton = {
-                Button(onClick = {}) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            imageVector = Icons.Outlined.QrCodeScanner,
-                            contentDescription = "Escanear QR Code"
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(text = "Escanear QR Code")
-                    }
-                }
-            },
-            uiState = HomeUiState.Loading(null)
-        )
-    }
-}
+//@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+//@Composable
+//private fun SettingsTopBarPreview() {
+//    ComprinhasTheme {
+//        TopBar(
+//            title = "Configurações",
+//            backButton = {},
+//            uiState = HomeUiState.Loading(null)
+//        )
+//    }
+//}
+//
+//@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+//@Composable
+//private fun ReceiptsTopBarPreview() {
+//    ComprinhasTheme {
+//        TopBar(
+//            title = "Notas Fiscais",
+//            backButton = {},
+//            mainButton = {
+//                Button(onClick = {}) {
+//                    Row(verticalAlignment = Alignment.CenterVertically) {
+//                        Icon(
+//                            imageVector = Icons.Outlined.QrCodeScanner,
+//                            contentDescription = "Escanear QR Code"
+//                        )
+//                        Spacer(modifier = Modifier.width(8.dp))
+//                        Text(text = "Escanear QR Code")
+//                    }
+//                }
+//            },
+//            uiState = HomeUiState.Loading(null)
+//        )
+//    }
+//}

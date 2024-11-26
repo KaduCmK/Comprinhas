@@ -9,8 +9,7 @@ sealed class HomeUiState {
         override val currentUser: Usuario?,
         val lists: List<ShoppingList>,
         val dialogState: DialogState?
-    ) :
-        HomeUiState()
+    ) : HomeUiState()
 
     data class Loading(override val currentUser: Usuario?) : HomeUiState()
     data class NoInternet(override val currentUser: Usuario?) : HomeUiState()

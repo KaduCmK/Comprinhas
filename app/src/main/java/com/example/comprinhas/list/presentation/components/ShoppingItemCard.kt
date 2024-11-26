@@ -14,7 +14,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SwipeToDismissBox
@@ -30,6 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.comprinhas.list.data.model.ShoppingItem
 import com.example.comprinhas.core.data.TimeDiff
+import com.example.comprinhas.core.data.model.Usuario
 import com.example.comprinhas.ui.theme.ComprinhasTheme
 
 @Composable
@@ -86,15 +86,11 @@ fun ShoppingItemCard(
                         modifier = Modifier.weight(1f),
                     ) {
                         Text(
-                            text = shoppingItem.nomeItem,
+                            text = shoppingItem.nome,
                             style = MaterialTheme.typography.titleMedium
                         )
                         Text(
-                            text = "Adicionado por ${shoppingItem.adicionadoPor} | ${
-                                TimeDiff.calculateTimeDiff(
-                                    shoppingItem.idItem
-                                )
-                            }",
+                            text = "Adicionado por ${shoppingItem.adicionadoPor}",
                             style = MaterialTheme.typography.bodyMedium
                         )
                     }
@@ -110,7 +106,7 @@ fun ShoppingItemCard(
 private fun ShoppingItemPreview() {
     ComprinhasTheme {
         ShoppingItemCard(
-            shoppingItem = ShoppingItem(0, "Titulo", "Fulano"),
+            shoppingItem = ShoppingItem("0", "Titulo", Usuario()),
             onDelete = {},
             actionButton = {}
         )

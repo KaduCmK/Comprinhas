@@ -1,7 +1,6 @@
-package com.example.comprinhas.list.presentation
+package com.example.comprinhas.list.presentation.components
 
 import android.content.res.Configuration
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -25,11 +24,10 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.comprinhas.R
-import com.example.comprinhas.list.presentation.components.ShoppingItemCard
+import com.example.comprinhas.core.data.model.Usuario
 import com.example.comprinhas.list.data.model.ShoppingItem
 import com.example.comprinhas.ui.theme.ComprinhasTheme
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ShoppingList(
     modifier: Modifier = Modifier,
@@ -65,9 +63,8 @@ fun ShoppingList(
                     )
                 }
             }
-        }
-        else {
-            items(items = shoppingList, key = { it.idItem }) {
+        } else {
+            items(items = shoppingList, key = { it.id }) {
                 ShoppingItemCard(
                     modifier = Modifier.animateItem(),
                     shoppingItem = it,
@@ -76,7 +73,8 @@ fun ShoppingList(
                         IconButton(onClick = { onMoveToCart(it) }) {
                             Icon(
                                 painter = painterResource(id = R.drawable.baseline_add_shopping_cart_24),
-                                contentDescription = "adicionar ao carrinho")
+                                contentDescription = "adicionar ao carrinho"
+                            )
                         }
                     }
                 )
@@ -106,7 +104,13 @@ private fun Preview() {
     ComprinhasTheme {
         Surface {
             ShoppingList(
-                shoppingList = List(4) { ShoppingItem(idItem = it.toLong(), nomeItem = "Compra $it") },
+                shoppingList = List(4) {
+                    ShoppingItem(
+                        id = it.toString(),
+                        nome = "Compra $it",
+                        adicionadoPor = Usuario()
+                    )
+                },
                 onMoveToCart = {},
                 onDelete = {},
             )

@@ -27,7 +27,7 @@ import androidx.compose.ui.window.Dialog
 import kotlinx.coroutines.delay
 
 @Composable
-fun InputDialog(
+fun NewItemDialog(
     onDismiss: () -> Unit,
     setValue: (String) -> Unit
 ) {
@@ -105,6 +105,6 @@ fun InputDialog(
 
 @Preview
 @Composable
-private fun InputDialogPreview() {
-    InputDialog({}, {})
+private fun NewItemDialogPreview() {
+    NewItemDialog({}, {})
 }
