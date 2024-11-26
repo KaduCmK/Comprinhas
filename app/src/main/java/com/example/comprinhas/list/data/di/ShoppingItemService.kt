@@ -1,8 +1,10 @@
 package com.example.comprinhas.list.data.di
 
 import android.util.Log
+import com.example.comprinhas.core.data.model.Usuario
 import com.example.comprinhas.list.data.model.ShoppingItem
 import com.example.comprinhas.list.data.model.ShoppingItemFirestore
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
@@ -37,14 +39,13 @@ class ShoppingItemService @Inject constructor() {
         }
     }
 
-    suspend fun addShoppingItem(listUid: String, shoppingItem: ShoppingItem): Result<Unit> {
+    suspend fun addShoppingItem(listUid: String, nome: String): Result<Unit> {
         val fb = Firebase.firestore
 
         return try {
             val shoppingItemFirestore = ShoppingItemFirestore(
-                nome = shoppingItem.nome,
-                adicionadoPor = shoppingItem.adicionadoPor,
-                onCart = shoppingItem.onCart
+                nome = nome,
+                adicionadoPor = Usuario(FirebaseAuth.getInstance().currentUser!!),
             )
 
             fb.collection("shoppingLists")

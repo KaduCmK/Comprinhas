@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.comprinhas.home.data.di.ShoppingListService
 import com.example.comprinhas.list.data.di.ShoppingItemService
+import com.example.comprinhas.list.data.model.ShoppingItem
 import com.example.comprinhas.list.data.model.ShoppingListUiEvent
 import com.example.comprinhas.list.data.model.ShoppingListUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -38,6 +39,15 @@ class ShoppingListViewModel @Inject constructor(
                             dialogState = null
                         )
                     }
+                }
+            }
+
+            is ShoppingListUiEvent.OnAddShoppingItem -> {
+                viewModelScope.launch {
+                    _uiState.update {
+                        ShoppingListUiState.Loading(it.shoppingList)
+                    }
+                    val result = shoppingItemService.addShoppingItem(uiEvent.listUid, uiEvent.nome)
                 }
             }
         }

@@ -34,7 +34,11 @@ import com.example.comprinhas.ui.theme.ComprinhasTheme
 import kotlinx.coroutines.launch
 
 @Composable
-fun ShoppingListScreenRoot(modifier: Modifier = Modifier, navController: NavController, listId: String) {
+fun ShoppingListScreenRoot(
+    modifier: Modifier = Modifier,
+    navController: NavController,
+    listId: String
+) {
     val viewModel = hiltViewModel<ShoppingListViewModel>()
 
     LaunchedEffect(key1 = Unit) {
@@ -64,7 +68,14 @@ fun ShoppingListScreen(
         topBar = {
             ListTopBar(
                 uiState = uiState,
-                onAddItem = {  }
+                onAddItem = {
+                    onEvent(
+                        ShoppingListUiEvent.OnAddShoppingItem(
+                            uiState.shoppingList!!.id,
+                            "ABC"
+                        )
+                    )
+                }
             )
         },
         sheetPeekHeight = 115.dp,
