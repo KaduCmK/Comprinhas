@@ -77,7 +77,7 @@ fun ListTopBar(modifier: Modifier = Modifier, uiState: ShoppingListUiState, onAd
             ) {
                 Button(
                     enabled = uiState is ShoppingListUiState.Loaded,
-                    onClick = {}
+                    onClick = { onAddItem() }
                 ) {
                     Text(
 
@@ -96,20 +96,20 @@ fun ListTopBar(modifier: Modifier = Modifier, uiState: ShoppingListUiState, onAd
                 }
             }
 //            if (uiState is ShoppingListUiState.NoInternet) {
-            Row(
-                modifier = Modifier.padding(top = 16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    imageVector = Icons.Outlined.CloudOff,
-                    contentDescription = "No Connection"
-                )
-                Text(
-                    text = "Sem conexão com o servidor",
-                    style = MaterialTheme.typography.bodyMedium.copy(fontStyle = FontStyle.Italic)
-                )
-            }
+//            Row(
+//                modifier = Modifier.padding(top = 16.dp),
+//                verticalAlignment = Alignment.CenterVertically
+//            ) {
+//                Icon(
+//                    modifier = Modifier.padding(horizontal = 16.dp),
+//                    imageVector = Icons.Outlined.CloudOff,
+//                    contentDescription = "No Connection"
+//                )
+//                Text(
+//                    text = "Sem conexão com o servidor",
+//                    style = MaterialTheme.typography.bodyMedium.copy(fontStyle = FontStyle.Italic)
+//                )
+//            }
 //            }
 //            else if (uiState is HomeUiState.Loading) {
             Spacer(modifier = Modifier.height(16.dp))

@@ -10,6 +10,6 @@ sealed class ShoppingListUiState {
     data class Loaded(
         override val shoppingList: ShoppingList,
         val shoppingItems: List<ShoppingItem>,
-        val dialogState: DialogState?
+        val dialogState: Boolean
     ) : ShoppingListUiState()
 }

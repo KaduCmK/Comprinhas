@@ -90,7 +90,7 @@ fun ShoppingItemCard(
                             style = MaterialTheme.typography.titleMedium
                         )
                         Text(
-                            text = "Adicionado por ${shoppingItem.adicionadoPor}",
+                            text = "Adicionado por ${shoppingItem.adicionadoPor.displayName}",
                             style = MaterialTheme.typography.bodyMedium
                         )
                     }

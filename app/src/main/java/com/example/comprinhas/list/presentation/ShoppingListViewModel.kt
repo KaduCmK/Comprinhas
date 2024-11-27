@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.comprinhas.home.data.di.ShoppingListService
 import com.example.comprinhas.list.data.di.ShoppingItemService
-import com.example.comprinhas.list.data.model.ShoppingItem
 import com.example.comprinhas.list.data.model.ShoppingListUiEvent
 import com.example.comprinhas.list.data.model.ShoppingListUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -36,7 +35,7 @@ class ShoppingListViewModel @Inject constructor(
                         ShoppingListUiState.Loaded(
                             shoppingList = it.shoppingList!!,
                             shoppingItems = shoppingItemService.getShoppingItems(it.shoppingList!!.id),
-                            dialogState = null
+                            dialogState = false
                         )
                     }
                 }
@@ -47,7 +46,22 @@ class ShoppingListViewModel @Inject constructor(
                     _uiState.update {
                         ShoppingListUiState.Loading(it.shoppingList)
                     }
-                    val result = shoppingItemService.addShoppingItem(uiEvent.listUid, uiEvent.nome)
+                    shoppingItemService.addShoppingItem(_uiState.value.shoppingList!!.id, uiEvent.nome)
+                    _uiState.update { ShoppingListUiState.Loaded(
+                        shoppingList = it.shoppingList!!,
+                        shoppingItems = shoppingItemService.getShoppingItems(it.shoppingList!!.id),
+                        dialogState = false
+                    ) }
+                }
+            }
+
+            is ShoppingListUiEvent.OnToggleDialog -> {
+                _uiState.update {
+                    ShoppingListUiState.Loaded(
+                        shoppingList = it.shoppingList!!,
+                        shoppingItems = (it as? ShoppingListUiState.Loaded)?.shoppingItems ?: emptyList(),
+                        dialogState = uiEvent.dialog
+                    )
                 }
             }
         }

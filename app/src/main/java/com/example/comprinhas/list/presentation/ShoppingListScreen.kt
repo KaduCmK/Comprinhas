@@ -22,14 +22,13 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.comprinhas.ComprinhasViewModel
 import com.example.comprinhas.core.data.model.Usuario
 import com.example.comprinhas.list.data.model.ShoppingListUiEvent
 import com.example.comprinhas.list.data.model.ShoppingListUiState
 import com.example.comprinhas.list.presentation.components.BottomBar
 import com.example.comprinhas.list.presentation.components.ListTopBar
 import com.example.comprinhas.list.presentation.components.ShoppingList
-import com.example.comprinhas.ui.UiState
+import com.example.comprinhas.list.presentation.dialogs.NewItemDialog
 import com.example.comprinhas.ui.theme.ComprinhasTheme
 import kotlinx.coroutines.launch
 
@@ -65,17 +64,11 @@ fun ShoppingListScreen(
     val scope = rememberCoroutineScope()
 
     BottomSheetScaffold(
+        modifier = modifier,
         topBar = {
             ListTopBar(
                 uiState = uiState,
-                onAddItem = {
-                    onEvent(
-                        ShoppingListUiEvent.OnAddShoppingItem(
-                            uiState.shoppingList!!.id,
-                            "ABC"
-                        )
-                    )
-                }
+                onAddItem = { onEvent(ShoppingListUiEvent.OnToggleDialog(true)) }
             )
         },
         sheetPeekHeight = 115.dp,
@@ -105,6 +98,13 @@ fun ShoppingListScreen(
             }
 
             is ShoppingListUiState.Loaded -> {
+                if (uiState.dialogState) {
+                    NewItemDialog(
+                        onDismiss = { onEvent(ShoppingListUiEvent.OnToggleDialog(false)) },
+                        setValue = { onEvent(ShoppingListUiEvent.OnAddShoppingItem(it)) }
+                    )
+                }
+
                 ShoppingList(
                     modifier = Modifier.padding(innerPadding),
                     shoppingList = uiState.shoppingItems,

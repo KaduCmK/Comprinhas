@@ -48,11 +48,12 @@ class ShoppingItemService @Inject constructor() {
                 adicionadoPor = Usuario(FirebaseAuth.getInstance().currentUser!!),
             )
 
-            fb.collection("shoppingLists")
+            val itemsRef = fb.collection("shoppingLists")
                 .document(listUid)
                 .collection("items")
-                .add(shoppingItemFirestore)
-                .await()
+                .document()
+
+            itemsRef.set(shoppingItemFirestore).await()
 
             Result.success(Unit)
         }

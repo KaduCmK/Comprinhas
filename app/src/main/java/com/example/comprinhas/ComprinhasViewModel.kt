@@ -41,13 +41,6 @@ class ComprinhasViewModel(private val application: Application): AndroidViewMode
 //
 //    }
 
-    fun addShoppingListItem(item: ShoppingItem) {
-        viewModelScope.launch {
-//            preferencesRepository.updateLastChanged(item.idItem)
-//            repo.insert(item)
-        }
-    }
-
     fun deleteShoppingItem(item: ShoppingItem) {
         viewModelScope.launch{
             val lastChanged = ZonedDateTime.now().toEpochSecond()
