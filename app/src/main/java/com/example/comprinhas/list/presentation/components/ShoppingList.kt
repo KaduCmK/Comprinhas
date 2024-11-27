@@ -34,6 +34,7 @@ fun ShoppingList(
     shoppingList: List<ShoppingItem>,
     onMoveToCart: (ShoppingItem) -> Unit,
     onDelete: (ShoppingItem) -> Unit,
+    onEdit: (ShoppingItem) -> Unit,
 ) {
 
     LazyColumn(
@@ -69,6 +70,7 @@ fun ShoppingList(
                     modifier = Modifier.animateItem(),
                     shoppingItem = it,
                     onDelete = { onDelete(it) },
+                    onEdit = { onEdit(it) },
                     actionButton = {
                         IconButton(onClick = { onMoveToCart(it) }) {
                             Icon(
@@ -93,6 +95,7 @@ private fun EmptyPreview() {
                 shoppingList = emptyList(),
                 onMoveToCart = {},
                 onDelete = {},
+                onEdit = {}
             )
         }
     }
@@ -113,6 +116,7 @@ private fun Preview() {
                 },
                 onMoveToCart = {},
                 onDelete = {},
+                onEdit = {}
             )
         }
     }

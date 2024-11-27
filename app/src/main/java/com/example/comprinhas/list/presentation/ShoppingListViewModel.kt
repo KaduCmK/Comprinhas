@@ -55,6 +55,26 @@ class ShoppingListViewModel @Inject constructor(
                 }
             }
 
+            is ShoppingListUiEvent.OnDeleteShoppingItem -> {
+                viewModelScope.launch {
+                    _uiState.update {
+                        ShoppingListUiState.Loading(it.shoppingList)
+                    }
+                    shoppingItemService.deleteShoppingItem(_uiState.value.shoppingList!!.id, uiEvent.uid)
+                    _uiState.update {
+                        ShoppingListUiState.Loaded(
+                            shoppingList = it.shoppingList!!,
+                            shoppingItems = shoppingItemService.getShoppingItems(it.shoppingList!!.id),
+                            dialogState = false
+                        )
+                    }
+                }
+            }
+
+            is ShoppingListUiEvent.OnEditShoppingItem -> {
+                
+            }
+
             is ShoppingListUiEvent.OnToggleDialog -> {
                 _uiState.update {
                     ShoppingListUiState.Loaded(

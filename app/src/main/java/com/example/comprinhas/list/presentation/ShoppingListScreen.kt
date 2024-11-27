@@ -108,7 +108,8 @@ fun ShoppingListScreen(
                     modifier = Modifier.padding(innerPadding),
                     shoppingList = uiState.shoppingItems,
                     onMoveToCart = {},
-                    onDelete = {},
+                    onDelete = { onEvent(ShoppingListUiEvent.OnDeleteShoppingItem(it.id)) },
+                    onEdit = {  }
                 )
             }
         }

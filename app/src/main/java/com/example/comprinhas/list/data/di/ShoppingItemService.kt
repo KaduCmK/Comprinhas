@@ -62,4 +62,42 @@ class ShoppingItemService @Inject constructor() {
             Result.failure(e)
         }
     }
+
+    suspend fun deleteShoppingItem(listUid: String, itemUid: String): Result<Unit> {
+        val fb = Firebase.firestore
+
+        return try {
+            fb.collection("shoppingLists")
+                .document(listUid)
+                .collection("items")
+                .document(itemUid)
+                .delete()
+                .await()
+
+            Result.success(Unit)
+        }
+        catch (e: Exception) {
+            Log.d("ShoppingItemService", "Error deleting item", e)
+            Result.failure(e)
+        }
+    }
+
+    suspend fun editShoppingItem(listUid: String, itemUid: String, nome: String): Result<Unit> {
+        val fb = Firebase.firestore
+
+        return try {
+            val itemRef = fb.collection("shoppingLists")
+                .document(listUid)
+                .collection("items")
+                .document(itemUid)
+
+            itemRef.update("nome", nome).await()
+
+            Result.success(Unit)
+        }
+        catch (e: Exception) {
+            Log.d("ShoppingItemService", "Error editing item", e)
+            Result.failure(e)
+        }
+    }
 }

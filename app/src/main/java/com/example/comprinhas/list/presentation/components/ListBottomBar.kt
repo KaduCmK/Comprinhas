@@ -107,6 +107,8 @@ fun BottomBar(
             items(cartList) {
                 ShoppingItemCard(
                     shoppingItem = it,
+                    onDelete = {  },
+                    onEdit = {  },
                     actionButton = {
                         IconButton(onClick = { onRemoveItem(it) }) {
                             Icon(

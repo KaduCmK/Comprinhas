@@ -38,7 +38,8 @@ import com.example.comprinhas.ui.theme.ComprinhasTheme
 fun ShoppingItemCard(
     modifier: Modifier = Modifier,
     shoppingItem: ShoppingItem,
-    onDelete: () -> Unit = {},
+    onDelete: () -> Unit,
+    onEdit: () -> Unit,
     actionButton: @Composable () -> Unit,
 ) {
     val haptic = LocalHapticFeedback.current
@@ -88,10 +89,10 @@ fun ShoppingItemCard(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    IconButton(onClick = {}) {
+                    IconButton(onClick = onEdit) {
                         Icon(imageVector = Icons.Default.Edit, contentDescription = "Edit")
                     }
-                    IconButton(onClick = {}) {
+                    IconButton(onClick = onDelete) {
                         Icon(
                             imageVector = Icons.Default.Delete,
                             contentDescription = "Delete",
@@ -111,6 +112,7 @@ private fun ShoppingItemPreview() {
         ShoppingItemCard(
             shoppingItem = ShoppingItem("0", "Titulo", Usuario()),
             onDelete = {},
+            onEdit = {},
             actionButton = {}
         )
     }
