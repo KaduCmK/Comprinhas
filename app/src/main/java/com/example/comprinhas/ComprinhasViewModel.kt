@@ -1,44 +1,18 @@
 package com.example.comprinhas
 
 import android.app.Application
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.comprinhas.core.data.AppPreferences
-import com.example.comprinhas.core.data.PreferencesRepository
 import com.example.comprinhas.list.data.model.ShoppingItem
 import kotlinx.coroutines.launch
 import java.time.ZonedDateTime
 
+@Deprecated("Passando para viewModels especificas de cada tela")
 class ComprinhasViewModel(private val application: Application): AndroidViewModel(application) {
-    private val preferencesRepository =
-        PreferencesRepository(application.dataStore)
-
-    var uiState = preferencesRepository.uiState
-
-//    fun deleteList(listName: String, listPassword: String) {
-//        viewModelScope.launch {
-//            repo.deleteList(appPreferences.name, listName, listPassword)
-//        }
-//    }
-//
-//    fun exitShoppingList(listName: String, listPassword: String) {
+    //    fun exitShoppingList(listName: String, listPassword: String) {
 //        viewModelScope.launch {
 //            repo.exitShoppingList(listName, listPassword)
 //        }
-//    }
-
-//    var currentList by mutableStateOf(ShoppingList("sadasdasdad", "", "", ""))
-//    fun getCurrentList(listId: String) {
-//        viewModelScope.launch {
-//            repo.lists.collect { list ->
-//                currentList = list.find { it.id == listId } ?: ShoppingList("asdad", "", "", "")
-//                Log.d("VIEW-MODEL", "Mudando para lista ${currentList.id}/${currentList.nome}")
-//            }
-//        }
-//
 //    }
 
     fun deleteShoppingItem(item: ShoppingItem) {

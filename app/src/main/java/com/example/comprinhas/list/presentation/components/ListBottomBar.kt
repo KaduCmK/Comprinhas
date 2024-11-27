@@ -90,7 +90,8 @@ fun BottomBar(
 
         FilledTonalButton(
             modifier = Modifier.align(Alignment.CenterHorizontally),
-            onClick = onClearCart
+            onClick = onClearCart,
+            enabled = cartList.isNotEmpty()
         ) {
             Icon(
                 modifier = Modifier.padding(end = 4.dp),

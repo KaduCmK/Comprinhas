@@ -1,6 +1,5 @@
 package com.example.comprinhas.list.presentation
 
-import android.app.Application
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
