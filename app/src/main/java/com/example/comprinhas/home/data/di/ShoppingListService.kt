@@ -19,6 +19,11 @@ class ShoppingListService @Inject constructor() {
             .await()
 
         val shoppingList = shoppingListSnapshot.toObject(ShoppingListFirestore::class.java)
+        val listaParticipantes = shoppingListSnapshot
+            .reference.collection("participantes").get().await()
+            .documents.mapNotNull { participante ->
+                participante.toObject(Usuario::class.java)
+            }
 
         return ShoppingList(
             id = shoppingListSnapshot.id,
@@ -26,7 +31,7 @@ class ShoppingListService @Inject constructor() {
             nome = shoppingList.nome!!,
             senha = shoppingList.senha,
             imgUrl = shoppingList.imgUrl,
-            participantes = emptyList()
+            participantes = listaParticipantes
         )
     }
 
