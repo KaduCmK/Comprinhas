@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.QrCode
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -20,12 +21,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.comprinhas.core.data.model.Usuario
 import com.example.comprinhas.list.data.model.ShoppingListUiState
 import com.example.comprinhas.list.presentation.dialogs.QrCodeDialog
@@ -55,9 +54,9 @@ fun ListTopBar(
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = "Lista de Compras", style = TextStyle(
-                            fontSize = 24.sp, fontWeight = FontWeight(700)
-                        )
+                        text = "Lista de Compras",
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.SemiBold
                     )
                     Text(
                         text = uiState.shoppingList?.nome ?: "",
@@ -66,7 +65,7 @@ fun ListTopBar(
                     )
                 }
                 IconButton(onClick = { onShowQrCode(true) }) {
-                    Icon(imageVector = Icons.Default.MoreVert, contentDescription = "Options")
+                    Icon(imageVector = Icons.Default.QrCode, contentDescription = "Options")
                 }
             }
             Row(

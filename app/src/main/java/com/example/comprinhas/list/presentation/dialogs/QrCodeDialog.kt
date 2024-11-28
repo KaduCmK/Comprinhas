@@ -63,7 +63,7 @@ fun QrCodeDialog(modifier: Modifier = Modifier, bitmap: Bitmap, onDismiss: () ->
                     "Escaneie o QRCode no dispositivo que deseja acessar esta lista",
                     textAlign = TextAlign.Center
                 )
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(8.dp))
                 Button(onDismiss) {
                     Text("Fechar")
                 }
