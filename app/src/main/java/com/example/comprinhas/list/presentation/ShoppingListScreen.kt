@@ -85,19 +85,17 @@ fun ShoppingListScreen(
             onEdit = { onEvent(ShoppingListUiEvent.OnToggleDialog(true, it)) }
         )
         if ((uiState as? ShoppingListUiState.Loaded)?.dialogState?.first == true) {
-//            if (uiState.dialogState.first) {
-                NewItemDialog(
-                    editItem = uiState.dialogState.second,
-                    onDismiss = { onEvent(ShoppingListUiEvent.OnToggleDialog(false)) },
-                    onConfirm = { name, uid ->
-                        if (uid == null) {
-                            onEvent(ShoppingListUiEvent.OnAddShoppingItem(name))
-                        } else {
-                            onEvent(ShoppingListUiEvent.OnEditShoppingItem(uid, name))
-                        }
+            NewItemDialog(
+                editItem = uiState.dialogState.second,
+                onDismiss = { onEvent(ShoppingListUiEvent.OnToggleDialog(false)) },
+                onConfirm = { name, uid ->
+                    if (uid == null) {
+                        onEvent(ShoppingListUiEvent.OnAddShoppingItem(name))
+                    } else {
+                        onEvent(ShoppingListUiEvent.OnEditShoppingItem(uid, name))
                     }
-                )
-//            }
+                }
+            )
         }
     }
 }

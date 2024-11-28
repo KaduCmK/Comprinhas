@@ -85,7 +85,6 @@ fun NewItemDialog(
 
                         } else {
                         onConfirm(txtField, editItem?.id)
-                        onDismiss()
                         }
                     }
                 ) {
