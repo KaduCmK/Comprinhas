@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -92,10 +93,9 @@ fun ListTopBar(modifier: Modifier = Modifier, uiState: ShoppingListUiState, onAd
 //                )
 //            }
 //            }
-//            else if (uiState is HomeUiState.Loading) {
             Spacer(modifier = Modifier.height(16.dp))
-//            LinearProgressIndicator()
-//            }
+            if (uiState is ShoppingListUiState.Loading)
+                LinearProgressIndicator()
         }
     }
 }
@@ -117,7 +117,8 @@ private fun ListTopBarPreview() {
                         photoUrl = ""
                     ),
                     participantes = emptyList()
-                )
+                ),
+                emptyList()
             ),
             onAddItem = {}
         )

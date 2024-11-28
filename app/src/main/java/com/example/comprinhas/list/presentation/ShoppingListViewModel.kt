@@ -18,7 +18,8 @@ class ShoppingListViewModel @Inject constructor(
     private val shoppingListService: ShoppingListService,
     private val shoppingItemService: ShoppingItemService
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow<ShoppingListUiState>(ShoppingListUiState.Loading(null))
+    private val _uiState =
+        MutableStateFlow<ShoppingListUiState>(ShoppingListUiState.Loading(null, emptyList()))
     val uiState = _uiState.asStateFlow()
 
     fun onEvent(uiEvent: ShoppingListUiEvent) {
@@ -27,7 +28,8 @@ class ShoppingListViewModel @Inject constructor(
                 viewModelScope.launch {
                     _uiState.update {
                         ShoppingListUiState.Loading(
-                            shoppingList = shoppingListService.getShoppingListById(uiEvent.uid)
+                            shoppingList = shoppingListService.getShoppingListById(uiEvent.uid),
+                            shoppingItems = shoppingItemService.getShoppingItems(uiEvent.uid)
                         )
                     }
 
@@ -43,20 +45,38 @@ class ShoppingListViewModel @Inject constructor(
 
             is ShoppingListUiEvent.OnAddShoppingItem -> {
                 viewModelScope.launch {
-                    _uiState.update { ShoppingListUiState.Loading(it.shoppingList) }
-                    shoppingItemService.addShoppingItem(_uiState.value.shoppingList!!.id, uiEvent.nome)
-                    _uiState.update { ShoppingListUiState.Loaded(
-                        shoppingList = it.shoppingList!!,
-                        shoppingItems = shoppingItemService.getShoppingItems(it.shoppingList!!.id),
-                        dialogState = false to null
-                    ) }
+                    _uiState.update {
+                        ShoppingListUiState.Loading(
+                            it.shoppingList,
+                            it.shoppingItems
+                        )
+                    }
+                    shoppingItemService.addShoppingItem(
+                        _uiState.value.shoppingList!!.id,
+                        uiEvent.nome
+                    )
+                    _uiState.update {
+                        ShoppingListUiState.Loaded(
+                            shoppingList = it.shoppingList!!,
+                            shoppingItems = shoppingItemService.getShoppingItems(it.shoppingList!!.id),
+                            dialogState = false to null
+                        )
+                    }
                 }
             }
 
             is ShoppingListUiEvent.OnDeleteShoppingItem -> {
                 viewModelScope.launch {
-                    _uiState.update { ShoppingListUiState.Loading(it.shoppingList) }
-                    shoppingItemService.deleteShoppingItem(_uiState.value.shoppingList!!.id, uiEvent.uid)
+                    _uiState.update {
+                        ShoppingListUiState.Loading(
+                            it.shoppingList,
+                            it.shoppingItems
+                        )
+                    }
+                    shoppingItemService.deleteShoppingItem(
+                        _uiState.value.shoppingList!!.id,
+                        uiEvent.uid
+                    )
                     _uiState.update {
                         ShoppingListUiState.Loaded(
                             shoppingList = it.shoppingList!!,
@@ -69,8 +89,17 @@ class ShoppingListViewModel @Inject constructor(
 
             is ShoppingListUiEvent.OnEditShoppingItem -> {
                 viewModelScope.launch {
-                    _uiState.update { ShoppingListUiState.Loading(it.shoppingList) }
-                    shoppingItemService.editShoppingItem(_uiState.value.shoppingList!!.id, uiEvent.uid, uiEvent.nome)
+                    _uiState.update {
+                        ShoppingListUiState.Loading(
+                            it.shoppingList,
+                            it.shoppingItems
+                        )
+                    }
+                    shoppingItemService.editShoppingItem(
+                        _uiState.value.shoppingList!!.id,
+                        uiEvent.uid,
+                        uiEvent.nome
+                    )
                     _uiState.update {
                         ShoppingListUiState.Loaded(
                             shoppingList = it.shoppingList!!,
@@ -85,7 +114,7 @@ class ShoppingListViewModel @Inject constructor(
                 _uiState.update {
                     ShoppingListUiState.Loaded(
                         shoppingList = it.shoppingList!!,
-                        shoppingItems = (it as? ShoppingListUiState.Loaded)?.shoppingItems ?: emptyList(),
+                        shoppingItems = it.shoppingItems,
                         dialogState = uiEvent.dialog to uiEvent.editItem
                     )
                 }
