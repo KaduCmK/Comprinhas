@@ -8,15 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.outlined.ReceiptLong
-import androidx.compose.material.icons.outlined.CloudOff
 import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -30,7 +22,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.comprinhas.core.data.model.Usuario
-import com.example.comprinhas.home.data.model.HomeUiState
 import com.example.comprinhas.list.data.model.ShoppingListUiState
 import com.example.comprinhas.ui.theme.ComprinhasTheme
 
@@ -73,25 +64,15 @@ fun ListTopBar(modifier: Modifier = Modifier, uiState: ShoppingListUiState, onAd
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.Center
             ) {
                 Button(
                     enabled = uiState is ShoppingListUiState.Loaded,
                     onClick = { onAddItem() }
                 ) {
                     Text(
-
                         style = MaterialTheme.typography.titleMedium,
                         text = "Adicionar"
-                    )
-                }
-
-                IconButton(
-                    onClick = {},
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Outlined.ReceiptLong,
-                        contentDescription = null
                     )
                 }
             }

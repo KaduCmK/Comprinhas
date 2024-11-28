@@ -24,15 +24,17 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.example.comprinhas.list.data.model.ShoppingItem
 import kotlinx.coroutines.delay
 
 @Composable
 fun NewItemDialog(
+    editItem: ShoppingItem?,
     onDismiss: () -> Unit,
-    setValue: (String) -> Unit
+    onConfirm: (String, String?) -> Unit
 ) {
 
-    var txtField by remember { mutableStateOf("") }
+    var txtField by remember { mutableStateOf(editItem?.nome ?: "") }
     var isValid by remember { mutableStateOf(true) }
 
     val showKeyboard by remember { mutableStateOf(true) }
@@ -47,7 +49,7 @@ fun NewItemDialog(
                 modifier = Modifier
                     .padding(8.dp)
                     .align(Alignment.CenterHorizontally),
-                text = "Adicionar Item",
+                text = "${if (editItem == null) "Adicionar" else "Editar"} Item",
                 style = MaterialTheme.typography.titleMedium
             )
             OutlinedTextField(
@@ -82,12 +84,12 @@ fun NewItemDialog(
                             isValid = false
 
                         } else {
-                        setValue(txtField)
+                        onConfirm(txtField, editItem?.id)
                         onDismiss()
                         }
                     }
                 ) {
-                    Text(text = "Adicionar")
+                    Text(text = "Confirmar")
                 }
             }
         }
@@ -106,5 +108,5 @@ fun NewItemDialog(
 @Preview
 @Composable
 private fun NewItemDialogPreview() {
-    NewItemDialog({}, {})
+    NewItemDialog(null, {}, {_,_->})
 }

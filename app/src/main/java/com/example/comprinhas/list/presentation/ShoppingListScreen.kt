@@ -97,10 +97,17 @@ fun ShoppingListScreen(
             }
 
             is ShoppingListUiState.Loaded -> {
-                if (uiState.dialogState) {
+                if (uiState.dialogState.first) {
                     NewItemDialog(
+                        editItem = uiState.dialogState.second,
                         onDismiss = { onEvent(ShoppingListUiEvent.OnToggleDialog(false)) },
-                        setValue = { onEvent(ShoppingListUiEvent.OnAddShoppingItem(it)) }
+                        onConfirm = { name, uid ->
+                            if (uid == null) {
+                                onEvent(ShoppingListUiEvent.OnAddShoppingItem(name))
+                            } else {
+                                onEvent(ShoppingListUiEvent.OnEditShoppingItem(uid, name))
+                            }
+                        }
                     )
                 }
 
@@ -109,7 +116,7 @@ fun ShoppingListScreen(
                     shoppingList = uiState.shoppingItems,
                     onMoveToCart = {},
                     onDelete = { onEvent(ShoppingListUiEvent.OnDeleteShoppingItem(it.id)) },
-                    onEdit = {  }
+                    onEdit = { onEvent(ShoppingListUiEvent.OnToggleDialog(true, it)) }
                 )
             }
         }
