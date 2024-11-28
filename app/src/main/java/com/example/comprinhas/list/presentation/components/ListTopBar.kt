@@ -8,7 +8,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -24,10 +28,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.comprinhas.core.data.model.Usuario
 import com.example.comprinhas.list.data.model.ShoppingListUiState
+import com.example.comprinhas.list.presentation.dialogs.QrCodeDialog
 import com.example.comprinhas.ui.theme.ComprinhasTheme
 
 @Composable
-fun ListTopBar(modifier: Modifier = Modifier, uiState: ShoppingListUiState, onAddItem: () -> Unit) {
+fun ListTopBar(
+    modifier: Modifier = Modifier,
+    uiState: ShoppingListUiState,
+    onAddItem: () -> Unit,
+    onShowQrCode: (Boolean) -> Unit
+) {
+    ((uiState as? ShoppingListUiState.Loaded)?.qrCode)?.let {
+        QrCodeDialog(bitmap = it, onDismiss = { onShowQrCode(false) })
+    }
+
     Surface {
         Column(
             modifier = modifier.padding(bottom = 32.dp),
@@ -39,14 +53,6 @@ fun ListTopBar(modifier: Modifier = Modifier, uiState: ShoppingListUiState, onAd
                     .padding(24.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-//                IconButton(onClick = {}) {
-//                    Icon(
-//                        modifier = Modifier.size(32.dp),
-//                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-//                        contentDescription = "Back Button"
-//                    )
-//                }
-
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = "Lista de Compras", style = TextStyle(
@@ -58,6 +64,9 @@ fun ListTopBar(modifier: Modifier = Modifier, uiState: ShoppingListUiState, onAd
                         style = MaterialTheme.typography.bodyMedium,
                         fontStyle = FontStyle.Italic
                     )
+                }
+                IconButton(onClick = { onShowQrCode(true) }) {
+                    Icon(imageVector = Icons.Default.MoreVert, contentDescription = "Options")
                 }
             }
             Row(
@@ -77,22 +86,6 @@ fun ListTopBar(modifier: Modifier = Modifier, uiState: ShoppingListUiState, onAd
                     )
                 }
             }
-//            if (uiState is ShoppingListUiState.NoInternet) {
-//            Row(
-//                modifier = Modifier.padding(top = 16.dp),
-//                verticalAlignment = Alignment.CenterVertically
-//            ) {
-//                Icon(
-//                    modifier = Modifier.padding(horizontal = 16.dp),
-//                    imageVector = Icons.Outlined.CloudOff,
-//                    contentDescription = "No Connection"
-//                )
-//                Text(
-//                    text = "Sem conexão com o servidor",
-//                    style = MaterialTheme.typography.bodyMedium.copy(fontStyle = FontStyle.Italic)
-//                )
-//            }
-//            }
             Spacer(modifier = Modifier.height(16.dp))
             if (uiState is ShoppingListUiState.Loading)
                 LinearProgressIndicator()
@@ -120,7 +113,8 @@ private fun ListTopBarPreview() {
                 ),
                 emptyList()
             ),
-            onAddItem = {}
+            onAddItem = {},
+            onShowQrCode = {}
         )
     }
 }

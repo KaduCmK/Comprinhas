@@ -14,15 +14,6 @@ class ComprinhasViewModel(private val application: Application): AndroidViewMode
 //            repo.exitShoppingList(listName, listPassword)
 //        }
 //    }
-
-    fun deleteShoppingItem(item: ShoppingItem) {
-        viewModelScope.launch{
-            val lastChanged = ZonedDateTime.now().toEpochSecond()
-//            preferencesRepository.updateLastChanged(lastChanged)
-//            repo.deleteFromList(item, lastChanged)
-        }
-    }
-
     fun moveToCart(item: ShoppingItem) {
         viewModelScope.launch {
 //            repo.moveToCart(item.idItem)

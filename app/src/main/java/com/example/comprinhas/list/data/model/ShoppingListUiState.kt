@@ -1,5 +1,6 @@
 package com.example.comprinhas.list.data.model
 
+import android.graphics.Bitmap
 import com.example.comprinhas.home.data.model.ShoppingList
 
 sealed class ShoppingListUiState {
@@ -14,6 +15,7 @@ sealed class ShoppingListUiState {
     data class Loaded(
         override val shoppingList: ShoppingList,
         override val shoppingItems: List<ShoppingItem>,
-        val dialogState: Pair<Boolean, ShoppingItem?>
+        val dialogState: Pair<Boolean, ShoppingItem?>,
+        val qrCode: Bitmap? = null
     ) : ShoppingListUiState()
 }

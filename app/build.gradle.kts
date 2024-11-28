@@ -99,7 +99,6 @@ dependencies {
     // Hilt
     implementation(libs.hilt.android)
     implementation(libs.androidx.hilt.navigation.compose)
-    implementation(libs.coil.compose)
     ksp(libs.hilt.android.compiler)
 
     // Credential Manager
@@ -119,4 +118,11 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)
+
+    // QR Code
+    implementation(libs.zxing.android.embedded)
+    implementation(libs.barcode.scanning)
+
+    // Misc
+    implementation(libs.coil.compose)
 }

@@ -61,7 +61,8 @@ fun ShoppingListScreen(
         topBar = {
             ListTopBar(
                 uiState = uiState,
-                onAddItem = { onEvent(ShoppingListUiEvent.OnToggleDialog(true)) }
+                onAddItem = { onEvent(ShoppingListUiEvent.OnToggleDialog(true)) },
+                onShowQrCode = { onEvent(ShoppingListUiEvent.OnToggleQrCode(it)) }
             )
         },
         sheetPeekHeight = 115.dp,

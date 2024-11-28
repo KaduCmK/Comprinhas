@@ -2,6 +2,7 @@ package com.example.comprinhas.list.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.comprinhas.core.data.di.QrCodeService
 import com.example.comprinhas.home.data.di.ShoppingListService
 import com.example.comprinhas.list.data.di.ShoppingItemService
 import com.example.comprinhas.list.data.model.ShoppingListUiEvent
@@ -16,7 +17,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ShoppingListViewModel @Inject constructor(
     private val shoppingListService: ShoppingListService,
-    private val shoppingItemService: ShoppingItemService
+    private val shoppingItemService: ShoppingItemService,
+    private val qrCodeService: QrCodeService
 ) : ViewModel() {
     private val _uiState =
         MutableStateFlow<ShoppingListUiState>(ShoppingListUiState.Loading(null, emptyList()))
@@ -116,6 +118,20 @@ class ShoppingListViewModel @Inject constructor(
                         shoppingList = it.shoppingList!!,
                         shoppingItems = it.shoppingItems,
                         dialogState = uiEvent.dialog to uiEvent.editItem
+                    )
+                }
+            }
+
+            is ShoppingListUiEvent.OnToggleQrCode -> {
+                _uiState.update {
+                    ShoppingListUiState.Loaded(
+                        shoppingList = it.shoppingList!!,
+                        shoppingItems = it.shoppingItems,
+                        dialogState = false to null,
+                        qrCode = if (uiEvent.toggle)
+                            qrCodeService.generateQrCode("${it.shoppingList!!.id}:${it.shoppingList!!.senha}")
+                        else
+                            null
                     )
                 }
             }

@@ -6,4 +6,5 @@ sealed interface ShoppingListUiEvent {
     data class OnDeleteShoppingItem(val uid: String) : ShoppingListUiEvent
     data class OnEditShoppingItem(val uid: String, val nome: String) : ShoppingListUiEvent
     data class OnToggleDialog(val dialog: Boolean, val editItem: ShoppingItem? = null) : ShoppingListUiEvent
+    data class OnToggleQrCode(val toggle: Boolean) : ShoppingListUiEvent
 }
