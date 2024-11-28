@@ -19,8 +19,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -33,18 +34,24 @@ fun NewItemDialog(
     onDismiss: () -> Unit,
     onConfirm: (String, String?) -> Unit
 ) {
+    var txtField by remember {
+        mutableStateOf(
+            TextFieldValue(
+            text = editItem?.nome ?: "",
+            selection = TextRange(editItem?.nome?.length ?: 0)
+        ))
+    }
 
-    var txtField by remember { mutableStateOf(editItem?.nome ?: "") }
-    var isValid by remember { mutableStateOf(true) }
-
-    val showKeyboard by remember { mutableStateOf(true) }
     val focusRequester = remember { FocusRequester() }
     val keyboard = LocalSoftwareKeyboardController.current
+    LaunchedEffect(focusRequester) {
+        delay(50)
+        focusRequester.requestFocus()
+        keyboard?.show()
+    }
 
     Dialog(onDismissRequest = onDismiss) {
-        Card(
-            modifier = Modifier.padding(16.dp)
-        ) {
+        Card {
             Text(
                 modifier = Modifier
                     .padding(8.dp)
@@ -54,22 +61,15 @@ fun NewItemDialog(
             )
             OutlinedTextField(
                 modifier = Modifier
-                    .padding(8.dp)
+                    .padding(vertical = 4.dp)
+                    .align(Alignment.CenterHorizontally)
                     .focusRequester(focusRequester),
                 value = txtField,
-                onValueChange = { txtField = it},
-                label = { Text("Item")},
-                isError = !isValid,
-                supportingText = {
-                    if (!isValid) {
-                        Text(
-                            text = "Não pode ser vazio",
-                            color = Color.Red
-                        )
-                    }
-                }
+                onValueChange = { txtField = it },
+                label = { Text("Nome") },
+                singleLine = true
             )
-            Row (
+            Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
             ) {
@@ -79,27 +79,12 @@ fun NewItemDialog(
                     Text(text = "Cancelar")
                 }
                 TextButton(
-                    onClick = {
-                        if (txtField.isEmpty()) {
-                            isValid = false
-
-                        } else {
-                        onConfirm(txtField, editItem?.id)
-                        }
-                    }
+                    onClick = { onConfirm(txtField.text, editItem?.id) },
+                    enabled = txtField.text.isNotEmpty()
                 ) {
                     Text(text = "Confirmar")
                 }
             }
-        }
-
-    }
-
-    LaunchedEffect(focusRequester) {
-        if (showKeyboard) {
-            delay(50)
-            focusRequester.requestFocus()
-            keyboard?.show()
         }
     }
 }
@@ -107,5 +92,5 @@ fun NewItemDialog(
 @Preview
 @Composable
 private fun NewItemDialogPreview() {
-    NewItemDialog(null, {}, {_,_->})
+    NewItemDialog(null, {}, { _, _ -> })
 }

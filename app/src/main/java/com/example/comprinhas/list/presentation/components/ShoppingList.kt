@@ -17,6 +17,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -36,6 +40,9 @@ fun ShoppingList(
     onDelete: (ShoppingItem) -> Unit,
     onEdit: (ShoppingItem) -> Unit,
 ) {
+    var expandedCardUid by remember {
+        mutableStateOf("")
+    }
 
     LazyColumn(
         modifier = modifier
@@ -69,6 +76,10 @@ fun ShoppingList(
                 ShoppingItemCard(
                     modifier = Modifier.animateItem(),
                     shoppingItem = it,
+                    expanded = expandedCardUid == it.id,
+                    onClick = {
+                        expandedCardUid = if (expandedCardUid == it.id) "" else it.id
+                    },
                     onDelete = { onDelete(it) },
                     onEdit = { onEdit(it) },
                     actionButton = {

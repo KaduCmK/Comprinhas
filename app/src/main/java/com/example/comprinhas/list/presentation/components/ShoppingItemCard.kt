@@ -38,12 +38,13 @@ import com.example.comprinhas.ui.theme.ComprinhasTheme
 fun ShoppingItemCard(
     modifier: Modifier = Modifier,
     shoppingItem: ShoppingItem,
+    expanded: Boolean = false,
     onDelete: () -> Unit,
     onEdit: () -> Unit,
+    onClick: () -> Unit = {},
     actionButton: @Composable () -> Unit,
 ) {
     val haptic = LocalHapticFeedback.current
-    var expanded by remember { mutableStateOf(false) }
 
     Column(
         modifier = modifier.animateContentSize(),
@@ -56,7 +57,7 @@ fun ShoppingItemCard(
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
             onClick = {
                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                expanded = !expanded
+                onClick()
             }
         ) {
             Row(
@@ -111,8 +112,10 @@ private fun ShoppingItemPreview() {
     ComprinhasTheme {
         ShoppingItemCard(
             shoppingItem = ShoppingItem("0", "Titulo", Usuario()),
+            expanded = true,
             onDelete = {},
             onEdit = {},
+            onClick = {},
             actionButton = {}
         )
     }
