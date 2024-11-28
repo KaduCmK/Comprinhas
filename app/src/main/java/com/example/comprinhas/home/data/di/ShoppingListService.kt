@@ -3,7 +3,6 @@ package com.example.comprinhas.home.data.di
 import com.example.comprinhas.core.data.model.Usuario
 import com.example.comprinhas.home.data.model.ShoppingList
 import com.example.comprinhas.home.data.model.ShoppingListFirestore
-import com.google.firebase.firestore.Source
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
@@ -15,7 +14,7 @@ class ShoppingListService @Inject constructor() {
 
         val shoppingListSnapshot = db.collection("shoppingLists")
             .document(listUid)
-            .get(Source.CACHE)
+            .get()
             .await()
 
         val shoppingList = shoppingListSnapshot.toObject(ShoppingListFirestore::class.java)
@@ -76,7 +75,7 @@ class ShoppingListService @Inject constructor() {
                 }
 
             ShoppingList(
-                id = doc.id,
+                id = shoppingListRef!!.id,
                 criador = shoppingListDto?.criador!!,
                 nome = shoppingListDto.nome!!,
                 senha = shoppingListDto.senha,
