@@ -16,7 +16,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.comprinhas"
-        minSdk = 26
+        minSdk = 28
         targetSdk = 34
         versionCode = 3
         versionName = "0.9.8"
@@ -76,8 +76,6 @@ android {
         implementation(libs.material)
         implementation(libs.androidx.core.ktx)
         implementation(libs.androidx.lifecycle.runtime.ktx)
-        implementation(libs.androidx.activity.compose)
-        implementation(platform(libs.androidx.compose.bom))
         implementation(libs.androidx.ui)
         implementation(libs.androidx.ui.graphics)
         implementation(libs.androidx.ui.tooling.preview)
@@ -93,6 +91,11 @@ android {
     }
 }
 dependencies {
+    // Compose
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.activity.compose)
+    implementation(platform(libs.androidx.compose.bom))
+
     // Hilt
     implementation(libs.hilt.android)
     implementation(libs.androidx.hilt.navigation.compose)
@@ -116,6 +119,4 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)
-
-    implementation(libs.androidx.navigation.compose)
 }
