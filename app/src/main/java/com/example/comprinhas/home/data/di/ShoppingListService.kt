@@ -3,6 +3,8 @@ package com.example.comprinhas.home.data.di
 import com.example.comprinhas.core.data.model.Usuario
 import com.example.comprinhas.home.data.model.ShoppingList
 import com.example.comprinhas.home.data.model.ShoppingListFirestore
+import com.example.comprinhas.list.data.model.CartItem
+import com.example.comprinhas.list.data.model.CartItemFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
@@ -24,13 +26,25 @@ class ShoppingListService @Inject constructor() {
                 participante.toObject(Usuario::class.java)
             }
 
+        val carrinho = shoppingListSnapshot.reference.collection("carrinho").get().await()
+            .documents.mapNotNull { item ->
+                val dto = item.toObject(CartItemFirestore::class.java)
+
+                CartItem(
+                    id = item.id,
+                    item = dto!!.item,
+                    owner = dto.owner
+                )
+            }
+
         return ShoppingList(
             id = shoppingListSnapshot.id,
             criador = shoppingList?.criador!!,
             nome = shoppingList.nome!!,
             senha = shoppingList.senha,
             imgUrl = shoppingList.imgUrl,
-            participantes = listaParticipantes
+            participantes = listaParticipantes,
+            carrinho = carrinho
         )
     }
 
@@ -55,15 +69,28 @@ class ShoppingListService @Inject constructor() {
                     participante.toObject(Usuario::class.java)
                 }
 
+            val carrinho = doc.reference.collection("carrinho").get().await()
+                .documents.mapNotNull { item ->
+                    val dto = item.toObject(CartItemFirestore::class.java)
+
+                    CartItem(
+                        id = item.id,
+                        item = dto!!.item,
+                        owner = dto.owner
+                    )
+                }
+
             ShoppingList(
                 id = doc.id,
                 criador = shoppingListDto?.criador!!,
                 nome = shoppingListDto.nome!!,
                 senha = shoppingListDto.senha,
                 imgUrl = shoppingListDto.imgUrl,
-                participantes = listaParticipantes
+                participantes = listaParticipantes,
+                carrinho = carrinho
             )
         }
+
         val participatingLists = participatingListsSnapshot.documents.mapNotNull { doc ->
             val shoppingListRef = doc.reference.parent.parent
             val shoppingListDto =
@@ -74,13 +101,25 @@ class ShoppingListService @Inject constructor() {
                     participante.toObject(Usuario::class.java)
                 }
 
+            val carrinho = doc.reference.collection("carrinho").get().await()
+                .documents.mapNotNull { item ->
+                    val dto = item.toObject(CartItemFirestore::class.java)
+
+                    CartItem(
+                        id = item.id,
+                        item = dto!!.item,
+                        owner = dto.owner
+                    )
+                }
+
             ShoppingList(
                 id = shoppingListRef!!.id,
                 criador = shoppingListDto?.criador!!,
                 nome = shoppingListDto.nome!!,
                 senha = shoppingListDto.senha,
                 imgUrl = shoppingListDto.imgUrl,
-                participantes = listaParticipantes ?: emptyList()
+                participantes = listaParticipantes ?: emptyList(),
+                carrinho = carrinho
             )
         }
 

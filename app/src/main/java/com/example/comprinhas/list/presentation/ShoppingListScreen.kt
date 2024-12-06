@@ -120,7 +120,8 @@ private fun HomeScreenPreview(
                         email = "",
                         photoUrl = ""
                     ),
-                    participantes = emptyList()
+                    participantes = emptyList(),
+                    carrinho = emptyList()
                 ),
                 emptyList()
             ),
