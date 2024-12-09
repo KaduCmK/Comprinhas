@@ -68,11 +68,11 @@ fun ShoppingItemCard(
                     modifier = Modifier.weight(1f),
                 ) {
                     Text(
-                        text = shoppingItem.nome,
+                        text = shoppingItem.nome ?: "",
                         style = MaterialTheme.typography.titleMedium
                     )
                     Text(
-                        text = "Adicionado por ${shoppingItem.adicionadoPor.displayName}",
+                        text = "Adicionado por ${shoppingItem.adicionadoPor?.displayName}",
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }

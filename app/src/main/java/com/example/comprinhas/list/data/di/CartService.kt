@@ -2,27 +2,86 @@ package com.example.comprinhas.list.data.di
 
 import android.util.Log
 import com.example.comprinhas.core.data.model.Usuario
-import com.example.comprinhas.home.data.di.ShoppingListService
+import com.example.comprinhas.list.data.model.CartItem
 import com.example.comprinhas.list.data.model.CartItemFirestore
 import com.example.comprinhas.list.data.model.ShoppingItem
 import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class CartService @Inject constructor() {
-    suspend fun addItemToCart(listUid: String, owner: Usuario, item: ShoppingItem): Result<Unit> {
+    private val fb = Firebase.firestore
+    private val user = FirebaseAuth.getInstance().currentUser!!
+
+    suspend fun getCartItems(listUid: String): List<CartItem> {
         return try {
-            val fb = Firebase.firestore
+            val listRef = fb.collection("shoppingLists").document(listUid)
 
-            val cartRef = fb.collection("shoppingLists")
-                .document(listUid).collection("carrinho")
+            val carrinho = listRef.collection("carrinho").get().await()
+                .mapNotNull { doc ->
+                    val dto = doc.toObject(CartItemFirestore::class.java)
 
-            cartRef.add(CartItemFirestore(item = item, owner = owner)).await()
+                    CartItem(
+                        id = doc.id,
+                        item = dto.item!!,
+                        owner = dto.owner!!
+                    )
+                }
+
+            carrinho
+        }
+        catch (e: Exception) {
+            Log.e("CartService", "Error getting cart items", e)
+            emptyList()
+        }
+    }
+
+    suspend fun addItemToCart(listUid: String, item: ShoppingItem): Result<Unit> {
+        return try {
+            val listRef = fb.collection("shoppingLists").document(listUid)
+            val cartRef = listRef.collection("carrinho")
+
+            cartRef.add(CartItemFirestore(item = item, owner = Usuario(user))).await()
+            listRef.collection("items").document(item.id!!).delete().await()
             Result.success(Unit)
         }
         catch (e: Exception) {
             Log.e("CartService", "Error adding item to cart", e)
+            Result.failure(e)
+        }
+    }
+
+    suspend fun removeItemFromCart(listUid: String, cartItem: CartItem): Result<Unit> {
+        return try {
+            val listRef = fb.collection("shoppingLists").document(listUid)
+            val cartRef = listRef.collection("carrinho")
+
+            cartRef.document(cartItem.id).delete().await()
+            listRef.collection("items").document(cartItem.item.id!!).set(cartItem.item)
+                .await()
+            Result.success(Unit)
+        }
+        catch (e: Exception) {
+            Log.e("CartService", "Error removing item from cart", e)
+            Result.failure(e)
+        }
+    }
+
+    suspend fun clearCart(listUid: String): Result<Unit> {
+        return try {
+            val listRef = fb.collection("shoppingLists").document(listUid)
+            val cartRef = listRef.collection("carrinho")
+
+            cartRef.get().await().forEach { doc ->
+                cartRef.document(doc.id).delete()
+            }
+
+            Result.success(Unit)
+        }
+        catch (e: Exception) {
+            Log.e("CartService", "Error clearing cart", e)
             Result.failure(e)
         }
     }

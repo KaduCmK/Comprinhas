@@ -110,6 +110,7 @@ private fun ListTopBarPreview() {
                     ),
                     participantes = emptyList()
                 ),
+                emptyList(),
                 emptyList()
             ),
             onAddItem = {},

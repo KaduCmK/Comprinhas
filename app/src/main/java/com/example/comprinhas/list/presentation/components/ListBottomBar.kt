@@ -34,14 +34,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.comprinhas.R
+import com.example.comprinhas.list.data.model.CartItem
 import com.example.comprinhas.list.data.model.ShoppingItem
+import com.example.comprinhas.list.data.model.ShoppingListUiState
 import com.example.comprinhas.ui.theme.ComprinhasTheme
 
 @Composable
 fun BottomBar(
     modifier: Modifier = Modifier,
-    cartList: List<ShoppingItem>,
-    onRemoveItem: (ShoppingItem) -> Unit,
+    uiState: ShoppingListUiState,
+    onRemoveItem: (CartItem) -> Unit,
     onClearCart: () -> Unit,
 ) {
     Column(modifier = Modifier.animateContentSize()) {
@@ -68,7 +70,7 @@ fun BottomBar(
             )
             AnimatedContent(
                 label = "Cart count animation",
-                targetState = cartList.size,
+                targetState = uiState.carrinho.size,
                 transitionSpec = {
                     if (targetState > initialState) {
                         (slideInVertically { height -> height } + fadeIn()).togetherWith(
@@ -91,7 +93,7 @@ fun BottomBar(
         FilledTonalButton(
             modifier = Modifier.align(Alignment.CenterHorizontally),
             onClick = onClearCart,
-            enabled = cartList.isNotEmpty()
+            enabled = uiState.carrinho.isNotEmpty()
         ) {
             Icon(
                 modifier = Modifier.padding(end = 4.dp),
@@ -104,9 +106,9 @@ fun BottomBar(
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            items(cartList) {
+            items(uiState.carrinho) {
                 ShoppingItemCard(
-                    shoppingItem = it,
+                    shoppingItem = ShoppingItem(id = it.id, nome = it.item.nome, adicionadoPor = it.owner),
                     onDelete = {  },
                     onEdit = {  },
                     actionButton = {
@@ -130,9 +132,26 @@ private fun BottomBarPreview() {
     ComprinhasTheme {
         Surface {
             BottomBar(
+                uiState = ShoppingListUiState.Loaded(
+                    shoppingList = com.example.comprinhas.home.data.model.ShoppingList(
+                        id = "1",
+                        nome = "Daiso",
+                        senha = "",
+                        criador = com.example.comprinhas.core.data.model.Usuario(
+                            uid = "",
+                            displayName = "Lucas",
+                            email = "",
+                            photoUrl = ""
+                        ),
+                        participantes = emptyList(),
+                        carrinho = emptyList()
+                    ),
+                    shoppingItems = emptyList(),
+                    carrinho = emptyList(),
+                    false to null
+                ),
                 onRemoveItem = {},
                 onClearCart = {},
-                cartList = emptyList(),
             )
         }
     }

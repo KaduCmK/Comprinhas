@@ -41,7 +41,7 @@ fun ShoppingListScreenRoot(
         modifier = modifier,
         navController = navController,
         uiState = viewModel.uiState.collectAsState().value,
-        onEvent = viewModel::onEvent
+        uiEvent = viewModel::onEvent
     )
 }
 
@@ -51,7 +51,7 @@ fun ShoppingListScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
     uiState: ShoppingListUiState,
-    onEvent: (ShoppingListUiEvent) -> Unit
+    uiEvent: (ShoppingListUiEvent) -> Unit
 ) {
     val scaffoldState = rememberBottomSheetScaffoldState()
     val scope = rememberCoroutineScope()
@@ -61,18 +61,18 @@ fun ShoppingListScreen(
         topBar = {
             ListTopBar(
                 uiState = uiState,
-                onAddItem = { onEvent(ShoppingListUiEvent.OnToggleDialog(true)) },
-                onShowQrCode = { onEvent(ShoppingListUiEvent.OnToggleQrCode(it)) }
+                onAddItem = { uiEvent(ShoppingListUiEvent.OnToggleDialog(true)) },
+                onShowQrCode = { uiEvent(ShoppingListUiEvent.OnToggleQrCode(it)) }
             )
         },
         sheetPeekHeight = 115.dp,
         scaffoldState = scaffoldState,
         sheetContent = {
             BottomBar(
-                cartList = emptyList(),
-                onRemoveItem = {},
+                uiState = uiState,
+                onRemoveItem = { uiEvent(ShoppingListUiEvent.OnRemoveFromCart(it)) },
                 onClearCart = {
-//                    viewModel.clearCart(listId)
+                    uiEvent(ShoppingListUiEvent.OnClearCart)
                     scope.launch { scaffoldState.bottomSheetState.partialExpand() }
                 },
             )
@@ -81,19 +81,20 @@ fun ShoppingListScreen(
         ShoppingList(
             modifier = Modifier.padding(innerPadding),
             shoppingList = uiState.shoppingItems,
-            onMoveToCart = {},
-            onDelete = { onEvent(ShoppingListUiEvent.OnDeleteShoppingItem(it.id)) },
-            onEdit = { onEvent(ShoppingListUiEvent.OnToggleDialog(true, it)) }
+            onMoveToCart = { uiEvent(ShoppingListUiEvent.OnAddToCart(it)) },
+            onDelete = { uiEvent(ShoppingListUiEvent.OnDeleteShoppingItem(it.id!!)) },
+            onEdit = { uiEvent(ShoppingListUiEvent.OnToggleDialog(true, it)) },
+            uiEvent = uiEvent
         )
         if ((uiState as? ShoppingListUiState.Loaded)?.dialogState?.first == true) {
             NewItemDialog(
                 editItem = uiState.dialogState.second,
-                onDismiss = { onEvent(ShoppingListUiEvent.OnToggleDialog(false)) },
+                onDismiss = { uiEvent(ShoppingListUiEvent.OnToggleDialog(false)) },
                 onConfirm = { name, uid ->
                     if (uid == null) {
-                        onEvent(ShoppingListUiEvent.OnAddShoppingItem(name))
+                        uiEvent(ShoppingListUiEvent.OnAddShoppingItem(name))
                     } else {
-                        onEvent(ShoppingListUiEvent.OnEditShoppingItem(uid, name))
+                        uiEvent(ShoppingListUiEvent.OnEditShoppingItem(uid, name))
                     }
                 }
             )
@@ -123,9 +124,10 @@ private fun HomeScreenPreview(
                     participantes = emptyList(),
                     carrinho = emptyList()
                 ),
+                emptyList(),
                 emptyList()
             ),
-            onEvent = {}
+            uiEvent = {}
         )
     }
 }

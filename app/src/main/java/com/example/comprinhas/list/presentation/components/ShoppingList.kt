@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import com.example.comprinhas.R
 import com.example.comprinhas.core.data.model.Usuario
 import com.example.comprinhas.list.data.model.ShoppingItem
+import com.example.comprinhas.list.data.model.ShoppingListUiEvent
 import com.example.comprinhas.ui.theme.ComprinhasTheme
 
 @Composable
@@ -39,6 +40,7 @@ fun ShoppingList(
     onMoveToCart: (ShoppingItem) -> Unit,
     onDelete: (ShoppingItem) -> Unit,
     onEdit: (ShoppingItem) -> Unit,
+    uiEvent: (ShoppingListUiEvent) -> Unit
 ) {
     var expandedCardUid by remember {
         mutableStateOf("")
@@ -72,13 +74,13 @@ fun ShoppingList(
                 }
             }
         } else {
-            items(items = shoppingList, key = { it.id }) {
+            items(items = shoppingList, key = { it.id!! }) {
                 ShoppingItemCard(
                     modifier = Modifier.animateItem(),
                     shoppingItem = it,
                     expanded = expandedCardUid == it.id,
                     onClick = {
-                        expandedCardUid = if (expandedCardUid == it.id) "" else it.id
+                        expandedCardUid = if (expandedCardUid == it.id) "" else it.id!!
                     },
                     onDelete = { onDelete(it) },
                     onEdit = { onEdit(it) },
@@ -106,7 +108,8 @@ private fun EmptyPreview() {
                 shoppingList = emptyList(),
                 onMoveToCart = {},
                 onDelete = {},
-                onEdit = {}
+                onEdit = {},
+                uiEvent = {}
             )
         }
     }
@@ -127,7 +130,8 @@ private fun Preview() {
                 },
                 onMoveToCart = {},
                 onDelete = {},
-                onEdit = {}
+                onEdit = {},
+                uiEvent = {}
             )
         }
     }

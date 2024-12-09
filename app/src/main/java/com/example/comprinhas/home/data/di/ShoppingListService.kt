@@ -32,8 +32,8 @@ class ShoppingListService @Inject constructor() {
 
                 CartItem(
                     id = item.id,
-                    item = dto!!.item,
-                    owner = dto.owner
+                    item = dto!!.item!!,
+                    owner = dto.owner!!
                 )
             }
 
@@ -75,8 +75,8 @@ class ShoppingListService @Inject constructor() {
 
                     CartItem(
                         id = item.id,
-                        item = dto!!.item,
-                        owner = dto.owner
+                        item = dto!!.item!!,
+                        owner = dto.owner!!
                     )
                 }
 
@@ -107,8 +107,8 @@ class ShoppingListService @Inject constructor() {
 
                     CartItem(
                         id = item.id,
-                        item = dto!!.item,
-                        owner = dto.owner
+                        item = dto!!.item!!,
+                        owner = dto.owner!!
                     )
                 }
 

@@ -28,7 +28,6 @@ class ShoppingItemService @Inject constructor() {
                     id = doc.id,
                     nome = dto!!.nome!!,
                     adicionadoPor = dto.adicionadoPor!!,
-                    onCart = dto.onCart ?: false
                 )
             }
 
