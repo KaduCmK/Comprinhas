@@ -76,7 +76,7 @@ class CartService @Inject constructor(
             val listRef = fb.collection("shoppingLists").document(listUid)
             val cartRef = listRef.collection("carrinho")
 
-            cartRef.get().await().forEach { doc ->
+            cartRef.whereEqualTo("owner.uid", user.uid).get().await().forEach { doc ->
                 cartRef.document(doc.id).delete()
             }
 
