@@ -11,15 +11,17 @@ import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
-class CartService @Inject constructor() {
+class CartService @Inject constructor(
+) {
     private val fb = Firebase.firestore
     private val user = FirebaseAuth.getInstance().currentUser!!
 
-    suspend fun getCartItems(listUid: String): List<CartItem> {
+    suspend fun getOwnCartItems(listUid: String): List<CartItem> {
         return try {
             val listRef = fb.collection("shoppingLists").document(listUid)
 
-            val carrinho = listRef.collection("carrinho").get().await()
+            val carrinho = listRef.collection("carrinho")
+                .get().await()
                 .mapNotNull { doc ->
                     val dto = doc.toObject(CartItemFirestore::class.java)
 

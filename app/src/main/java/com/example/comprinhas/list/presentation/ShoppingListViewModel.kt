@@ -23,7 +23,14 @@ class ShoppingListViewModel @Inject constructor(
     private val qrCodeService: QrCodeService
 ) : ViewModel() {
     private val _uiState =
-        MutableStateFlow<ShoppingListUiState>(ShoppingListUiState.Loading(null, emptyList(), emptyList()))
+        MutableStateFlow<ShoppingListUiState>(
+            ShoppingListUiState.Loading(
+                null,
+                null,
+                emptyList(),
+                emptyList()
+            )
+        )
     val uiState = _uiState.asStateFlow()
 
     fun onEvent(uiEvent: ShoppingListUiEvent) {
@@ -33,17 +40,19 @@ class ShoppingListViewModel @Inject constructor(
                     viewModelScope.launch {
                         _uiState.update {
                             ShoppingListUiState.Loading(
+                                currentUser = shoppingListService.currentUser,
                                 shoppingList = shoppingListService.getShoppingListById(uiEvent.uid),
                                 shoppingItems = shoppingItemService.getShoppingItems(uiEvent.uid),
-                                carrinho = cartService.getCartItems(uiEvent.uid)
+                                carrinho = cartService.getOwnCartItems(uiEvent.uid)
                             )
                         }
 
                         _uiState.update {
                             ShoppingListUiState.Loaded(
+                                currentUser = it.currentUser,
                                 shoppingList = it.shoppingList!!,
                                 shoppingItems = shoppingItemService.getShoppingItems(it.shoppingList!!.id),
-                                carrinho = cartService.getCartItems(it.shoppingList!!.id),
+                                carrinho = cartService.getOwnCartItems(it.shoppingList!!.id),
                                 dialogState = false to null
                             )
                         }
@@ -52,11 +61,7 @@ class ShoppingListViewModel @Inject constructor(
 
                 is ShoppingListUiEvent.OnAddShoppingItem -> {
                     _uiState.update {
-                        ShoppingListUiState.Loading(
-                            it.shoppingList,
-                            it.shoppingItems,
-                            it.carrinho
-                        )
+                        ShoppingListUiState.Loading(it.currentUser, it.shoppingList, it.shoppingItems, it.carrinho)
                     }
                     shoppingItemService.addShoppingItem(
                         _uiState.value.shoppingList!!.id,
@@ -64,6 +69,7 @@ class ShoppingListViewModel @Inject constructor(
                     )
                     _uiState.update {
                         ShoppingListUiState.Loaded(
+                            currentUser = it.currentUser,
                             shoppingList = it.shoppingList!!,
                             shoppingItems = shoppingItemService.getShoppingItems(it.shoppingList!!.id),
                             carrinho = it.carrinho,
@@ -74,11 +80,7 @@ class ShoppingListViewModel @Inject constructor(
 
                 is ShoppingListUiEvent.OnDeleteShoppingItem -> {
                     _uiState.update {
-                        ShoppingListUiState.Loading(
-                            it.shoppingList,
-                            it.shoppingItems,
-                            it.carrinho
-                        )
+                        ShoppingListUiState.Loading(it.currentUser, it.shoppingList, it.shoppingItems, it.carrinho)
                     }
                     shoppingItemService.deleteShoppingItem(
                         _uiState.value.shoppingList!!.id,
@@ -86,9 +88,10 @@ class ShoppingListViewModel @Inject constructor(
                     )
                     _uiState.update {
                         ShoppingListUiState.Loaded(
+                            currentUser = it.currentUser,
                             shoppingList = it.shoppingList!!,
                             shoppingItems = shoppingItemService.getShoppingItems(it.shoppingList!!.id),
-                            carrinho = cartService.getCartItems(it.shoppingList!!.id),
+                            carrinho = cartService.getOwnCartItems(it.shoppingList!!.id),
                             dialogState = false to null
                         )
                     }
@@ -96,11 +99,7 @@ class ShoppingListViewModel @Inject constructor(
 
                 is ShoppingListUiEvent.OnEditShoppingItem -> {
                     _uiState.update {
-                        ShoppingListUiState.Loading(
-                            it.shoppingList,
-                            it.shoppingItems,
-                            it.carrinho
-                        )
+                        ShoppingListUiState.Loading(it.currentUser, it.shoppingList, it.shoppingItems, it.carrinho)
                     }
                     shoppingItemService.editShoppingItem(
                         _uiState.value.shoppingList!!.id,
@@ -109,9 +108,10 @@ class ShoppingListViewModel @Inject constructor(
                     )
                     _uiState.update {
                         ShoppingListUiState.Loaded(
+                            currentUser = it.currentUser,
                             shoppingList = it.shoppingList!!,
                             shoppingItems = shoppingItemService.getShoppingItems(it.shoppingList!!.id),
-                            carrinho = cartService.getCartItems(it.shoppingList!!.id),
+                            carrinho = cartService.getOwnCartItems(it.shoppingList!!.id),
                             dialogState = false to null
                         )
                     }
@@ -119,14 +119,15 @@ class ShoppingListViewModel @Inject constructor(
 
                 is ShoppingListUiEvent.OnAddToCart -> {
                     _uiState.update {
-                        ShoppingListUiState.Loading(it.shoppingList, it.shoppingItems, it.carrinho)
+                        ShoppingListUiState.Loading(it.currentUser, it.shoppingList, it.shoppingItems, it.carrinho)
                     }
                     cartService.addItemToCart(_uiState.value.shoppingList?.id!!, uiEvent.item)
                     _uiState.update {
                         ShoppingListUiState.Loaded(
+                            currentUser = it.currentUser,
                             shoppingList = it.shoppingList!!,
                             shoppingItems = shoppingItemService.getShoppingItems(it.shoppingList!!.id),
-                            carrinho = cartService.getCartItems(it.shoppingList!!.id),
+                            carrinho = cartService.getOwnCartItems(it.shoppingList!!.id),
                             dialogState = false to null,
                         )
                     }
@@ -134,14 +135,15 @@ class ShoppingListViewModel @Inject constructor(
 
                 is ShoppingListUiEvent.OnRemoveFromCart -> {
                     _uiState.update {
-                        ShoppingListUiState.Loading(it.shoppingList, it.shoppingItems, it.carrinho)
+                        ShoppingListUiState.Loading(it.currentUser, it.shoppingList, it.shoppingItems, it.carrinho)
                     }
                     cartService.removeItemFromCart(_uiState.value.shoppingList?.id!!, uiEvent.item)
                     _uiState.update {
                         ShoppingListUiState.Loaded(
+                            currentUser = it.currentUser,
                             shoppingList = it.shoppingList!!,
                             shoppingItems = shoppingItemService.getShoppingItems(it.shoppingList!!.id),
-                            carrinho = cartService.getCartItems(it.shoppingList!!.id),
+                            carrinho = cartService.getOwnCartItems(it.shoppingList!!.id),
                             dialogState = false to null
                         )
                     }
@@ -149,14 +151,15 @@ class ShoppingListViewModel @Inject constructor(
 
                 is ShoppingListUiEvent.OnClearCart -> {
                     _uiState.update {
-                        ShoppingListUiState.Loading(it.shoppingList, it.shoppingItems, it.carrinho)
+                        ShoppingListUiState.Loading(it.currentUser, it.shoppingList, it.shoppingItems, it.carrinho)
                     }
                     cartService.clearCart(_uiState.value.shoppingList?.id!!)
                     _uiState.update {
                         ShoppingListUiState.Loaded(
+                            currentUser = it.currentUser,
                             shoppingList = it.shoppingList!!,
                             shoppingItems = shoppingItemService.getShoppingItems(it.shoppingList!!.id),
-                            carrinho = cartService.getCartItems(it.shoppingList!!.id),
+                            carrinho = cartService.getOwnCartItems(it.shoppingList!!.id),
                             dialogState = false to null
                         )
                     }
@@ -165,6 +168,7 @@ class ShoppingListViewModel @Inject constructor(
                 is ShoppingListUiEvent.OnToggleDialog -> {
                     _uiState.update {
                         ShoppingListUiState.Loaded(
+                            currentUser = it.currentUser,
                             shoppingList = it.shoppingList!!,
                             shoppingItems = it.shoppingItems,
                             carrinho = it.carrinho,
@@ -176,6 +180,7 @@ class ShoppingListViewModel @Inject constructor(
                 is ShoppingListUiEvent.OnToggleQrCode -> {
                     _uiState.update {
                         ShoppingListUiState.Loaded(
+                            currentUser = it.currentUser,
                             shoppingList = it.shoppingList!!,
                             shoppingItems = it.shoppingItems,
                             carrinho = it.carrinho,

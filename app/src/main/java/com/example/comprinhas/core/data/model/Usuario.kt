@@ -1,6 +1,5 @@
 package com.example.comprinhas.core.data.model
 
-import com.example.comprinhas.list.data.model.ShoppingItem
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.serialization.Serializable
 

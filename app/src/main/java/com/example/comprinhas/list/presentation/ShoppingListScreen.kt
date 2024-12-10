@@ -8,7 +8,6 @@ import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -18,12 +17,11 @@ import androidx.navigation.compose.rememberNavController
 import com.example.comprinhas.core.data.model.Usuario
 import com.example.comprinhas.list.data.model.ShoppingListUiEvent
 import com.example.comprinhas.list.data.model.ShoppingListUiState
-import com.example.comprinhas.list.presentation.components.BottomBar
+import com.example.comprinhas.list.presentation.components.bottom_sheet.BottomBar
 import com.example.comprinhas.list.presentation.components.ListTopBar
 import com.example.comprinhas.list.presentation.components.ShoppingList
 import com.example.comprinhas.list.presentation.dialogs.NewItemDialog
 import com.example.comprinhas.ui.theme.ComprinhasTheme
-import kotlinx.coroutines.launch
 
 @Composable
 fun ShoppingListScreenRoot(
@@ -54,7 +52,6 @@ fun ShoppingListScreen(
     uiEvent: (ShoppingListUiEvent) -> Unit
 ) {
     val scaffoldState = rememberBottomSheetScaffoldState()
-    val scope = rememberCoroutineScope()
 
     BottomSheetScaffold(
         modifier = modifier,
@@ -70,20 +67,14 @@ fun ShoppingListScreen(
         sheetContent = {
             BottomBar(
                 uiState = uiState,
-                onRemoveItem = { uiEvent(ShoppingListUiEvent.OnRemoveFromCart(it)) },
-                onClearCart = {
-                    uiEvent(ShoppingListUiEvent.OnClearCart)
-                    scope.launch { scaffoldState.bottomSheetState.partialExpand() }
-                },
+                scaffoldState = scaffoldState,
+                uiEvent = uiEvent
             )
         }
     ) { innerPadding ->
         ShoppingList(
             modifier = Modifier.padding(innerPadding),
             shoppingList = uiState.shoppingItems,
-            onMoveToCart = { uiEvent(ShoppingListUiEvent.OnAddToCart(it)) },
-            onDelete = { uiEvent(ShoppingListUiEvent.OnDeleteShoppingItem(it.id!!)) },
-            onEdit = { uiEvent(ShoppingListUiEvent.OnToggleDialog(true, it)) },
             uiEvent = uiEvent
         )
         if ((uiState as? ShoppingListUiState.Loaded)?.dialogState?.first == true) {
@@ -111,6 +102,7 @@ private fun HomeScreenPreview(
         ShoppingListScreen(
             navController = rememberNavController(),
             uiState = ShoppingListUiState.Loading(
+                currentUser = null,
                 com.example.comprinhas.home.data.model.ShoppingList(
                     id = "1",
                     nome = "Daiso",

@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.QrCode
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -98,6 +97,7 @@ private fun ListTopBarPreview() {
     ComprinhasTheme {
         ListTopBar(
             uiState = ShoppingListUiState.Loading(
+                currentUser = null,
                 com.example.comprinhas.home.data.model.ShoppingList(
                     id = "1",
                     nome = "Daiso",

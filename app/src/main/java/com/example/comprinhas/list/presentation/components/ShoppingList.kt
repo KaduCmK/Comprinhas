@@ -37,9 +37,6 @@ import com.example.comprinhas.ui.theme.ComprinhasTheme
 fun ShoppingList(
     modifier: Modifier = Modifier,
     shoppingList: List<ShoppingItem>,
-    onMoveToCart: (ShoppingItem) -> Unit,
-    onDelete: (ShoppingItem) -> Unit,
-    onEdit: (ShoppingItem) -> Unit,
     uiEvent: (ShoppingListUiEvent) -> Unit
 ) {
     var expandedCardUid by remember {
@@ -82,10 +79,10 @@ fun ShoppingList(
                     onClick = {
                         expandedCardUid = if (expandedCardUid == it.id) "" else it.id!!
                     },
-                    onDelete = { onDelete(it) },
-                    onEdit = { onEdit(it) },
+                    onDelete = { uiEvent(ShoppingListUiEvent.OnDeleteShoppingItem(it.id!!)) },
+                    onEdit = { uiEvent(ShoppingListUiEvent.OnToggleDialog(true, it)) },
                     actionButton = {
-                        IconButton(onClick = { onMoveToCart(it) }) {
+                        IconButton(onClick = { uiEvent(ShoppingListUiEvent.OnAddToCart(it)) }) {
                             Icon(
                                 painter = painterResource(id = R.drawable.baseline_add_shopping_cart_24),
                                 contentDescription = "adicionar ao carrinho"
@@ -106,9 +103,6 @@ private fun EmptyPreview() {
         Surface {
             ShoppingList(
                 shoppingList = emptyList(),
-                onMoveToCart = {},
-                onDelete = {},
-                onEdit = {},
                 uiEvent = {}
             )
         }
@@ -128,9 +122,6 @@ private fun Preview() {
                         adicionadoPor = Usuario()
                     )
                 },
-                onMoveToCart = {},
-                onDelete = {},
-                onEdit = {},
                 uiEvent = {}
             )
         }

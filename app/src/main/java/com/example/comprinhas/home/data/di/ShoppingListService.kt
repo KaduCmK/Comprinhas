@@ -5,14 +5,17 @@ import com.example.comprinhas.home.data.model.ShoppingList
 import com.example.comprinhas.home.data.model.ShoppingListFirestore
 import com.example.comprinhas.list.data.model.CartItem
 import com.example.comprinhas.list.data.model.CartItemFirestore
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class ShoppingListService @Inject constructor() {
+    val currentUser = Usuario(Firebase.auth.currentUser!!)
+    private val db = Firebase.firestore
+
     suspend fun getShoppingListById(listUid: String): ShoppingList {
-        val db = Firebase.firestore
 
         val shoppingListSnapshot = db.collection("shoppingLists")
             .document(listUid)
@@ -49,7 +52,6 @@ class ShoppingListService @Inject constructor() {
     }
 
     suspend fun getOwnedShoppingLists(uid: String): List<ShoppingList> {
-        val db = Firebase.firestore
 
         val createdListsSnapshot = db.collection("shoppingLists")
             .whereEqualTo("criador.uid", uid)
@@ -127,7 +129,6 @@ class ShoppingListService @Inject constructor() {
     }
 
     suspend fun searchShoppingList(nome: String): List<ShoppingList> {
-        val db = Firebase.firestore
 
         val shoppingListsSnapshot = db.collection("shoppingLists")
             .whereGreaterThanOrEqualTo("nome", nome)
@@ -156,7 +157,6 @@ class ShoppingListService @Inject constructor() {
     }
 
     suspend fun createShoppingList(shoppingList: ShoppingListFirestore): Result<Unit> {
-        val db = Firebase.firestore
 
         return try {
             val docRef = db.collection("shoppingLists").document()
@@ -173,8 +173,6 @@ class ShoppingListService @Inject constructor() {
         password: String,
         currentUser: Usuario
     ): Result<Unit> {
-        val db = Firebase.firestore
-
         return try {
             val shoppingListRef = db.collection("shoppingLists").document(uid)
             val participantesRef = shoppingListRef
@@ -194,8 +192,6 @@ class ShoppingListService @Inject constructor() {
     }
 
     suspend fun deleteShoppingList(uid: String): Result<Unit> {
-        val db = Firebase.firestore
-
         return try {
             db.collection("shoppingLists").document(uid).delete().await()
             Result.success(Unit)
