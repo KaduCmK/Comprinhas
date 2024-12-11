@@ -41,11 +41,8 @@ class ShoppingListService @Inject constructor() {
             }
 
         return ShoppingList(
-            id = shoppingListSnapshot.id,
-            criador = shoppingList?.criador!!,
-            nome = shoppingList.nome!!,
-            senha = shoppingList.senha,
-            imgUrl = shoppingList.imgUrl,
+            firestoreUid = shoppingListSnapshot.id,
+            shoppingListFirestore = shoppingList!!,
             participantes = listaParticipantes,
             carrinho = carrinho
         )
@@ -83,11 +80,8 @@ class ShoppingListService @Inject constructor() {
                 }
 
             ShoppingList(
-                id = doc.id,
-                criador = shoppingListDto?.criador!!,
-                nome = shoppingListDto.nome!!,
-                senha = shoppingListDto.senha,
-                imgUrl = shoppingListDto.imgUrl,
+                firestoreUid = doc.id,
+                shoppingListFirestore = shoppingListDto!!,
                 participantes = listaParticipantes,
                 carrinho = carrinho
             )
@@ -115,11 +109,8 @@ class ShoppingListService @Inject constructor() {
                 }
 
             ShoppingList(
-                id = shoppingListRef!!.id,
-                criador = shoppingListDto?.criador!!,
-                nome = shoppingListDto.nome!!,
-                senha = shoppingListDto.senha,
-                imgUrl = shoppingListDto.imgUrl,
+                firestoreUid = shoppingListRef!!.id,
+                shoppingListFirestore = shoppingListDto!!,
                 participantes = listaParticipantes ?: emptyList(),
                 carrinho = carrinho
             )
@@ -145,12 +136,9 @@ class ShoppingListService @Inject constructor() {
                 }
 
             ShoppingList(
-                id = doc.id,
-                criador = shoppingListDto?.criador!!,
-                nome = shoppingListDto.nome!!,
-                senha = shoppingListDto.senha,
-                imgUrl = shoppingListDto.imgUrl,
-                participantes = listaParticipantes
+                firestoreUid = doc.id,
+                shoppingListFirestore = shoppingListDto!!,
+                participantes = listaParticipantes,
             )
         }
         return shoppingLists

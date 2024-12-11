@@ -11,6 +11,19 @@ data class ShoppingList(
     val senha: String? = null,
     val criador: Usuario,
     val imgUrl: String? = null,
-    val participantes: List<Usuario>,
+    val participantes: List<Usuario> = emptyList(),
     val carrinho: List<CartItem> = emptyList()
-)
+) {
+    constructor(
+        firestoreUid: String,
+        shoppingListFirestore: ShoppingListFirestore,
+        participantes: List<Usuario>,
+        carrinho: List<CartItem> = emptyList()
+    ) : this(
+        id = firestoreUid,
+        nome = shoppingListFirestore.nome ?: "",
+        senha = shoppingListFirestore.senha,
+        criador = shoppingListFirestore.criador!!,
+        imgUrl = shoppingListFirestore.imgUrl,
+    )
+}
