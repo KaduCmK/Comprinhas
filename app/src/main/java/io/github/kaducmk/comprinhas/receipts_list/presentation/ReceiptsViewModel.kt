@@ -5,7 +5,6 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.lifecycle.AndroidViewModel
 import io.github.kaducmk.comprinhas.dataStore
 import io.github.kaducmk.comprinhas.receipts_list.data.model.Receipt
-import io.github.kaducmk.comprinhas.ui.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
@@ -26,9 +25,9 @@ class ReceiptsViewModel(private val application: Application) : AndroidViewModel
     val receiptsList: StateFlow<List<Receipt>>
         get() = _receiptsList
 
-    private var _uiState = MutableStateFlow(UiState.LOADING)
-    val uiState: StateFlow<UiState>
-        get() = _uiState
+//    private var _uiState = MutableStateFlow(UiState.LOADING)
+//    val uiState: StateFlow<UiState>
+//        get() = _uiState
 
 
 //    fun getReceiptsList() {

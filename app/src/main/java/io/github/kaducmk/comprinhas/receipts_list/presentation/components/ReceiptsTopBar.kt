@@ -27,14 +27,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.github.kaducmk.comprinhas.ui.UiState
 import io.github.kaducmk.comprinhas.ui.theme.ComprinhasTheme
 
 @Composable
 fun ReceiptsTopBar(
     onQrCodeScan: () -> Unit,
     onNavigateBack: () -> Unit,
-    uiState: UiState
 ) {
     Surface {
         Column(
@@ -74,17 +72,17 @@ fun ReceiptsTopBar(
                 }
             }
 
-            if (uiState == UiState.LOADING) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(text = "Carregando...", style = TextStyle(fontStyle = FontStyle.Italic))
-                    LinearProgressIndicator()
-                }
-            }
+//            if (uiState == UiState.LOADING) {
+//                Column(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .padding(top = 16.dp),
+//                    horizontalAlignment = Alignment.CenterHorizontally
+//                ) {
+//                    Text(text = "Carregando...", style = TextStyle(fontStyle = FontStyle.Italic))
+//                    LinearProgressIndicator()
+//                }
+//            }
         }
     }
 }
@@ -93,6 +91,6 @@ fun ReceiptsTopBar(
 @Composable
 private fun ReceiptsTopBarPreview() {
     ComprinhasTheme {
-        ReceiptsTopBar({}, {}, UiState.LOADING)
+        ReceiptsTopBar({}, {})
     }
 }
