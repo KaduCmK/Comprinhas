@@ -7,14 +7,30 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:409916661575:android:7d20198b1e1339929b3662",
+        "mobilesdk_app_id": "1:409916661575:android:ff4bc9ce0ce692009b3662",
         "android_client_info": {
           "package_name": "io.github.kaducmk.comprinhas"
         }
       },
       "oauth_client": [
         {
-          "client_id": "409916661575-9q0gpc90ko827drpsdp5vo5mdmdq7ce6.apps.googleusercontent.com",
+          "client_id": "409916661575-5673bjmc1ue9uh71jus2ejncsg41nrf3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "io.github.kaducmk.comprinhas",
+            "certificate_hash": "d5b7f48434e4a952a6381addcfa26909018790d7"
+          }
+        },
+        {
+          "client_id": "409916661575-gnllcikjf0d3unoc6j2eq4gkitebvph2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "io.github.kaducmk.comprinhas",
+            "certificate_hash": "b9dda69d1ac915df83b1a4f3e27d2652b16d36b1"
+          }
+        },
+        {
+          "client_id": "409916661575-v6fccrestf9i2ii5brjrdf0u3pta8skc.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "io.github.kaducmk.comprinhas",

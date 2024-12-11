@@ -12,7 +12,7 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class ShoppingListService @Inject constructor() {
-    val currentUser = Usuario(Firebase.auth.currentUser!!)
+    val currentUser = Usuario(Firebase.auth.currentUser)
     private val db = Firebase.firestore
 
     suspend fun getShoppingListById(listUid: String): ShoppingList {
