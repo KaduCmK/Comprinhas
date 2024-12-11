@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:409916661575:android:7d20198b1e1339929b3662",
         "android_client_info": {
-          "package_name": "com.example.comprinhas"
+          "package_name": "io.github.kaducmk.comprinhas"
         }
       },
       "oauth_client": [
@@ -17,7 +17,7 @@
           "client_id": "409916661575-9q0gpc90ko827drpsdp5vo5mdmdq7ce6.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.comprinhas",
+            "package_name": "io.github.kaducmk.comprinhas",
             "certificate_hash": "1ba44267a6275a13edc012656b0218c021b55384"
           }
         },

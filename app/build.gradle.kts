@@ -11,11 +11,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.comprinhas"
+    namespace = "io.github.kaducmk.comprinhas"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.comprinhas"
+        applicationId = "io.github.kaducmk.comprinhas"
         minSdk = 28
         targetSdk = 34
         versionCode = 3
