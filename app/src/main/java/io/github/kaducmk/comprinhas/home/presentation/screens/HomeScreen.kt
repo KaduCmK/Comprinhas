@@ -1,4 +1,4 @@
-package io.github.kaducmk.comprinhas.home.presentation
+package io.github.kaducmk.comprinhas.home.presentation.screens
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
@@ -21,11 +21,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import io.github.kaducmk.comprinhas.core.data.model.Usuario
@@ -34,26 +32,9 @@ import io.github.kaducmk.comprinhas.home.data.model.HomeUiEvent
 import io.github.kaducmk.comprinhas.home.data.model.HomeUiState
 import io.github.kaducmk.comprinhas.home.data.model.ShoppingList
 import io.github.kaducmk.comprinhas.home.presentation.components.ShoppingListCard
-import io.github.kaducmk.comprinhas.home.presentation.dialogs.NewListDialog
+import io.github.kaducmk.comprinhas.ui.navigation.HomeRoutes
 import io.github.kaducmk.comprinhas.ui.navigation.ToAuth
-import io.github.kaducmk.comprinhas.ui.navigation.ToShoppingList
 import io.github.kaducmk.comprinhas.ui.theme.ComprinhasTheme
-
-@Composable
-fun HomeScreenRoot(
-    modifier: Modifier = Modifier,
-    navController: NavController,
-    currentUser: Usuario?
-) {
-    val viewModel = hiltViewModel<HomeViewModel>()
-    HomeScreen(
-        modifier = modifier,
-        currentUser = currentUser,
-        uiState = viewModel.uiState.collectAsState().value,
-        uiEvent = viewModel::onEvent,
-        navController = navController,
-    )
-}
 
 @Composable
 fun HomeScreen(
@@ -77,7 +58,7 @@ fun HomeScreen(
                 title = "Comprinhas",
                 mainButton = {
                     Button(
-                        onClick = { uiEvent(HomeUiEvent.OnDialog(true)) },
+                        onClick = { navController.navigate(HomeRoutes.ToCreateListScreen) },
                         enabled = uiState is HomeUiState.Loaded
                     ) {
                         Icon(
@@ -93,7 +74,7 @@ fun HomeScreen(
                 },
                 bottomButton = {
                     TextButton(
-                        onClick = { uiEvent(HomeUiEvent.OnDialog(false)) },
+                        onClick = { navController.navigate(HomeRoutes.ToJoinListScreen) },
                         enabled = uiState is HomeUiState.Loaded
                     ) {
                         Icon(
@@ -126,34 +107,18 @@ fun HomeScreen(
             }
 
             is HomeUiState.Loaded -> {
-                uiState.dialogState?.let {
-                    NewListDialog(
-                        onDismiss = { uiEvent(HomeUiEvent.OnDialog(null)) },
-                        dialogState = uiState.dialogState,
-                        onSearch = { uiEvent(HomeUiEvent.OnSearchShoppingList(it)) },
-                        onJoinList = { nameOrId, password ->
-                            if (it.newList) uiEvent(
-                                HomeUiEvent.OnCreateShoppingList(
-                                    nameOrId,
-                                    password
-                                )
-                            )
-                            else uiEvent(HomeUiEvent.OnJoinShoppingList(nameOrId, password))
-                        })
-                }
-
                 LazyVerticalGrid(
                     modifier = Modifier.padding(paddingValues),
                     columns = GridCells.Fixed(2),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    items(uiState.lists, key = { it.id }) {
+                    items(uiState.lists!!, key = { it.id }) {
                         ShoppingListCard(
                             modifier = Modifier.animateItem(),
                             shoppingList = it,
                             onCardClick = {
-                                navController.navigate(ToShoppingList(it.id))
+                                navController.navigate(HomeRoutes.ToShoppingList(it.id))
                             },
                             onCardHold = { list -> uiEvent(HomeUiEvent.OnHoldCard(list)) }
                         )
@@ -161,7 +126,6 @@ fun HomeScreen(
                 }
             }
         }
-
     }
 }
 

@@ -28,10 +28,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="io.github.kaducmk.comprinhas" />
+                  <option name="mobileSdkAppId" value="1:409916661575:android:ff4bc9ce0ce692009b3662" />
+                  <option name="projectId" value="comprinhas-73254" />
+                  <option name="projectNumber" value="409916661575" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

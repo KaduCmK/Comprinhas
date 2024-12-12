@@ -156,7 +156,7 @@ private fun HomeTopBarPreview() {
                     Icon(imageVector = Icons.AutoMirrored.Outlined.ReceiptLong, contentDescription = null)
                 }
             },
-            uiState = HomeUiState.Loading(null)
+            uiState = HomeUiState.Loading(null, null)
         )
     }
 }

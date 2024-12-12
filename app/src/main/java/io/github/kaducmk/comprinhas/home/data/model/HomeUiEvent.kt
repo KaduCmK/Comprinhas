@@ -9,4 +9,5 @@ sealed interface HomeUiEvent {
     data class OnGetShoppingLists(val currentUser: Usuario) : HomeUiEvent
     data class OnSearchShoppingList(val nome: String) : HomeUiEvent
     data class OnHoldCard(val shoppingList: ShoppingList) : HomeUiEvent
+    data object OnScanQrCode : HomeUiEvent
 }

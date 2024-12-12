@@ -11,6 +11,14 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        create("release") {
+            storeFile = file("C:\\Users\\carlos.alves.SECONCI\\keystore.jks")
+            storePassword = "Kadu2014"
+            keyAlias = "personal"
+            keyPassword = "Kadu2014"
+        }
+    }
     namespace = "io.github.kaducmk.comprinhas"
     compileSdk = 34
 
@@ -34,6 +42,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
             applicationVariants.all {
                 outputs.all {
                     (this as BaseVariantOutputImpl).outputFileName = "${namespace}_$name-$versionName.apk"

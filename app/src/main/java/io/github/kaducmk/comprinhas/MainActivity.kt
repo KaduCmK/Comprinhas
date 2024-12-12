@@ -45,7 +45,6 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val navController = rememberNavController()
-
             ComprinhasTheme {
                 MainNavGraph(navController, authService)
             }

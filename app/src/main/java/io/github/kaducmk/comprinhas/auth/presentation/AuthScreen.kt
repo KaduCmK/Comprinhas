@@ -30,6 +30,7 @@ import io.github.kaducmk.comprinhas.auth.data.AuthService
 import io.github.kaducmk.comprinhas.auth.data.model.AuthUiEvent
 import io.github.kaducmk.comprinhas.auth.data.model.AuthUiState
 import io.github.kaducmk.comprinhas.ui.navigation.ToHome
+import io.github.kaducmk.comprinhas.ui.navigation.ToHomeNavGraph
 import io.github.kaducmk.comprinhas.ui.theme.ComprinhasTheme
 
 @Composable
@@ -99,7 +100,7 @@ fun AuthScreen(
 
                 is AuthUiState.Authenticated -> {
                     Toast.makeText(LocalContext.current, "Login efetuado com sucesso", Toast.LENGTH_SHORT).show()
-                    navController.navigate(ToHome)
+                    navController.navigate(ToHomeNavGraph)
                 }
             }
         }

@@ -159,7 +159,6 @@ class ShoppingListService @Inject constructor() {
     suspend fun joinShoppingList(
         uid: String,
         password: String,
-        currentUser: Usuario
     ): Result<Unit> {
         return try {
             val shoppingListRef = db.collection("shoppingLists").document(uid)
@@ -181,7 +180,25 @@ class ShoppingListService @Inject constructor() {
 
     suspend fun deleteShoppingList(uid: String): Result<Unit> {
         return try {
-            db.collection("shoppingLists").document(uid).delete().await()
+            val shoppingListRef = db.collection("shoppingLists").document(uid)
+
+            shoppingListRef.collection("participantes").get().await().forEach {
+                it.reference.delete().await()
+            }
+            shoppingListRef.collection("participantes").document().delete().await()
+
+            shoppingListRef.collection("carrinho").get().await().forEach {
+                it.reference.delete().await()
+            }
+            shoppingListRef.collection("carrinho").document().delete().await()
+
+            shoppingListRef.collection("items").get().await().forEach {
+                it.reference.delete().await()
+            }
+            shoppingListRef.collection("items").document().delete().await()
+
+            shoppingListRef.delete().await()
+
             Result.success(Unit)
         }
         catch (e: Exception) {
